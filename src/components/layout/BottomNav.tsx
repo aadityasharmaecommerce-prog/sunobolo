@@ -10,16 +10,14 @@ export function BottomNav() {
   const items = [
     { to: ROUTES.home, label: 'Home', emoji: '🏠' },
     { to: ROUTES.courses, label: 'Learn', emoji: '📚' },
-    ...(progress.lastLesson && isAuthenticated
-      ? [
-          {
-            to: ROUTES.lesson(progress.lastLesson.courseId, progress.lastLesson.lessonId),
-            label: 'Practice',
-            emoji: '🎤',
-          },
-        ]
-      : []),
-    { to: ROUTES.pricing, label: 'Pricing', emoji: '💎' },
+    {
+      to: progress.lastLesson
+        ? ROUTES.lesson(progress.lastLesson.courseId, progress.lastLesson.lessonId)
+        : '/free-trial',
+      label: 'Practice',
+      emoji: '🎤',
+    },
+    { to: isAuthenticated ? ROUTES.dashboard : '/free-trial', label: 'Progress', emoji: '📊' },
     { to: isAuthenticated ? ROUTES.profile : ROUTES.login, label: isAuthenticated ? 'Profile' : 'Login', emoji: isAuthenticated ? '👤' : '🔑' },
   ];
 

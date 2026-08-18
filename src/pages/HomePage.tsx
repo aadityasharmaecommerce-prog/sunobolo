@@ -31,55 +31,93 @@ export function HomePage() {
   return (
     <div>
       {/* ═══════════════════════════════════════════
-          1. HERO — Two-column emotional headline
+          1. HERO — Image-style two-column
          ═══════════════════════════════════════════ */}
-      <section className="hero-new">
-        <div className="container hero-grid">
-          <div className="hero-left">
-            <span className="hero-badge">🇮🇳 Hindi-Friendly English Speaking Practice</span>
-            <h1 className="hero-headline">
-              English Samajh Aati Hai,<br />
-              <span className="hero-headline--accent">Par Bolne Mein Confidence Nahi Aata?</span>
+      <section className="hero-v2">
+        <div className="container hero-v2__grid">
+          {/* LEFT */}
+          <div className="hero-v2__left">
+            <span className="hero-v2__badge">🇮🇳 Hindi-Friendly English Speaking Practice</span>
+            <h1 className="hero-v2__title">
+              English Bolna<br />
+              Ab Aapke <span className="hero-v2__accent">Haath Mein.</span>
             </h1>
-            <p className="hero-sub">
-              SunoBolo English ke saath English ko sirf padhiye nahi — <strong>SUNIYE, BOLIYE</strong> aur <strong>REPEAT</strong> kijiye.
-            </p>
-            <p className="hero-desc">
-              Real-life English sentences ko daily 10–15 minute practice karke apni speaking confidence ko gradually improve kijiye.
-            </p>
-            <div className="hero-cta">
-              <Button size="lg" to="/free-trial">🆓 25 SENTENCES FREE</Button>
+            <div className="hero-v2__steps">
+              <span>🔊 Suno.</span>
+              <span>🎤 Samjho.</span>
+              <span>🔄 Bolo.</span>
+              <span>⭕ Repeat.</span>
             </div>
-            <div className="hero-trust">
-              <span>✓ No Login</span>
-              <span>✓ No Payment</span>
-              <span>✓ Start Immediately</span>
-            </div>
-            <p className="hero-secondary">Pehle free mein try kijiye. Pasand aaye to complete learning continue kijiye.</p>
-          </div>
-          <div className="hero-right">
-            <div className="hero-phone">
-              <div className="phone-frame">
-                <div className="phone-notch" />
-                <div className="phone-screen">
-                  <div className="phone-sentence">
-                    <p className="phone-english">"I'm running late."</p>
-                    <p className="phone-hindi">मुझे देर हो रही है।</p>
-                  </div>
-                  <div className="phone-counters">
-                    <span className="phone-counter">🔊 1 / 3</span>
-                    <span className="phone-counter phone-counter--done">🎤 2 / 3</span>
-                  </div>
-                  <div className="phone-progress">
-                    <div className="phone-progress-fill" style={{ width: '60%' }} />
-                  </div>
+            <p className="hero-v2__desc">
+              Roz 10–15 minute ki practice se English speaking confidence dheere dheere badhta hai.
+            </p>
+            <div className="hero-v2__cta-card">
+              <div className="hero-v2__cta-left">
+                <span className="hero-v2__cta-icon">🎁</span>
+                <div>
+                  <strong>25 SENTENCES FREE</strong>
+                  <small>No Login · No Payment · Start Now</small>
                 </div>
               </div>
-              <div className="phone-flow">
-                <span className="phone-flow-item">🔊 Listen</span>
-                <span className="phone-flow-item">🎤 Speak</span>
-                <span className="phone-flow-item">🔁 Repeat</span>
-                <span className="phone-flow-item">😊 Confidence</span>
+              <span className="hero-v2__cta-arrow">→</span>
+            </div>
+          </div>
+
+          {/* RIGHT — Phone mockup + girl illustration + sticky notes */}
+          <div className="hero-v2__right">
+            <div className="hero-v2__visual">
+              {/* Phone Mockup */}
+              <div className="hero-v2__phone">
+                <div className="hero-v2__phone-notch" />
+                <div className="hero-v2__phone-screen">
+                  <div className="hero-v2__phone-counter">1 of 25</div>
+                  <div className="hero-v2__phone-progress">
+                    <div className="hero-v2__phone-progress-fill" />
+                  </div>
+                  <p className="hero-v2__phone-label">English Sentence</p>
+                  <div className="hero-v2__phone-sentence">
+                    <span>I'm going to be a little late.</span>
+                    <span className="hero-v2__phone-speaker">🔊</span>
+                  </div>
+                  <p className="hero-v2__phone-label">Hindi Meaning</p>
+                  <div className="hero-v2__phone-hindi">
+                    मुझे थोड़ी देर हो जाएगी।
+                  </div>
+                  <div className="hero-v2__phone-listen">
+                    <p>Listen 3 Times</p>
+                    <div className="hero-v2__phone-dots">
+                      <span className="hero-v2__phone-dot hero-v2__phone-dot--active">🔊 1</span>
+                      <span className="hero-v2__phone-dot">🔊 2</span>
+                      <span className="hero-v2__phone-dot">🔊 3</span>
+                    </div>
+                  </div>
+                  <div className="hero-v2__phone-speak">
+                    <p>Speak 3 Times</p>
+                    <div className="hero-v2__phone-dots">
+                      <span className="hero-v2__phone-dot hero-v2__phone-dot--active">🎤 1</span>
+                      <span className="hero-v2__phone-dot">🎤 2</span>
+                      <span className="hero-v2__phone-dot">🎤 3</span>
+                    </div>
+                  </div>
+                  <div className="hero-v2__phone-done">✓ Sentence Complete</div>
+                  <div className="hero-v2__phone-next">Next Sentence →</div>
+                </div>
+              </div>
+
+              {/* Girl illustration (CSS) */}
+              <div className="hero-v2__girl">
+                <div className="hero-v2__girl-head" />
+                <div className="hero-v2__girl-body" />
+                <div className="hero-v2__girl-book hero-v2__girl-book--1" />
+                <div className="hero-v2__girl-book hero-v2__girl-book--2" />
+              </div>
+
+              {/* Sticky notes */}
+              <div className="hero-v2__sticky hero-v2__sticky--1">
+                Aaj Ka<br />Ek Sentence,<br />Kal Ki Ek<br />Confident<br />Conversation.
+              </div>
+              <div className="hero-v2__sticky hero-v2__sticky--2">
+                Perfect hone ka wait mat kijiye, practice aaj se shuru kijiye. 😊
               </div>
             </div>
           </div>
@@ -87,51 +125,91 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          2. TRUST STRIP — Method visual
+          2. FEATURES STRIP — Listen/Speak/Repeat/Use
          ═══════════════════════════════════════════ */}
-      <section className="trust-strip">
+      <section className="features-strip">
         <div className="container">
-          <p className="trust-strip__label">One Simple Method</p>
-          <div className="trust-strip__flow">
-            <span>🔊 SUNO 3×</span>
-            <span className="trust-strip__arrow">→</span>
-            <span>🎤 BOLO 3×</span>
-            <span className="trust-strip__arrow">→</span>
-            <span>🔁 REPEAT</span>
-            <span className="trust-strip__arrow">→</span>
-            <span>🗣️ USE IN REAL LIFE</span>
+          <div className="features-strip__grid">
+            {[
+              { icon: '🎧', title: 'Listen 3x', sub: 'Clear Audio Practice' },
+              { icon: '🎤', title: 'Speak 3x', sub: 'Bolkar Seekho Confidence Badhaao' },
+              { icon: '🔄', title: 'Repeat & Improve', sub: 'Roz Practice, Roz Improvement' },
+              { icon: '🌍', title: 'Use in Real Life', sub: 'Jo seekha, use kijiye real situations mein' },
+            ].map((f) => (
+              <div key={f.title} className="features-strip__item">
+                <span className="features-strip__icon">{f.icon}</span>
+                <div>
+                  <strong>{f.title}</strong>
+                  <small>{f.sub}</small>
+                </div>
+              </div>
+            ))}
           </div>
-          <p className="trust-strip__sub">Har lesson ka focus practical speaking practice par hai.</p>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          3. PROBLEM SECTION
+          3. REAL-LIFE ENGLISH — Category cards
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
-          <Section eyebrow="Problem" title="English Aati Hai… Par Bolte Waqt Problem Hoti Hai?" align="center">
-            <div className="problem-cards">
-              {[
-                { emoji: '📞', text: 'Phone par English bolne mein hesitation' },
-                { emoji: '💼', text: 'Interview mein answer bolne mein difficulty' },
-                { emoji: '🏢', text: 'Office mein English communication ka pressure' },
-                { emoji: '🗣️', text: 'Daily conversation mein words yaad na aana' },
-              ].map((item) => (
-                <div key={item.emoji} className="problem-card-new">
-                  <span className="problem-card-new__emoji">{item.emoji}</span>
-                  <p>{item.text}</p>
-                </div>
-              ))}
-            </div>
-            <p className="problem-solution">Problem English samajhne ki nahi,<br />practice ki bhi ho sakti hai.</p>
-            <Button to="/free-trial">FREE PRACTICE TRY KAREIN →</Button>
-          </Section>
+          <h2 className="section-title">→ English Jo Aapki Life Mein Kaam Aaye ←</h2>
+          <div className="reallife-grid">
+            {[
+              { emoji: '📞', title: 'Phone Calls', sub: 'English mein baat karna easy hoga.' },
+              { emoji: '🛍️', title: 'Daily Life', sub: 'Shopping, requests, conversations.' },
+              { emoji: '💼', title: 'Interview', sub: 'Confident answers, better opportunities.' },
+              { emoji: '🏢', title: 'Office', sub: 'Meetings, updates, team communication.' },
+              { emoji: '✈️', title: 'Travel', sub: 'Safar mein English bolna simple hoga.' },
+              { emoji: '👥', title: 'Social Life', sub: 'Nayi dosti, nayi conversations.' },
+            ].map((item) => (
+              <div key={item.title} className="reallife-card">
+                <span className="reallife-card__emoji">{item.emoji}</span>
+                <h4>{item.title}</h4>
+                <p>{item.sub}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          4. HOW SUNOBOLO WORKS
+          4. TESTIMONIAL
+         ═══════════════════════════════════════════ */}
+      <section className="section section--alt">
+        <div className="container">
+          <div className="testimonial-card">
+            <div className="testimonial-card__quote">"</div>
+            <p>SunoBolo se roz thoda practice karta hu, ab English bolne ka darr kaafi kam ho gaya hai.</p>
+            <span className="testimonial-card__author">— Real SunoBolo Learner</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          5. HUMARA WADA — Trust section
+         ═══════════════════════════════════════════ */}
+      <section className="section">
+        <div className="container">
+          <h2 className="section-title">Humara Wada</h2>
+          <div className="wada-grid">
+            {[
+              { icon: '✅', title: '100%', sub: 'Practical Sentences' },
+              { icon: '📊', title: 'Step By Step', sub: 'Learning Path' },
+              { icon: '❤️', title: 'Beginner to Advanced', sub: 'Complete Journey' },
+            ].map((w) => (
+              <div key={w.title} className="wada-card">
+                <span className="wada-card__icon">{w.icon}</span>
+                <strong>{w.title}</strong>
+                <small>{w.sub}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          6. HOW IT WORKS
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
@@ -164,7 +242,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          5. SHOW THE ACTUAL PRODUCT
+          7. SHOW THE ACTUAL PRODUCT
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -199,35 +277,32 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          6. REAL-LIFE ENGLISH
+          8. PROBLEM SECTION
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
-          <Section eyebrow="Real-Life" title="Sirf Textbook English Nahi. Real-Life English Practice." align="center">
-            <div className="reallife-grid">
+          <Section eyebrow="Problem" title="English Aati Hai… Par Bolte Waqt Problem Hoti Hai?" align="center">
+            <div className="problem-cards">
               {[
-                { emoji: '📞', title: 'Phone Calls', example: '"Can you call me back later?"' },
-                { emoji: '🛍️', title: 'Shopping', example: '"How much does this cost?"' },
-                { emoji: '🍽️', title: 'Restaurant', example: '"I would like to order please."' },
-                { emoji: '🏠', title: 'Daily Life', example: '"I\'ll be home in a few minutes."' },
-                { emoji: '✈️', title: 'Travel', example: '"How can I get there?"' },
-                { emoji: '💼', title: 'Interview', example: '"Could you tell me about yourself?"' },
-                { emoji: '🏢', title: 'Office', example: '"I\'ll finish this today."' },
-                { emoji: '👥', title: 'Conversation', example: '"It was nice talking to you."' },
+                { emoji: '📞', text: 'Phone par English bolne mein hesitation' },
+                { emoji: '💼', text: 'Interview mein answer bolne mein difficulty' },
+                { emoji: '🏢', text: 'Office mein English communication ka pressure' },
+                { emoji: '🗣️', text: 'Daily conversation mein words yaad na aana' },
               ].map((item) => (
-                <div key={item.title} className="reallife-card">
-                  <span className="reallife-card__emoji">{item.emoji}</span>
-                  <h4>{item.title}</h4>
-                  <p>{item.example}</p>
+                <div key={item.emoji} className="problem-card-new">
+                  <span className="problem-card-new__emoji">{item.emoji}</span>
+                  <p>{item.text}</p>
                 </div>
               ))}
             </div>
+            <p className="problem-solution">Problem English samajhne ki nahi,<br />practice ki bhi ho sakti hai.</p>
+            <Button to="/free-trial">FREE PRACTICE TRY KAREIN →</Button>
           </Section>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          7. WHO IS IT FOR
+          9. WHO IS IT FOR
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -254,7 +329,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          8. COURSE VALUE / ROADMAP
+          10. COURSE VALUE / ROADMAP
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
@@ -282,7 +357,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          9. COURSE CONTENT PREVIEW
+          11. COURSE CONTENT PREVIEW
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -333,7 +408,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          10. FREE TRIAL SECTION
+          12. FREE TRIAL SECTION
          ═══════════════════════════════════════════ */}
       <section className="section section--trial">
         <div className="container">
@@ -352,7 +427,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          11. WHY CONTINUE AFTER TRIAL
+          13. WHY CONTINUE AFTER TRIAL
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -377,7 +452,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          12. EMOTIONAL / ASPIRATIONAL
+          14. EMOTIONAL / ASPIRATIONAL
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
@@ -400,7 +475,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          13. FOR PARENTS (KIDS)
+          15. FOR PARENTS (KIDS)
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -420,7 +495,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          14. PURCHASE SECTION
+          16. PURCHASE SECTION
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
@@ -449,7 +524,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          15. VALUE COMPARISON
+          17. VALUE COMPARISON
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
@@ -475,7 +550,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          16. FAQ
+          18. FAQ
          ═══════════════════════════════════════════ */}
       <section className="section section--alt">
         <div className="container">
@@ -502,7 +577,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          17. FINAL CTA
+          19. FINAL CTA
          ═══════════════════════════════════════════ */}
       <section className="section section--final-cta">
         <div className="container">
@@ -516,7 +591,7 @@ export function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          18. COURSES (existing)
+          20. COURSES (existing)
          ═══════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
