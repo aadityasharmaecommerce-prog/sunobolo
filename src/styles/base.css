@@ -13,6 +13,7 @@
 }
 
 html {
+  overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
@@ -199,3 +200,81 @@ strong {
 
 .flex-wrap { flex-wrap: wrap; }
 .grow { flex: 1; }
+
+
+/* ─── Animations ─── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes listenPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes completionBounce {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ─── Section spacing polish ─── */
+.section { padding-block: var(--sp-10); }
+.section--alt { background: var(--bg-soft, #f1f5f9); }
+.section__subtitle { max-width: 540px; margin: 0 auto; line-height: 1.7; color: var(--text-3); }
+
+/* ─── Button polish ─── */
+.btn { transition: all 0.2s ease; }
+.btn:active { transform: scale(0.97); }
+.btn--lg { padding: 0.875rem 2rem; font-size: 1.125rem; font-weight: 700; border-radius: var(--r-lg); }
+
+/* ─── Card polish ─── */
+.card, .course-card { transition: box-shadow 0.2s ease, transform 0.15s ease; }
+.card:hover, .course-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+/* ─── Steps polish ─── */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); max-width: 700px; margin: 0 auto; }
+.step { text-align: center; }
+.step__num { font-size: var(--fs-xs); font-weight: 800; color: var(--c-sky); letter-spacing: 0.05em; }
+.step__emoji { font-size: 2.5rem; margin: var(--sp-2) 0; }
+.step h3 { margin-bottom: var(--sp-1); }
+.step p { font-size: var(--fs-sm); color: var(--text-3); }
+
+/* ─── Home courses grid ─── */
+.home-courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--sp-4); }
+
+/* ─── CTA banner ─── */
+.cta-banner {
+  background: var(--gradient-brand); color: #fff; border-radius: var(--r-xl);
+  padding: var(--sp-8) var(--sp-6); text-align: center;
+}
+.cta-banner h2 { color: #fff; margin-bottom: var(--sp-2); }
+.cta-banner p { color: rgba(255,255,255,0.85); margin-bottom: var(--sp-5); }
+
+/* ─── Hero supporting ─── */
+.hero__supporting { max-width: 480px; margin: 0 auto var(--sp-5); color: var(--text-3); line-height: 1.6; }
+.hero__no-login { font-size: var(--fs-xs); color: var(--text-3); margin-top: var(--sp-2); letter-spacing: 0.04em; }
+.hero__secondary { margin-top: var(--sp-3); }
+
+
+/* ─── Hero visual flow ─── */
+.hero__visual-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--sp-2); margin-top: var(--sp-6);
+}
+.hero-flow-step {
+  display: flex; align-items: center; gap: var(--sp-3);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-5);
+  box-shadow: var(--shadow-sm); min-width: 160px; justify-content: center;
+}
+.hero-flow-emoji { font-size: 1.5rem; }
+.hero-flow-label { font-weight: 800; font-size: var(--fs-sm); letter-spacing: 0.1em; color: var(--text); }
+.hero-flow-arrow { font-size: 1.25rem; color: var(--c-sky); font-weight: 700; }

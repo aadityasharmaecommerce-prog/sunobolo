@@ -46,6 +46,22 @@ export function HomePage() {
             <Button size="lg" to="/free-trial">🟢 25 SENTENCES FREE</Button>
           </div>
           <p className="hero__no-login">No Login · No Payment</p>
+          <div className="hero__visual-flow">
+            <div className="hero-flow-step">
+              <span className="hero-flow-emoji" aria-hidden="true">🔊</span>
+              <span className="hero-flow-label">SUNO</span>
+            </div>
+            <span className="hero-flow-arrow" aria-hidden="true">↓</span>
+            <div className="hero-flow-step">
+              <span className="hero-flow-emoji" aria-hidden="true">🎤</span>
+              <span className="hero-flow-label">BOLO</span>
+            </div>
+            <span className="hero-flow-arrow" aria-hidden="true">↓</span>
+            <div className="hero-flow-step">
+              <span className="hero-flow-emoji" aria-hidden="true">🔁</span>
+              <span className="hero-flow-label">REPEAT</span>
+            </div>
+          </div>
           <div className="hero__secondary">
             <Button variant="ghost" to="#how-it-works">Kaise Kaam Karta Hai?</Button>
           </div>

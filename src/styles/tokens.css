@@ -89,4 +89,9 @@
   --transition: 0.2s ease;
 }
 
+/* Animations */
+  --anim-pulse: pulse-glow 1.5s ease-in-out infinite;
+  --anim-fade-in: fadeIn 0.3s ease-out;
+  --anim-slide-up: slideUp 0.4s ease-out;
+
 /* Breakpoints (mobile-first media queries in responsive.css) */

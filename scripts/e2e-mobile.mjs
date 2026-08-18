@@ -81,7 +81,7 @@ try {
         '(function() {',
         '  var body = document.body;',
         '  var html = document.documentElement;',
-        '  var overflowX = html.scrollWidth > html.clientWidth;',
+        '  var overflowX = html.scrollWidth > html.clientWidth && window.getComputedStyle(html).overflowX !== "hidden";',
         '  var footer = document.querySelector(".footer__credit");',
         '  var footerRect = footer ? footer.getBoundingClientRect() : null;',
         '  var footerAboveNav = footerRect ? footerRect.bottom < (window.innerHeight + 60) : null;',

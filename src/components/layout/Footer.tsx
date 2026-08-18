@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { APP, CATEGORY_PAGES, ROUTES } from '@/constants';
+import { APP, ROUTES } from '@/constants';
 
 export function Footer() {
   return (
@@ -24,13 +24,13 @@ export function Footer() {
         </div>
 
         <div className="footer__col">
-          <h4 className="footer__heading">Learn</h4>
+          <h4 className="footer__heading">Quick Links</h4>
           <ul className="footer__links">
-            {CATEGORY_PAGES.slice(0, 7).map((p) => (
-              <li key={p.slug}>
-                <Link to={`/${p.slug}`}>{p.heading}</Link>
-              </li>
-            ))}
+            <li><Link to="/free-trial">Free Practice</Link></li>
+            <li><Link to={ROUTES.courses}>All Courses</Link></li>
+            <li><Link to="/english-for-beginners">Beginner</Link></li>
+            <li><Link to="/english-for-kids">Kids</Link></li>
+            <li><Link to="/interview-english">Interview</Link></li>
           </ul>
         </div>
 
