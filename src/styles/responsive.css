@@ -152,3 +152,21 @@
   .trust-grid { grid-template-columns: repeat(2, 1fr); }
   .hero__no-login { font-size: var(--fs-xs, 11px); }
 }
+
+/* ─── New homepage mobile ─── */
+@media (max-width: 767px) {
+  .hero-grid { grid-template-columns: 1fr; text-align: center; }
+  .hero-left { order: 1; }
+  .hero-right { order: 2; margin-top: var(--sp-6); }
+  .hero-desc { margin-left: auto; margin-right: auto; }
+  .hero-trust { justify-content: center; }
+  .hero-secondary { text-align: center; }
+  .phone-frame { width: 220px; }
+  .reallife-grid { grid-template-columns: repeat(2, 1fr); }
+  .who-grid { grid-template-columns: repeat(2, 1fr); }
+  .preview-grid { grid-template-columns: 1fr; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .problem-cards { grid-template-columns: 1fr; }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .hero-headline { font-size: 1.5rem; }
+}
