@@ -1,0 +1,92 @@
+/* ─────────────────────────────────────────────
+   SunoBolo English — Design Tokens
+   Single source of truth for the whole UI.
+   ───────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --c-sky: #0ea5e9;
+  --c-sky-dark: #0284c7;
+  --c-indigo: #6366f1;
+  --c-indigo-dark: #4f46e5;
+  --gradient-brand: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+
+  /* Course accent colors (also used as token classes: .course-card--sky etc.) */
+  --c-violet: #8b5cf6;
+  --c-emerald: #10b981;
+  --c-amber: #f59e0b;
+  --c-rose: #f43f5e;
+  --c-teal: #14b8a6;
+  --c-orange: #f97316;
+  --c-fuchsia: #d946ef;
+  --c-lime: #84cc16;
+
+  /* Semantic */
+  --c-success: #16a34a;
+  --c-warning: #d97706;
+  --c-danger: #dc2626;
+  --c-info: #0284c7;
+
+  /* Surfaces */
+  --bg: #f8fafc;
+  --bg-soft: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* Text */
+  --text: #0f172a;
+  --text-2: #475569;
+  --text-3: #64748b;
+  --text-inverse: #ffffff;
+
+  /* Typography */
+  --font-sans: 'Inter', 'Mukta', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Mukta', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: 1.75rem;
+  --fs-3xl: 2.25rem;
+  --fs-4xl: 3rem;
+  --fs-hero: clamp(2.25rem, 6vw, 3.75rem);
+  --lh-tight: 1.2;
+  --lh-normal: 1.55;
+
+  /* Spacing scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-8: 3rem;
+  --sp-10: 4rem;
+  --sp-12: 5rem;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-full: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-brand: 0 8px 24px rgba(14, 165, 233, 0.35);
+
+  /* Layout */
+  --container: 1120px;
+  --header-h: 64px;
+  --bottomnav-h: 64px;
+
+  /* Motion */
+  --transition: 0.2s ease;
+}
+
+/* Breakpoints (mobile-first media queries in responsive.css) */

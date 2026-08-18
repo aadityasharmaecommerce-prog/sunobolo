@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sunobolo-api",
+  "main": "workers/api/src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "APP_NAME": "SunoBolo English",
+    "ENVIRONMENT": "production"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sunobolo-db",
+      "database_id": "c5a1b218-ba4d-43c4-a7f0-e8497f714b2f",
+      "migrations_dir": "./migrations"
+    }
+  ]
+}

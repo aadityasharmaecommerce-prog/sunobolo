@@ -1,0 +1,87 @@
+/* ─────────────────────────────────────────────
+   Responsive — mobile-first
+   Tested widths: 360, 390, 768, 1024, 1440
+   ───────────────────────────────────────────── */
+
+/* ≥ 480px */
+@media (min-width: 480px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .audience-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .testimonial-grid { grid-template-columns: 1fr; }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+}
+
+/* ≥ 640px */
+@media (min-width: 640px) {
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonial-grid { grid-template-columns: repeat(2, 1fr); }
+  .home-courses { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-card--popular { order: -1; }
+  .admin-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ≥ 768px (tablet) */
+@media (min-width: 768px) {
+  .header__nav { display: flex; }
+  .header__burger { display: none; }
+  .header__mobile { display: none; }
+  .bottom-nav { display: none; }
+  .app-main { padding-bottom: var(--sp-6); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .dash-courses { grid-template-columns: repeat(2, 1fr); }
+  .option-grid { grid-template-columns: repeat(4, 1fr); }
+  .toaster { bottom: var(--sp-4); }
+  .admin-sidebar { display: flex; }
+  .hero { padding: var(--sp-12) 0; }
+  .section { padding-block: var(--sp-12); }
+  .profile-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ≥ 1024px (desktop) */
+@media (min-width: 1024px) {
+  .home-courses { grid-template-columns: repeat(3, 1fr); }
+  .pricing-grid { grid-template-columns: repeat(4, 1fr); }
+  .pricing-card--popular { order: 0; }
+  .footer__grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .testimonial-grid { grid-template-columns: repeat(3, 1fr); }
+  .course-hero__inner { flex-direction: row; align-items: center; gap: var(--sp-6); }
+  .admin-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ≥ 1280px (large desktop) */
+@media (min-width: 1280px) {
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ≥ 1440px — content stays centered via container */
+@media (min-width: 1440px) {
+  .container { padding-inline: var(--sp-6); }
+}
+
+/* Small phones (360px) — tighten spacing */
+@media (max-width: 379px) {
+  .section { padding-block: var(--sp-8); }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .option-grid { grid-template-columns: 1fr 1fr; }
+  .btn--lg { padding: 0.8rem 1.2rem; font-size: var(--fs-md); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
