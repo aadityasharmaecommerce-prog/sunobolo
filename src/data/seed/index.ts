@@ -2,7 +2,7 @@ import type { Course, Lesson, Sentence, SentenceRow } from '@/types';
 import { coursesSeed } from './courses';
 import { kidsSentences } from './sentences-kids';
 import { schoolSentences } from './sentences-school';
-import { beginnerSentences } from './sentences-beginner';
+import { beginnerSentencesExpanded as beginnerSentences } from './sentences-beginner-expanded';
 import { intermediateSentences } from './sentences-intermediate';
 import { advancedSentences } from './sentences-advanced';
 import { dailySentences } from './sentences-daily';

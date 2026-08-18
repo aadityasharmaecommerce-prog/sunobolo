@@ -1,21 +1,26 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Sentence } from '@/types';
+import { freeTrialSentences } from '@/data/seed/free-trial';
 import { ROUTES } from '@/constants';
-import { seedData } from '@/data/seed';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { Button } from '@/components/ui/Button';
 
-const TRIAL_TOTAL = 25;
 
-/** Pick the first 25 free beginner sentences for the trial. */
+
+/** First 25 curated free trial sentences. */
 function getTrialSentences(): Sentence[] {
-  const all = seedData.sentences;
-  // Take first 25 from free courses (kids + school + beginner, in order)
-  const free = all.filter((s) => s.isFree);
-  return free.slice(0, TRIAL_TOTAL);
+  return freeTrialSentences.map((s, i) => ({
+    id: 'trial-' + (i + 1),
+    lessonId: 'trial',
+    courseId: 'trial',
+    english: s.english,
+    hindi: s.hindi,
+    difficulty: s.difficulty,
+    order: i + 1,
+    isFree: true,
+  }));
 }
-
 export function FreeTrialPage() {
   const audio = useAudioPlayer();
   const trial = useMemo(() => getTrialSentences(), []);
