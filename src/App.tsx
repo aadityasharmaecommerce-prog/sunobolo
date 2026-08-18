@@ -22,6 +22,7 @@ const SignupPage = lazy(() => import('@/pages/SignupPage').then((m) => ({ defaul
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })));
+const FreeTrialPage = lazy(() => import('@/pages/FreeTrialPage').then((m) => ({ default: m.FreeTrialPage })));
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage').then((m) => ({ default: m.AdminDashboardPage })));
 const AdminCoursesPage = lazy(() => import('@/pages/admin/AdminCoursesPage').then((m) => ({ default: m.AdminCoursesPage })));
@@ -62,6 +63,7 @@ export default function App() {
             <Routes>
               <Route element={<AppLayout />}>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/free-trial" element={<FreeTrialPage />} />
                 <Route path="/onboarding" element={<OnboardingPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/courses" element={<CoursesPage />} />

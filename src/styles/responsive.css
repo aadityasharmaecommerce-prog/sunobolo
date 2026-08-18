@@ -143,3 +143,12 @@
   .cta-banner { padding: var(--sp-6) var(--sp-4); }
   .cta-banner h2 { font-size: 1.25rem; }
 }
+
+/* ─── New grids mobile ─── */
+@media (max-width: 767px) {
+  .problem-grid { grid-template-columns: 1fr; }
+  .audience-grid { grid-template-columns: repeat(2, 1fr); }
+  .usecase-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero__no-login { font-size: var(--fs-xs, 11px); }
+}
