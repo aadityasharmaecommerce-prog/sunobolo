@@ -1739,3 +1739,30 @@
   .hero-v2__girl { display: none; }
   .hero-v2__sticky--1, .hero-v2__sticky--2 { display: none; }
 }
+
+/* ═══════════════════════════════════════════
+   HERO ILLUSTRATION
+   ═══════════════════════════════════════════ */
+.hero-v2__illustration {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  border-radius: var(--r-xl);
+  filter: drop-shadow(0 16px 48px rgba(0,0,0,0.12));
+  transition: transform 0.4s ease;
+}
+.hero-v2__illustration:hover {
+  transform: scale(1.02);
+}
+
+@media (max-width: 767px) {
+  .hero-v2__illustration {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 400px) {
+  .hero-v2__illustration {
+    max-width: 280px;
+  }
+}
