@@ -85,3 +85,61 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Shakti card mobile ─── */
+@media (max-width: 480px) {
+  .shakti-card__english { font-size: 1.25rem; }
+  .shakti-card__num { font-size: 2rem; }
+  .shakti-card { padding: 1rem; }
+  .shakti-play-btn { padding: .65rem 1.25rem; font-size: .9rem; }
+  .shakti-bolo-btn { padding: .75rem; font-size: .9rem; }
+}
+
+/* ─── Mobile: push footer credit above bottom nav ─── */
+@media (max-width: 767px) {
+  .footer { padding-bottom: calc(var(--bottomnav-h) + var(--sp-4)); }
+  .footer__credit { padding-top: .5rem; font-size: var(--fs-xs); }
+  .footer__bottom { padding-bottom: var(--sp-2); }
+  
+  /* Hero section mobile */
+  .hero { padding: var(--sp-6) 0; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p { font-size: var(--fs-sm); }
+  
+  /* Steps grid mobile */
+  .steps { grid-template-columns: 1fr; gap: var(--sp-4); }
+  
+  /* Course cards mobile */
+  .home-courses { grid-template-columns: 1fr; }
+  
+  /* Grid fixes */
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-courses { grid-template-columns: 1fr; }
+  .option-grid { grid-template-columns: repeat(2, 1fr); }
+  
+  /* Practice page mobile */
+  .practice { padding-bottom: var(--sp-8); }
+  
+  /* Sentence card mobile */
+  .sentence-card { padding: 1rem; }
+  .sentence-card__english { font-size: 1.25rem; }
+  
+  /* Pricing mobile */
+  .pricing-grid { grid-template-columns: 1fr; }
+  
+  /* Toaster above bottom nav */
+  .toaster { bottom: calc(var(--bottomnav-h) + var(--sp-3)); }
+  
+  /* Container mobile */
+  .container { padding-left: var(--sp-4); padding-right: var(--sp-4); }
+  
+  /* FAQ mobile */
+  .faq-item { padding: .75rem 0; }
+  
+  /* CTA banner mobile */
+  .cta-banner { padding: var(--sp-6) var(--sp-4); }
+  .cta-banner h2 { font-size: 1.25rem; }
+}

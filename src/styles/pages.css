@@ -909,3 +909,76 @@
   padding: var(--sp-6);
   box-shadow: var(--shadow-sm);
 }
+
+
+/* ─── SkillShakti-style practice page ─── */
+.practice--skillshakti { max-width: 640px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+.practice__topbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; }
+.practice__back { color: var(--c-muted); text-decoration: none; font-size: var(--fs-sm); transition: color .2s; }
+.practice__back:hover { color: var(--c-primary); }
+.practice__count-badge { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-pill); padding: .25rem .75rem; font-size: var(--fs-sm); font-weight: 600; color: var(--c-text); }
+
+.practice__progress-bar { height: 4px; background: var(--c-border); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+.practice__progress-fill { height: 100%; background: var(--c-primary); border-radius: 2px; transition: width .4s ease; }
+
+/* ─── Sentence card ─── */
+.shakti-card {
+  background: var(--c-surface, #fff); border: 1px solid var(--c-border, #e2e8f0);
+  border-radius: var(--r-xl, 16px); padding: 1.5rem; margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); position: relative;
+}
+.shakti-card__topic { font-size: var(--fs-xs, 12px); text-transform: uppercase; letter-spacing: .08em; color: var(--c-muted, #94a3b8); margin-bottom: .5rem; }
+.shakti-card__num { position: absolute; top: 1.5rem; right: 1.5rem; font-size: 2.5rem; font-weight: 800; color: var(--c-border, #e2e8f0); line-height: 1; }
+.shakti-card__label { display: block; font-size: var(--fs-xs, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--c-muted, #94a3b8); margin-bottom: .35rem; }
+
+.shakti-card__sentence { margin-bottom: 1rem; }
+.shakti-card__english { font-size: 1.5rem; font-weight: 700; line-height: 1.4; color: var(--c-text, #0f172a); margin: 0; }
+
+.shakti-card__hindi-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--r-lg, 12px); padding: .75rem 1rem; margin-bottom: 1rem; }
+.shakti-card__hindi { font-size: 1.1rem; line-height: 1.5; color: #166534; margin: 0; }
+
+.shakti-card__audio { margin-bottom: 1rem; }
+.shakti-play-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--c-primary, #2563eb); color: #fff; border: none; border-radius: var(--r-pill, 999px);
+  padding: .75rem 1.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;
+  transition: background .2s, transform .1s;
+}
+.shakti-play-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+.shakti-play-btn:active { transform: scale(.98); }
+.shakti-play-btn--active { background: var(--c-danger, #dc2626); animation: pulse-glow 1.2s infinite; }
+.shakti-play-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.shakti-hint { font-size: var(--fs-sm, 13px); color: var(--c-muted, #94a3b8); margin-top: .5rem; }
+
+/* ─── Counters ─── */
+.shakti-counter { margin-bottom: 1rem; }
+.shakti-counter__label { font-weight: 600; font-size: var(--fs-sm, 13px); margin-right: .5rem; }
+.shakti-counter__status { display: block; font-size: var(--fs-sm, 13px); color: var(--c-muted, #94a3b8); margin-top: .25rem; }
+.shakti-dots { display: inline-flex; gap: .5rem; }
+.shakti-dot {
+  width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--c-border, #e2e8f0); font-size: var(--fs-sm, 13px); font-weight: 700; color: var(--c-muted, #94a3b8);
+  transition: all .25s;
+}
+.shakti-dot--done { background: #10b981; border-color: #10b981; color: #fff; }
+.shakti-dot--active { border-color: var(--c-primary, #2563eb); color: var(--c-primary); box-shadow: 0 0 0 3px rgba(37,99,235,.2); }
+
+.shakti-bolo-btn {
+  display: block; width: 100%; margin-top: .5rem;
+  background: var(--c-surface, #f8fafc); border: 2px solid var(--c-primary, #2563eb); border-radius: var(--r-lg, 12px);
+  padding: .85rem 1rem; font-size: 1rem; font-weight: 600; color: var(--c-primary, #2563eb); cursor: pointer;
+  transition: all .2s;
+}
+.shakti-bolo-btn:hover { background: var(--c-primary, #2563eb); color: #fff; }
+.shakti-bolo-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; border-color: var(--c-border, #e2e8f0); color: var(--c-muted); }
+
+/* ─── Completion ─── */
+.shakti-done { text-align: center; padding: 2rem 0; }
+.shakti-done__emoji { font-size: 3rem; display: block; margin-bottom: .75rem; }
+.shakti-done h2 { margin-bottom: .5rem; }
+.shakti-done p { color: var(--c-muted, #94a3b8); margin-bottom: 1.5rem; }
+
+.shakti-footer { padding: 1rem 0; }
+
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)} 50%{box-shadow:0 0 0 8px rgba(220,38,38,0)} }
