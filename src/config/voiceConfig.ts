@@ -1,28 +1,25 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * Every spoken part of the practice flow — the English sentence, the Hindi
- * meaning ("मतलब ..."), the instruction ("मेरे साथ 3 बार रिपीट करो।") and the
- * 3 English repetitions — is pre-generated offline with the SAME premium
- * neural voice (Microsoft Azure neural TTS via edge-tts):
+ * PRIMARY: ElevenLabs (human-like quality)
+ *   - Voice: Rachel (natural, friendly, clear)
+ *   - Model: eleven_multilingual_v2 (supports English + Hindi)
+ *   - Generated via: scripts/generate_elevenlabs.py
  *
- *   hi-IN-SwaraNeural  (female, native Hindi, natural Indian English)
+ * FALLBACK: edge-tts (free, decent quality)
+ *   - Voice: hi-IN-SwaraNeural (Microsoft Azure)
+ *   - Generated via: scripts/regenerate_voice.py
  *
- * This voice is bilingual: it reads Devanagari natively AND English with a
- * natural Indian accent — so the whole flow sounds like ONE teacher.
+ * Both options use ONE voice for the entire guided flow:
+ *   English → Hindi → Instruction → 3× Repetitions
  *
- * IMPORTANT — why not the old voice: en-IN-NeerjaNeural (the previous
- * English-only voice) CANNOT speak Hindi — it returns no audio at all for
- * Devanagari text (verified). To get one consistent speaker across English
- * + Hindi, everything was regenerated with the single bilingual voice above.
- *
- * Browser TTS is ONLY a last-resort fallback when an MP3 is missing or
- * blocked, and even then it uses ONE single voice for every language
- * (see pickPracticeVoice below) — never a separate English/Hindi pair.
+ * The same voice reads Devanagari AND English — ONE teacher throughout.
  */
 
 export const PRACTICE_VOICE = {
-  /** The single edge-tts voice used to pre-generate ALL audio files. */
+  /** Primary: ElevenLabs voice name (for reference). */
+  elevenLabsVoice: 'Rachel',
+  /** Fallback: edge-tts voice ID. */
   edgeTtsVoiceId: 'hi-IN-SwaraNeural',
   /** Locale labels (used for reporting + fallback lang hints only). */
   englishLocale: 'en-IN',
@@ -64,12 +61,14 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
  * Bump this number whenever ANY audio file is regenerated — it forces
  * browsers, proxies and CDN edge caches to fetch the new assets instead
  * of serving stale MP3s (the classic "old audio keeps playing" bug).
+ *
+ * Bump to '5' after regenerating with ElevenLabs.
  */
-export const AUDIO_VERSION = '4';
+export const AUDIO_VERSION = '5';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
-/** Static MP3 paths — all pre-generated with PRACTICE_VOICE.edgeTtsVoiceId. */
+/** Static MP3 paths — all pre-generated with the same voice. */
 export const AUDIO_PATHS = {
   /** English sentence MP3 (sentence→file mapping unchanged). */
   english: (courseId: string, sentenceId: string): string =>
