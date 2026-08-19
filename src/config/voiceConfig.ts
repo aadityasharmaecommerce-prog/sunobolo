@@ -1,10 +1,10 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * PRIMARY: ElevenLabs (human-like quality)
- *   - Voice: Rachel (natural, friendly, clear)
- *   - Model: eleven_multilingual_v2 (supports English + Hindi)
- *   - Generated via: scripts/generate_elevenlabs.py
+ * PRIMARY: gTTS (Google Translate TTS) — free, natural human-like voice
+ *   - English: Google TTS (en) with Indian English accent
+ *   - Hindi: Google TTS (hi) native Hindi voice
+ *   - Generated via: scripts/gen_gtts_25.py
  *
  * FALLBACK: edge-tts (free, decent quality)
  *   - Voice: hi-IN-SwaraNeural (Microsoft Azure)
@@ -17,8 +17,8 @@
  */
 
 export const PRACTICE_VOICE = {
-  /** Primary: ElevenLabs voice name (for reference). */
-  elevenLabsVoice: 'Rachel',
+  /** Primary: gTTS voice (Google Translate TTS). */
+  gTTSLanguage: 'en',
   /** Fallback: edge-tts voice ID. */
   edgeTtsVoiceId: 'hi-IN-SwaraNeural',
   /** Locale labels (used for reporting + fallback lang hints only). */
@@ -62,9 +62,9 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
  * browsers, proxies and CDN edge caches to fetch the new assets instead
  * of serving stale MP3s (the classic "old audio keeps playing" bug).
  *
- * Bump to '5' after regenerating with ElevenLabs.
+ * Bump to '9' after regenerating with Google TTS (gTTS).
  */
-export const AUDIO_VERSION = '8';
+export const AUDIO_VERSION = '9';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
