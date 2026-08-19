@@ -1,0 +1,310 @@
+{
+  "auditedAt": "\"2026-08-19T07:58:51.127758\"",
+  "minOverlap": 0.5,
+  "results": [
+    {
+      "course": "advanced",
+      "id": "advanced-001",
+      "visibleEnglish": "I would like to schedule a meeting to discuss the quarterly results.",
+      "audioFile": "advanced/advanced-001.mp3",
+      "heardText": "it would like to schedule a meeting to discuss the quarterly results",
+      "overlap": 0.91,
+      "status": "PASS"
+    },
+    {
+      "course": "advanced",
+      "id": "advanced-101",
+      "visibleEnglish": "As a leader, I believe in empowering my team.",
+      "audioFile": "advanced/advanced-101.mp3",
+      "heardText": "the leader i believe in empowering mighty",
+      "overlap": 0.56,
+      "status": "PASS"
+    },
+    {
+      "course": "advanced",
+      "id": "advanced-201",
+      "visibleEnglish": "I am writing to formally request your approval.",
+      "audioFile": "advanced/advanced-201.mp3",
+      "heardText": "i am writing to formally request your approval",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "beginner",
+      "id": "beginner-001",
+      "visibleEnglish": "Hello! How are you?",
+      "audioFile": "beginner/beginner-001.mp3",
+      "heardText": "hello how are you",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "beginner",
+      "id": "beginner-242",
+      "visibleEnglish": "Please save my number.",
+      "audioFile": "beginner/beginner-242.mp3",
+      "heardText": "please save my number",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "beginner",
+      "id": "beginner-483",
+      "visibleEnglish": "The earliest slot is next Tuesday.",
+      "audioFile": "beginner/beginner-483.mp3",
+      "heardText": "the earliest slot is next tuesday",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "business",
+      "id": "business-001",
+      "visibleEnglish": "I run a small business in Delhi.",
+      "audioFile": "business/business-001.mp3",
+      "heardText": "the run a small business in delhi",
+      "overlap": 0.86,
+      "status": "PASS"
+    },
+    {
+      "course": "business",
+      "id": "business-134",
+      "visibleEnglish": "Please send the updated price list.",
+      "audioFile": "business/business-134.mp3",
+      "heardText": "please send the updated priceless",
+      "overlap": 0.67,
+      "status": "PASS"
+    },
+    {
+      "course": "business",
+      "id": "business-267",
+      "visibleEnglish": "Numbers guide our business decisions.",
+      "audioFile": "business/business-267.mp3",
+      "heardText": "numbers guide our business decision",
+      "overlap": 0.8,
+      "status": "PASS"
+    },
+    {
+      "course": "corporate",
+      "id": "corporate-001",
+      "visibleEnglish": "Good morning, everyone. How is everyone today?",
+      "audioFile": "corporate/corporate-001.mp3",
+      "heardText": "good morning everyone how is everyone today",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "corporate",
+      "id": "corporate-126",
+      "visibleEnglish": "The deadline for this project is next Monday.",
+      "audioFile": "corporate/corporate-126.mp3",
+      "heardText": "the deadline for this project is next monday",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "corporate",
+      "id": "corporate-251",
+      "visibleEnglish": "I am following up on the pending request.",
+      "audioFile": "corporate/corporate-251.mp3",
+      "heardText": "following up on the pending request",
+      "overlap": 0.75,
+      "status": "PASS"
+    },
+    {
+      "course": "daily-life",
+      "id": "daily-life-001",
+      "visibleEnglish": "Good morning! Did you sleep well?",
+      "audioFile": "daily-life/daily-life-001.mp3",
+      "heardText": "good morning did you sleep well",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "daily-life",
+      "id": "daily-life-159",
+      "visibleEnglish": "I would like to order dessert.",
+      "audioFile": "daily-life/daily-life-159.mp3",
+      "heardText": "it would like to order dessert",
+      "overlap": 0.83,
+      "status": "PASS"
+    },
+    {
+      "course": "daily-life",
+      "id": "daily-life-317",
+      "visibleEnglish": "Please wait for me here.",
+      "audioFile": "daily-life/daily-life-317.mp3",
+      "heardText": "please wait for me",
+      "overlap": 0.8,
+      "status": "PASS"
+    },
+    {
+      "course": "free-trial",
+      "id": "free-trial-001",
+      "visibleEnglish": "Good morning. How are you?",
+      "audioFile": "free-trial/free-trial-001.mp3",
+      "heardText": "good morning how are you",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "free-trial",
+      "id": "free-trial-009",
+      "visibleEnglish": "I don't understand. Can you repeat?",
+      "audioFile": "free-trial/free-trial-009.mp3",
+      "heardText": "don't understand can you repeat",
+      "overlap": 0.83,
+      "status": "PASS"
+    },
+    {
+      "course": "free-trial",
+      "id": "free-trial-017",
+      "visibleEnglish": "Let's meet at the coffee shop at 4.",
+      "audioFile": "free-trial/free-trial-017.mp3",
+      "heardText": "it's meet at the coffee shop at four",
+      "overlap": 0.71,
+      "status": "PASS"
+    },
+    {
+      "course": "intermediate",
+      "id": "intermediate-001",
+      "visibleEnglish": "Let me explain the situation to you.",
+      "audioFile": "intermediate/intermediate-001.mp3",
+      "heardText": "let me explain the situation to you",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "intermediate",
+      "id": "intermediate-117",
+      "visibleEnglish": "I am saving for a house.",
+      "audioFile": "intermediate/intermediate-117.mp3",
+      "heardText": "i am saving for a house",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "intermediate",
+      "id": "intermediate-233",
+      "visibleEnglish": "Secondly, it is more affordable.",
+      "audioFile": "intermediate/intermediate-233.mp3",
+      "heardText": "secondly it is more affordable",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "interview",
+      "id": "interview-001",
+      "visibleEnglish": "Good morning, sir. Thank you for giving me this opportunity.",
+      "audioFile": "interview/interview-001.mp3",
+      "heardText": "good morning sir thank you for giving me this opportunity",
+      "overlap": 1.0,
+      "status": "PASS"
+    },
+    {
+      "course": "interview",
+      "id": "interview-134",
+      "visibleEnglish": "I want to grow with a dynamic company.",
+      "audioFile": "interview/interview-134.mp3",
+      "heardText": "want to grow with a dynamic company",
+      "overlap": 0.88,
+      "status": "PASS"
+    },
+    {
+      "course": "interview",
+      "id": "interview-267",
+      "visibleEnglish": "Are there any upcoming projects I can join?",
+      "audioFile": "interview/interview-267.mp3",
+      "heardText": "there any upcoming projects i can join",
+      "overlap": 0.88,
+      "status": "PASS"
+    },
+    {
+      "course": "kids",
+      "id": "kids-001",
+      "visibleEnglish": "Hello! My name is Riya.",
+      "audioFile": "kids/kids-001.mp3",
+      "heardText": "hello my name is ray",
+      "overlap": 0.8,
+      "status": "PASS"
+    },
+    {
+      "course": "kids",
+      "id": "kids-134",
+      "visibleEnglish": "I share my toys with my friends.",
+      "audioFile": "kids/kids-134.mp3",
+      "heardText": "we share my toys with my friends",
+      "overlap": 0.83,
+      "status": "PASS"
+    },
+    {
+      "course": "kids",
+      "id": "kids-267",
+      "visibleEnglish": "I help my friends in class.",
+      "audioFile": "kids/kids-267.mp3",
+      "heardText": "help my friends in class",
+      "overlap": 0.83,
+      "status": "PASS"
+    },
+    {
+      "course": "school",
+      "id": "school-001",
+      "visibleEnglish": "Good morning, teacher!",
+      "audioFile": "school/school-001.mp3",
+      "heardText": "good morning teachers",
+      "overlap": 0.67,
+      "status": "PASS"
+    },
+    {
+      "course": "school",
+      "id": "school-109",
+      "visibleEnglish": "Let us study for the test together.",
+      "audioFile": "school/school-109.mp3",
+      "heardText": "a study for the test together",
+      "overlap": 0.71,
+      "status": "PASS"
+    },
+    {
+      "course": "school",
+      "id": "school-217",
+      "visibleEnglish": "I use English in my daily routine.",
+      "audioFile": "school/school-217.mp3",
+      "heardText": "they use english in my daily routine",
+      "overlap": 0.86,
+      "status": "PASS"
+    },
+    {
+      "course": "travel",
+      "id": "travel-001",
+      "visibleEnglish": "Where is the check-in counter?",
+      "audioFile": "travel/travel-001.mp3",
+      "heardText": "there is a check in counter",
+      "overlap": 0.4,
+      "status": "FAIL — AUDIO CONTENT MISMATCH"
+    },
+    {
+      "course": "travel",
+      "id": "travel-101",
+      "visibleEnglish": "I need a tourist guide.",
+      "audioFile": "travel/travel-101.mp3",
+      "heardText": "in either tourist guide",
+      "overlap": 0.4,
+      "status": "FAIL — AUDIO CONTENT MISMATCH"
+    },
+    {
+      "course": "travel",
+      "id": "travel-201",
+      "visibleEnglish": "I am looking for a souvenir shop.",
+      "audioFile": "travel/travel-201.mp3",
+      "heardText": "i'm looking for a sovereign yourself",
+      "overlap": 0.43,
+      "status": "FAIL — AUDIO CONTENT MISMATCH"
+    }
+  ],
+  "summary": {
+    "PASS": 30,
+    "FAIL — AUDIO CONTENT MISMATCH": 3,
+    "MISSING AUDIO": 0,
+    "MANUAL CHECK REQUIRED": 0
+  },
+  "verificationLevel": "ISSUES FOUND"
+}
