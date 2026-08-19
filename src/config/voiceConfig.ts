@@ -30,9 +30,9 @@ export const REPEAT_INSTRUCTION_TEXT = 'मेरे साथ 3 बार र�
 export const HINDI_MEANING_PREFIX = 'मतलब';
 
 /**
- * Cache-busting version — bump to '12' for gTTS iOS fix.
+ * Cache-busting version — bump to '14' for Viraj premium voice audio.
  */
-export const AUDIO_VERSION = '12';
+export const AUDIO_VERSION = '14';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
