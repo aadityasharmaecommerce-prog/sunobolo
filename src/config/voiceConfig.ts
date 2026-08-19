@@ -1,45 +1,34 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * PRIMARY: edge-tts with male Indian voices
- *   - English: en-IN-PrabhatNeural (Indian English Male, Friendly, Positive)
- *   - Hindi: hi-IN-MadhurNeural (Hindi Male, Friendly, Positive)
- *   - Generated via: scripts/gen_male_25.py
- *
- * FALLBACK: browser SpeechSynthesis
- *
- * Both options use ONE voice for the entire guided flow:
- *   English → Hindi → Instruction → 3× Repetitions
+ * Voice: hi-IN-MadhurNeural (Indian Male, Friendly, Positive)
+ * SAME voice for English + Hindi — one teacher throughout.
+ * Rate: +5% (natural, not slow, not robotic)
  */
 
 export const PRACTICE_VOICE = {
-  /** Primary English voice (edge-tts). */
-  edgeTtsVoiceId: 'en-IN-PrabhatNeural',
-  /** Primary Hindi voice (edge-tts). */
+  /** Single voice for everything — English + Hindi. */
+  edgeTtsVoiceId: 'hi-IN-MadhurNeural',
   edgeTtsHindiVoiceId: 'hi-IN-MadhurNeural',
-  /** Locale labels. */
   englishLocale: 'en-IN',
   hindiLocale: 'hi-IN',
 } as const;
 
 /**
- * Centralized timing for the guided practice flow.
- * All values in milliseconds.
+ * Centralized timing — REDUCED pauses for natural flow.
+ * Flow: English → (short pause) → Hindi → (short pause) → Instruction → (pause) → Rep×3
  */
 export const PRACTICE_TIMING = {
-  englishToHindi: 1500,
-  hindiToInstruction: 1500,
-  instructionToRepeat: 2000,
-  betweenRepeats: 2500,
+  englishToHindi: 1000,
+  hindiToInstruction: 1000,
+  instructionToRepeat: 1500,
+  betweenRepeats: 1500,
 } as const;
 
-/**
- * Speech rate for TTS fallback.
- * 0.82 = clear, natural, patient teacher-like speed.
- */
-export const SPEECH_RATE = 0.82;
+/** Speech rate for TTS fallback. */
+export const SPEECH_RATE = 0.85;
 
-/** Instruction phrase spoken after the Hindi meaning. */
+/** Instruction phrase. */
 export const REPEAT_INSTRUCTION_TEXT = 'मेरे साथ 3 बार रिपीट करो।';
 
 /** Hindi meaning prefix. */
@@ -47,9 +36,9 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
 
 /**
  * Cache-busting version for all audio URLs.
- * Bump to '10' after regenerating with male Indian voices.
+ * Bump to '11' after regenerating with same male voice.
  */
-export const AUDIO_VERSION = '10';
+export const AUDIO_VERSION = '11';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
@@ -64,7 +53,6 @@ export const AUDIO_PATHS = {
 
 /**
  * Browser TTS fallback: pick ONE single voice for EVERY language.
- * Prefers hi-IN voice (bilingual).
  */
 let cachedVoice: SpeechSynthesisVoice | null | undefined;
 
