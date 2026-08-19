@@ -17,7 +17,7 @@ export default function Profile() {
         <h1 className="text-xl font-bold text-gray-900 mt-4">Guest User</h1>
         <p className="text-gray-500 text-sm mt-1">Sign in to save progress and track streaks</p>
         <button onClick={() => navigate('/login')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
-          Continue with Google
+          Sign In / Sign Up
         </button>
       </div>
     );
@@ -36,19 +36,15 @@ export default function Profile() {
     <div className="space-y-6 animate-fade-in">
       {/* User info */}
       <div className="text-center py-6">
-        {user.avatar_url ? (
-          <img src={user.avatar_url} alt={user.name} className="w-20 h-20 rounded-full mx-auto shadow-lg ring-2 ring-brand-100" />
-        ) : (
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-3xl mx-auto shadow-glow-brand">
-            {user.name?.charAt(0)?.toUpperCase() || '?'}
-          </div>
-        )}
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-3xl mx-auto shadow-glow-brand">
+          {user.name?.charAt(0)?.toUpperCase() || '?'}
+        </div>
         <h1 className="text-xl font-bold text-gray-900 mt-4">{user.name}</h1>
         <p className="text-gray-500 text-sm mt-1">{user.email}</p>
       </div>
 
       {/* Subscription status */}
-      <div className={`card p-5 ${subscription.active ? 'border-success-200 bg-success-50/30' : ''}`}>
+      <div className={`card-premium p-5 ${subscription.active ? 'border-success-200 bg-success-50/30' : ''}`}>
         <h2 className="font-bold text-gray-900 mb-3">
           {subscription.active ? '🟢 Active Access' : '🔴 No Active Access'}
         </h2>
@@ -61,16 +57,16 @@ export default function Profile() {
           </div>
         ) : (
           <div>
-            <p className="text-sm text-gray-500 mb-3">Unlock 5,000+ sentences with full app access.</p>
+            <p className="text-sm text-gray-500 mb-3">Unlock 5,000+ sentences with full app access. One-time payment, no monthly charges.</p>
             <button onClick={() => navigate('/pricing')} className="btn-premium btn-premium-gradient w-full py-3 text-sm rounded-2xl">
-              Unlock Full Access
+              Unlock Full Access →
             </button>
           </div>
         )}
       </div>
 
       {/* Quick Actions */}
-      <div className="card p-5">
+      <div className="card-premium p-5">
         <h2 className="font-bold text-gray-900 mb-3">Quick Actions</h2>
         <div className="space-y-2">
           <button onClick={() => navigate('/free-trial')} className="w-full text-left p-3 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-3">
@@ -92,7 +88,7 @@ export default function Profile() {
 
       {/* Logout */}
       <button
-        onClick={async () => { await logout(); navigate('/'); }}
+        onClick={() => { logout(); navigate('/'); }}
         className="w-full text-center py-3 text-sm text-red-500 font-semibold hover:text-red-600 transition-colors"
       >
         Logout

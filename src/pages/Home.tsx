@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/auth';
 import { allCourses } from '../data/content';
 import { USER_GOALS } from '../data/goals';
 
@@ -28,6 +29,7 @@ const TESTIMONIALS = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user, subscription } = useAuth();
 
   return (
     <div className="space-y-5 -mt-1 pb-2 animate-fade-in w-full max-w-full overflow-x-hidden">
@@ -240,6 +242,58 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+
+      {/* ══════════ PURCHASE PLAN ══════════ */}
+      {!subscription.active && (
+        <section className="animate-fade-up-4">
+          <div className="text-center mb-3">
+            <p className="kicker">Unlock full access</p>
+            <h2 className="font-extrabold text-base text-gray-900 mt-0.5">One-Time Payment. No Monthly Fees.</h2>
+            <p className="text-gray-500 text-xs mt-1">Pay once, learn forever. No auto-debit.</p>
+          </div>
+          <div className="card-premium !rounded-2xl p-5 border-brand-200 bg-gradient-to-b from-brand-50/50 to-white">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-extrabold text-gray-900">1 Year Full Access</h3>
+                <p className="text-xs text-gray-500 mt-0.5">Best value · Save ₹1,100</p>
+              </div>
+              <div className="text-right">
+                <span className="text-3xl font-extrabold text-gray-900">₹1,700</span>
+                <p className="text-[9px] text-gray-400 font-semibold">ONE TIME</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {['5,000+ Sentences', 'All Courses', 'Viraj Premium Voice', 'Progress Tracking'].map(f => (
+                <div key={f} className="flex items-center gap-1.5 text-[11px] text-gray-600">
+                  <span className="w-4 h-4 rounded-full bg-success-100 text-success-700 border border-success-200 flex items-center justify-center text-[8px] font-bold shrink-0">✓</span>
+                  {f}
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate(user ? '/pricing' : '/login')}
+              className="btn-premium btn-premium-gradient w-full py-3.5 text-sm font-bold rounded-xl"
+            >
+              {user ? 'Choose Your Plan →' : 'Sign Up & Get Access →'}
+            </button>
+            <p className="text-center text-[10px] text-gray-400 mt-2.5">No monthly charges · No auto-renewal · Cancel anytime</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {[
+              { e: '🔒', t: 'Secure Payment', d: 'UPI · Cards' },
+              { e: '⚡', t: 'Instant Access', d: 'Turant unlock' },
+              { e: '💳', t: 'Pay Once', d: 'No hidden fees' },
+            ].map(x => (
+              <div key={x.t} className="card-premium !rounded-xl px-2 py-2.5 text-center">
+                <div className="text-base mb-0.5">{x.e}</div>
+                <p className="text-[9px] font-bold text-gray-900 leading-tight">{x.t}</p>
+                <p className="text-[8px] text-gray-500 leading-tight mt-0.5">{x.d}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ══════════ FOOTER ══════════ */}
       <footer className="text-center pt-1 pb-2">

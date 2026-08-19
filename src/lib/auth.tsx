@@ -1,55 +1,89 @@
 /**
- * SunoBolo Auth — Google OAuth + session management
+ * SunoBolo Auth — Email/Password + localStorage
+ * No backend needed. All data stored in browser localStorage.
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { PLANS, type PlanId } from '../config/plans';
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
-  avatar_url: string | null;
+  phone?: string;
 }
 
-interface Subscription {
+export interface Subscription {
   active: boolean;
+  plan_id?: string;
   started_at?: string;
   expires_at?: string;
-  plan_id?: string;
 }
 
 interface AuthState {
   user: User | null;
   subscription: Subscription;
   loading: boolean;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
-  refreshAuth: () => Promise<void>;
+  signup: (name: string, email: string, password: string, phone?: string) => Promise<{ error?: string }>;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  logout: () => void;
+  refreshAuth: () => void;
+  activateSubscription: (planId: string) => void;
 }
 
 const AuthContext = createContext<AuthState>({
   user: null,
   subscription: { active: false },
   loading: true,
-  login: async () => {},
-  logout: async () => {},
-  refreshAuth: async () => {},
+  signup: async () => ({}),
+  login: async () => ({}),
+  logout: () => {},
+  refreshAuth: () => {},
+  activateSubscription: () => {},
 });
 
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-const API_BASE = '';
+// --- localStorage helpers ---
+const USERS_KEY = 'sb_users';
+const SESSION_KEY = 'sb_session';
+const SUB_KEY = 'sb_subscription';
 
-interface MeResponse {
-  user: User | null;
-  subscription: Subscription;
+function getUsers(): Record<string, { id: string; name: string; email: string; phone?: string; password: string }> {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch { return {}; }
 }
 
-interface GoogleLoginResponse {
-  user: User;
-  subscription: Subscription;
+function saveUsers(users: Record<string, { id: string; name: string; email: string; phone?: string; password: string }>) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function getSession(): { email: string } | null {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+}
+
+function saveSession(email: string | null) {
+  if (email) localStorage.setItem(SESSION_KEY, JSON.stringify({ email }));
+  else localStorage.removeItem(SESSION_KEY);
+}
+
+function getSubscriptions(): Record<string, Subscription> {
+  try { return JSON.parse(localStorage.getItem(SUB_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveSubscriptions(subs: Record<string, Subscription>) {
+  localStorage.setItem(SUB_KEY, JSON.stringify(subs));
+}
+
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return 'h_' + Math.abs(hash).toString(36);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -57,81 +91,127 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscription] = useState<Subscription>({ active: false });
   const [loading, setLoading] = useState(true);
 
-  const refreshAuth = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
-      const data: MeResponse = await res.json();
-      setUser(data.user);
-      setSubscription(data.subscription);
-    } catch {
+  const refreshAuth = useCallback(() => {
+    const session = getSession();
+    if (!session) {
       setUser(null);
       setSubscription({ active: false });
+      return;
+    }
+    const users = getUsers();
+    const userData = users[session.email];
+    if (!userData) {
+      setUser(null);
+      setSubscription({ active: false });
+      saveSession(null);
+      return;
+    }
+    const { password: _, ...safeUser } = userData;
+    setUser(safeUser);
+
+    // Check subscription expiry
+    const subs = getSubscriptions();
+    const sub = subs[session.email];
+    if (sub && sub.active && sub.expires_at) {
+      const expiry = new Date(sub.expires_at);
+      if (expiry > new Date()) {
+        setSubscription(sub);
+      } else {
+        sub.active = false;
+        subs[session.email] = sub;
+        saveSubscriptions(subs);
+        setSubscription({ active: false });
+      }
+    } else {
+      setSubscription(sub || { active: false });
     }
   }, []);
 
   useEffect(() => {
-    refreshAuth().finally(() => setLoading(false));
+    refreshAuth();
+    setLoading(false);
   }, [refreshAuth]);
 
-  const login = useCallback(async () => {
-    if (!window.google?.accounts?.id) {
-      await new Promise<void>((resolve) => {
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.onload = () => resolve();
-        document.head.appendChild(script);
-      });
+  const signup = useCallback(async (name: string, email: string, password: string, phone?: string) => {
+    const users = getUsers();
+    const lowerEmail = email.toLowerCase().trim();
+
+    if (users[lowerEmail]) {
+      return { error: 'Email already registered. Please login.' };
+    }
+    if (password.length < 6) {
+      return { error: 'Password must be at least 6 characters.' };
     }
 
-    return new Promise<void>((resolve) => {
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-      if (!clientId) { console.error('VITE_GOOGLE_CLIENT_ID not set'); resolve(); return; }
+    const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    users[lowerEmail] = { id, name: name.trim(), email: lowerEmail, phone, password: simpleHash(password) };
+    saveUsers(users);
 
-      window.google!.accounts!.id!.initialize({
-        client_id: clientId,
-        callback: async (response: { credential?: string }) => {
-          if (!response.credential) { resolve(); return; }
-          try {
-            const res = await fetch(`${API_BASE}/api/auth/google`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ credential: response.credential }),
-            });
-            const data: GoogleLoginResponse = await res.json();
-            if (data.user) { setUser(data.user); setSubscription(data.subscription); }
-          } catch (e) { console.error('Login failed:', e); }
-          resolve();
-        },
-      });
-      window.google!.accounts!.id!.prompt();
-    });
+    saveSession(lowerEmail);
+    const { password: _, ...safeUser } = users[lowerEmail];
+    setUser(safeUser);
+    setSubscription({ active: false });
+    return {};
   }, []);
 
-  const logout = useCallback(async () => {
-    try {
-      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
-    } catch { /* ignore */ }
+  const login = useCallback(async (email: string, password: string) => {
+    const users = getUsers();
+    const lowerEmail = email.toLowerCase().trim();
+    const userData = users[lowerEmail];
+
+    if (!userData) {
+      return { error: 'Account not found. Please sign up first.' };
+    }
+    if (userData.password !== simpleHash(password)) {
+      return { error: 'Incorrect password. Try again.' };
+    }
+
+    saveSession(lowerEmail);
+    const { password: _, ...safeUser } = userData;
+    setUser(safeUser);
+
+    // Load subscription
+    const subs = getSubscriptions();
+    const sub = subs[lowerEmail];
+    if (sub && sub.active && sub.expires_at && new Date(sub.expires_at) > new Date()) {
+      setSubscription(sub);
+    } else {
+      setSubscription({ active: false });
+    }
+    return {};
+  }, []);
+
+  const logout = useCallback(() => {
+    saveSession(null);
     setUser(null);
     setSubscription({ active: false });
   }, []);
 
+  const activateSubscription = useCallback((planId: string) => {
+    if (!user) return;
+
+    const plan = PLANS[planId as PlanId];
+    if (!plan) return;
+
+    const now = new Date();
+    const expires = new Date(now.getTime() + plan.durationMonths * 30 * 24 * 60 * 60 * 1000);
+
+    const newSub: Subscription = {
+      active: true,
+      plan_id: planId,
+      started_at: now.toISOString(),
+      expires_at: expires.toISOString(),
+    };
+
+    const subs = getSubscriptions();
+    subs[user.email] = newSub;
+    saveSubscriptions(subs);
+    setSubscription(newSub);
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, subscription, loading, login, logout, refreshAuth }}>
+    <AuthContext.Provider value={{ user, subscription, loading, signup, login, logout, refreshAuth, activateSubscription }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-declare global {
-  interface Window {
-    google?: {
-      accounts?: {
-        id?: {
-          initialize: (config: { client_id: string; callback: (response: { credential?: string }) => void }) => void;
-          prompt: () => void;
-        };
-      };
-    };
-  }
 }

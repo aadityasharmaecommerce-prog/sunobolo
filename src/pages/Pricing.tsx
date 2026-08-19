@@ -4,14 +4,15 @@ import { PLAN_LIST, type Plan } from '../config/plans';
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
 
   const handleSelect = (plan: Plan) => {
     if (!user) {
       navigate('/login');
       return;
     }
-    navigate(`/payment/checkout?plan=${plan.id}`);
+    // One-time payment — activate directly
+    navigate(`/payment/success?plan=${plan.id}`);
   };
 
   return (
@@ -19,23 +20,30 @@ export default function Pricing() {
       <div className="text-center pt-2">
         <p className="kicker">Simple & honest pricing</p>
         <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Choose Your Learning Plan</h1>
-        <p className="text-gray-500 text-sm mt-1.5">One-time payment. No monthly subscription. No recurring charges.</p>
+        <p className="text-gray-500 text-sm mt-1.5">One-time payment. No monthly subscription. No auto-debit. Pay once, learn forever.</p>
         <div className="inline-flex items-center gap-1.5 mt-2.5 text-[10px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
           <span className="stars">★★★★★</span> 4.9 · 10,000+ learners trust SunoBolo
         </div>
       </div>
+
+      {subscription.active && (
+        <div className="card-premium !rounded-2xl p-4 text-center border-success-200 bg-success-50/30">
+          <p className="text-sm font-bold text-success-700">🟢 You have active access!</p>
+          <p className="text-xs text-gray-500 mt-1">Your plan is active until expiry. No need to purchase again.</p>
+        </div>
+      )}
 
       <div className="grid gap-4">
         {PLAN_LIST.map((plan, i) => (
           <div
             key={plan.id}
             className={`card-premium relative p-5 animate-fade-up-${i + 1} ${
-              plan.id === 'six_month'
+              plan.id === 'one_year'
                 ? '!border-brand-300 shadow-ring-brand bg-gradient-to-b from-brand-50/70 to-white'
                 : ''
             }`}
           >
-            {plan.id === 'six_month' && (
+            {plan.id === 'one_year' && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-[10px] font-extrabold px-4 py-1 rounded-full shadow-glow-brand tracking-wide">
                 ⭐ BEST VALUE
               </div>
@@ -43,7 +51,7 @@ export default function Pricing() {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h2 className="font-extrabold text-gray-900">{plan.name}</h2>
-                <p className="text-xs text-gray-500 mt-0.5">One-time payment · Full access</p>
+                <p className="text-xs text-gray-500 mt-0.5">One-time payment · No auto-renewal</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-extrabold text-gray-900">₹{plan.amountRupees}</span>
@@ -63,7 +71,7 @@ export default function Pricing() {
             <button
               onClick={() => handleSelect(plan)}
               className={`btn-premium w-full py-3 text-sm ${
-                plan.id === 'six_month'
+                plan.id === 'one_year'
                   ? 'btn-premium-gradient'
                   : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-brand-300 hover:text-brand-700'
               }`}

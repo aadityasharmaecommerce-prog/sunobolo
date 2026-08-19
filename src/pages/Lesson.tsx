@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useAuth } from '../lib/auth';
 import { useParams, useNavigate } from 'react-router-dom';
 import { allCourses } from '../data/content';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
@@ -17,11 +18,42 @@ export default function Lesson() {
   const mountedRef = useRef(true);
   const listenStartedRef = useRef(false);
 
+  const { user, subscription } = useAuth();
   const course = allCourses.find((c) => c.id === courseId);
   const lesson = course?.lessons.find((l) => l.id === lessonId);
   const sentences = lesson?.sentences ?? [];
   const total = sentences.length;
   const cur = sentences[idx];
+
+  // Premium lock: check if course requires subscription
+  const isFree = course?.isFree || courseId === 'free-trial';
+  if (!isFree && !subscription.active && !user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center text-3xl mb-4">🔒</div>
+        <h2 className="text-xl font-extrabold text-gray-900">Premium Course</h2>
+        <p className="text-gray-500 text-sm mt-2 max-w-xs">Sign in and purchase a plan to access this course.</p>
+        <button onClick={() => navigate('/login')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
+          Sign In & Unlock
+        </button>
+        <button onClick={() => navigate('/pricing')} className="mt-3 text-sm text-brand-600 font-semibold">
+          See Pricing →
+        </button>
+      </div>
+    );
+  }
+  if (!isFree && subscription && !subscription.active && user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center text-3xl mb-4">🔓</div>
+        <h2 className="text-xl font-extrabold text-gray-900">Access Required</h2>
+        <p className="text-gray-500 text-sm mt-2 max-w-xs">Purchase a plan to unlock all courses.</p>
+        <button onClick={() => navigate('/pricing')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
+          Get Full Access →
+        </button>
+      </div>
+    );
+  }
 
   useEffect(() => {
     mountedRef.current = true;
