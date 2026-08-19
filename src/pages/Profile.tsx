@@ -1,68 +1,75 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getPrefs, getUser, savePrefs, saveUser } from '../lib/progress';
+import { useAuth } from '../lib/auth';
+import { PLANS, type PlanId } from '../config/plans';
 
 export default function Profile() {
+  const { user, subscription, logout, loading } = useAuth();
   const navigate = useNavigate();
-  const stored = getUser();
-  const prefs = getPrefs();
-  const [name, setName] = useState(stored?.name ?? '');
-  const [autoPlay, setAutoPlay] = useState(prefs.autoPlay !== false);
-  const [saved, setSaved] = useState(false);
 
-  const isGuest = !stored;
+  if (loading) {
+    return <div className="min-h-[60vh] flex items-center justify-center text-gray-400 text-sm">Loading...</div>;
+  }
 
-  const saveName = () => {
-    const trimmed = name.trim() || 'Learner';
-    saveUser({ name: trimmed, createdAt: stored?.createdAt ?? new Date().toISOString() });
-    setSaved(true);
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-20 h-20 rounded-full bg-brand-100 flex items-center justify-center text-3xl mx-auto">👤</div>
+        <h1 className="text-xl font-bold text-gray-900 mt-4">Guest User</h1>
+        <p className="text-gray-500 text-sm mt-1">Sign in to save progress and track streaks</p>
+        <button onClick={() => navigate('/login')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
+          Continue with Google
+        </button>
+      </div>
+    );
+  }
+
+  const planInfo = subscription.active && subscription.plan_id
+    ? PLANS[subscription.plan_id as PlanId]
+    : null;
+
+  const formatDate = (iso?: string) => {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="text-center py-8">
-        <div className="w-20 h-20 rounded-full bg-brand-100 flex items-center justify-center text-3xl mx-auto">👤</div>
-        <h1 className="text-xl font-bold text-gray-900 mt-4">{stored?.name || 'Guest User'}</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          {isGuest ? 'Create an account to save your name and preferences' : 'Your practice is saved on this device'}
-        </p>
+      {/* User info */}
+      <div className="text-center py-6">
+        {user.avatar_url ? (
+          <img src={user.avatar_url} alt={user.name} className="w-20 h-20 rounded-full mx-auto shadow-lg ring-2 ring-brand-100" />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-3xl mx-auto shadow-glow-brand">
+            {user.name?.charAt(0)?.toUpperCase() || '?'}
+          </div>
+        )}
+        <h1 className="text-xl font-bold text-gray-900 mt-4">{user.name}</h1>
+        <p className="text-gray-500 text-sm mt-1">{user.email}</p>
       </div>
 
-      <div className="card p-5">
-        <h2 className="font-bold text-gray-900 mb-3">Your name</h2>
-        <input
-          value={name}
-          onChange={(e) => { setName(e.target.value); setSaved(false); }}
-          placeholder="Apna naam"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm"
-        />
-        <button onClick={saveName} className="btn-primary btn-md w-full mt-3">
-          {isGuest ? 'Create Free Account' : saved ? '✓ Saved' : 'Save Name'}
-        </button>
-        {isGuest && (
-          <button onClick={() => navigate('/onboarding')} className="btn-secondary btn-md w-full mt-2">
-            Sign In / Set Goal
-          </button>
+      {/* Subscription status */}
+      <div className={`card p-5 ${subscription.active ? 'border-success-200 bg-success-50/30' : ''}`}>
+        <h2 className="font-bold text-gray-900 mb-3">
+          {subscription.active ? '🟢 Active Access' : '🔴 No Active Access'}
+        </h2>
+        {subscription.active && planInfo ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between"><span className="text-gray-500">Plan</span><span className="font-semibold">{planInfo.name} — ₹{planInfo.amountRupees}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Status</span><span className="font-semibold text-success-600">Active</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Started</span><span className="font-semibold">{formatDate(subscription.started_at)}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Expires</span><span className="font-semibold">{formatDate(subscription.expires_at)}</span></div>
+          </div>
+        ) : (
+          <div>
+            <p className="text-sm text-gray-500 mb-3">Unlock 5,000+ sentences with full app access.</p>
+            <button onClick={() => navigate('/pricing')} className="btn-premium btn-premium-gradient w-full py-3 text-sm rounded-2xl">
+              Unlock Full Access
+            </button>
+          </div>
         )}
       </div>
 
-      <div className="card p-5">
-        <h2 className="font-bold text-gray-900 mb-3">Benefits of an account</h2>
-        <ul className="space-y-3">
-          {[
-            'Track your learning progress',
-            'Save completed lessons',
-            'Continue where you left off',
-            'Unlock all courses',
-          ].map((item, i) => (
-            <li key={i} className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold">✓</span>
-              <span className="text-sm text-gray-700">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      {/* Quick Actions */}
       <div className="card p-5">
         <h2 className="font-bold text-gray-900 mb-3">Quick Actions</h2>
         <div className="space-y-2">
@@ -74,32 +81,22 @@ export default function Profile() {
             <span className="w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center text-sm">📚</span>
             <span className="font-medium text-gray-700 text-sm">Browse Courses</span>
           </button>
-          <button onClick={() => navigate('/pricing')} className="w-full text-left p-3 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-3">
-            <span className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-sm">💰</span>
-            <span className="font-medium text-gray-700 text-sm">See Pricing</span>
-          </button>
+          {!subscription.active && (
+            <button onClick={() => navigate('/pricing')} className="w-full text-left p-3 rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-3">
+              <span className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-sm">💰</span>
+              <span className="font-medium text-gray-700 text-sm">See Pricing</span>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="card p-5">
-        <h2 className="font-bold text-gray-900 mb-3">Settings</h2>
-        <div className="space-y-3">
-          <button
-            type="button"
-            onClick={() => {
-              const next = !autoPlay;
-              setAutoPlay(next);
-              savePrefs({ autoPlay: next });
-            }}
-            className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 w-full"
-          >
-            <span className="text-sm text-gray-700">Auto-play audio</span>
-            <div className={`w-10 h-6 rounded-full relative ${autoPlay ? 'bg-brand-500' : 'bg-gray-300'}`}>
-              <div className={`w-4 h-4 rounded-full bg-white absolute top-1 shadow-sm ${autoPlay ? 'right-1' : 'left-1'}`} />
-            </div>
-          </button>
-        </div>
-      </div>
+      {/* Logout */}
+      <button
+        onClick={async () => { await logout(); navigate('/'); }}
+        className="w-full text-center py-3 text-sm text-red-500 font-semibold hover:text-red-600 transition-colors"
+      >
+        Logout
+      </button>
     </div>
   );
 }

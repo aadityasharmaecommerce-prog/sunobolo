@@ -1,75 +1,53 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/auth';
+import { PLAN_LIST, type Plan } from '../config/plans';
 
 export default function Pricing() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const plans = [
-    {
-      name: 'Free Trial',
-      price: '₹0',
-      per: 'forever free',
-      desc: 'Try before you buy — no login needed',
-      features: ['25 practical sentences', 'Hindi meanings', 'Natural Indian voice', 'Listen & Speak practice'],
-      cta: 'Start Free',
-      popular: false,
-      action: () => navigate('/free-trial'),
-    },
-    {
-      name: 'Single Course',
-      price: '₹199',
-      per: 'one-time · lifetime',
-      desc: 'One full course of your choice',
-      features: ['Full course access', 'All sentences + audio', 'Progress tracking', 'Lifetime access'],
-      cta: 'Buy Course',
-      popular: true,
-      action: () => navigate('/courses'),
-    },
-    {
-      name: 'Complete Bundle',
-      price: '₹999',
-      per: 'one-time · lifetime',
-      desc: 'All courses — best value',
-      features: ['All present & future courses', '5,000+ sentences', 'Priority support', 'Lifetime updates'],
-      cta: 'Get Bundle',
-      popular: false,
-      action: () => navigate('/courses'),
-    },
-  ];
+  const handleSelect = (plan: Plan) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    navigate(`/payment/checkout?plan=${plan.id}`);
+  };
 
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="text-center pt-2">
         <p className="kicker">Simple & honest pricing</p>
-        <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Choose Your Plan</h1>
-        <p className="text-gray-500 text-sm mt-1.5">Start free. Upgrade when ready. Cancel anytime.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Choose Your Learning Plan</h1>
+        <p className="text-gray-500 text-sm mt-1.5">One-time payment. No monthly subscription. No recurring charges.</p>
         <div className="inline-flex items-center gap-1.5 mt-2.5 text-[10px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
           <span className="stars">★★★★★</span> 4.9 · 10,000+ learners trust SunoBolo
         </div>
       </div>
 
       <div className="grid gap-4">
-        {plans.map((plan, i) => (
+        {PLAN_LIST.map((plan, i) => (
           <div
-            key={plan.name}
+            key={plan.id}
             className={`card-premium relative p-5 animate-fade-up-${i + 1} ${
-              plan.popular
+              plan.id === 'six_month'
                 ? '!border-brand-300 shadow-ring-brand bg-gradient-to-b from-brand-50/70 to-white'
                 : ''
             }`}
           >
-            {plan.popular && (
+            {plan.id === 'six_month' && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-[10px] font-extrabold px-4 py-1 rounded-full shadow-glow-brand tracking-wide">
-                ⭐ MOST POPULAR
+                ⭐ BEST VALUE
               </div>
             )}
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h2 className="font-extrabold text-gray-900">{plan.name}</h2>
-                <p className="text-xs text-gray-500 mt-0.5">{plan.desc}</p>
+                <p className="text-xs text-gray-500 mt-0.5">One-time payment · Full access</p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-extrabold text-gray-900">{plan.price}</span>
-                <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">{plan.per}</p>
+                <span className="text-2xl font-extrabold text-gray-900">₹{plan.amountRupees}</span>
+                <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">{plan.durationLabel}</p>
               </div>
             </div>
             <ul className="space-y-2 mb-4">
@@ -83,12 +61,14 @@ export default function Pricing() {
               ))}
             </ul>
             <button
-              onClick={plan.action}
+              onClick={() => handleSelect(plan)}
               className={`btn-premium w-full py-3 text-sm ${
-                plan.popular ? 'btn-premium-gradient' : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-brand-300 hover:text-brand-700'
+                plan.id === 'six_month'
+                  ? 'btn-premium-gradient'
+                  : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-brand-300 hover:text-brand-700'
               }`}
             >
-              {plan.cta}
+              Get {plan.durationLabel} — ₹{plan.amountRupees}
             </button>
           </div>
         ))}
@@ -97,7 +77,7 @@ export default function Pricing() {
       {/* Trust row */}
       <div className="grid grid-cols-3 gap-2 animate-fade-up-4">
         {[
-          { e: '🎓', t: '4,075+ Sentences', d: 'Real-life English' },
+          { e: '🎓', t: '5,000+ Sentences', d: 'Real-life English' },
           { e: '🔒', t: 'Secure Payment', d: 'UPI · Cards · NetBanking' },
           { e: '⚡', t: 'Instant Access', d: 'Payment ke turant baad' },
         ].map((x) => (

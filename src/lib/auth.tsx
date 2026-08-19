@@ -1,20 +1,5 @@
 /**
  * SunoBolo Auth — Google OAuth + session management
- *
- * Auth flow:
- *   1. User clicks "Continue with Google"
- *   2. Google Identity Services renders popup
- *   3. On success, sends credential JWT to POST /api/auth/google
- *   4. Backend creates/finds user, creates session, sets HttpOnly cookie
- *   5. Frontend stores user + subscription state in React context
- *
- * Session restore:
- *   On mount, GET /api/auth/me checks cookie → restores user if valid
- *
- * Security:
- *   - Session cookie is HttpOnly, Secure, SameSite=Lax
- *   - Frontend NEVER stores auth tokens
- *   - All protected API calls go through cookie auth
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
@@ -30,6 +15,7 @@ interface Subscription {
   active: boolean;
   started_at?: string;
   expires_at?: string;
+  plan_id?: string;
 }
 
 interface AuthState {
@@ -54,7 +40,7 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-const API_BASE = ''; // Same origin — Cloudflare Pages Functions
+const API_BASE = '';
 
 interface MeResponse {
   user: User | null;
@@ -71,12 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscription] = useState<Subscription>({ active: false });
   const [loading, setLoading] = useState(true);
 
-  /** Fetch current user from session cookie. */
   const refreshAuth = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/me`, {
-        credentials: 'include',
-      });
+      const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
       const data: MeResponse = await res.json();
       setUser(data.user);
       setSubscription(data.subscription);
@@ -86,14 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  /** Restore session on mount. */
   useEffect(() => {
     refreshAuth().finally(() => setLoading(false));
   }, [refreshAuth]);
 
-  /** Google OAuth login — uses Google Identity Services (GIS) script. */
   const login = useCallback(async () => {
-    // Load Google Identity Services if not already loaded
     if (!window.google?.accounts?.id) {
       await new Promise<void>((resolve) => {
         const script = document.createElement('script');
@@ -105,21 +85,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return new Promise<void>((resolve) => {
       const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-
-      if (!clientId) {
-        console.error('VITE_GOOGLE_CLIENT_ID not set');
-        resolve();
-        return;
-      }
+      if (!clientId) { console.error('VITE_GOOGLE_CLIENT_ID not set'); resolve(); return; }
 
       window.google!.accounts!.id!.initialize({
         client_id: clientId,
         callback: async (response: { credential?: string }) => {
-          if (!response.credential) {
-            resolve();
-            return;
-          }
-
+          if (!response.credential) { resolve(); return; }
           try {
             const res = await fetch(`${API_BASE}/api/auth/google`, {
               method: 'POST',
@@ -127,34 +98,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               credentials: 'include',
               body: JSON.stringify({ credential: response.credential }),
             });
-
             const data: GoogleLoginResponse = await res.json();
-
-            if (data.user) {
-              setUser(data.user);
-              setSubscription(data.subscription);
-            }
-          } catch (e) {
-            console.error('Login failed:', e);
-          }
+            if (data.user) { setUser(data.user); setSubscription(data.subscription); }
+          } catch (e) { console.error('Login failed:', e); }
           resolve();
         },
       });
-
       window.google!.accounts!.id!.prompt();
     });
   }, []);
 
-  /** Logout — destroy session on server, clear local state. */
   const logout = useCallback(async () => {
     try {
-      await fetch(`${API_BASE}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch {
-      // Ignore — clear local state anyway
-    }
+      await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch { /* ignore */ }
     setUser(null);
     setSubscription({ active: false });
   }, []);
@@ -166,16 +123,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Extend Window for Google Identity Services
 declare global {
   interface Window {
     google?: {
       accounts?: {
         id?: {
-          initialize: (config: {
-            client_id: string;
-            callback: (response: { credential?: string }) => void;
-          }) => void;
+          initialize: (config: { client_id: string; callback: (response: { credential?: string }) => void }) => void;
           prompt: () => void;
         };
       };
