@@ -64,7 +64,7 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
  *
  * Bump to '5' after regenerating with ElevenLabs.
  */
-export const AUDIO_VERSION = '6';
+export const AUDIO_VERSION = '7';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
