@@ -205,7 +205,7 @@ export default function Home() {
                   {course.isFree ? (
                     <span className="text-[9px] font-extrabold text-success-700 bg-success-100 border border-success-200 px-2 py-1 rounded-full">FREE</span>
                   ) : (
-                    <span className="text-xs font-extrabold text-gray-900">{course.price}</span>
+                    <span className="text-[9px] font-extrabold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-1 rounded-full">PREMIUM</span>
                   )}
                 </div>
               </div>

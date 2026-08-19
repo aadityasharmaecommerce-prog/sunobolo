@@ -46,8 +46,8 @@ export const freeTrialLesson: LessonData = {
       "courseId": "free-trial",
       "lessonId": "free-trial-01",
       "order": 1,
-      "english": "Good morning. How are you?",
-      "hindi": "सुप्रभात। आप कैसे हैं?",
+      "english": "I can understand English, but I can't speak it confidently.",
+      "hindi": "मुझे अंग्रेज़ी समझ आती है, पर मैं आत्मविश्वास से बोल नहीं पाता।",
       "topic": "Mixed",
       "difficulty": "Beginner",
       "isFree": true
@@ -336,7 +336,6 @@ export const beginnerCourse: CourseData = {
   "totalLessons": 29,
   "estimatedHours": 29,
   "isFree": false,
-  "price": "₹199",
   "lessons": [
     {
       "id": "beginner-01",
@@ -17131,7 +17130,6 @@ export const intermediateCourse: CourseData = {
   "totalLessons": 14,
   "estimatedHours": 14,
   "isFree": false,
-  "price": "₹299",
   "lessons": [
     {
       "id": "intermediate-01",
@@ -25256,7 +25254,6 @@ export const advancedCourse: CourseData = {
   "totalLessons": 12,
   "estimatedHours": 12,
   "isFree": false,
-  "price": "₹399",
   "lessons": [
     {
       "id": "advanced-01",
@@ -32225,7 +32222,6 @@ export const daily_lifeCourse: CourseData = {
   "totalLessons": 18,
   "estimatedHours": 19,
   "isFree": false,
-  "price": "₹199",
   "lessons": [
     {
       "id": "daily-life-01",
@@ -43212,7 +43208,6 @@ export const interviewCourse: CourseData = {
   "totalLessons": 15,
   "estimatedHours": 16,
   "isFree": false,
-  "price": "₹299",
   "lessons": [
     {
       "id": "interview-01",
@@ -52465,7 +52460,6 @@ export const corporateCourse: CourseData = {
   "totalLessons": 15,
   "estimatedHours": 15,
   "isFree": false,
-  "price": "₹299",
   "lessons": [
     {
       "id": "corporate-01",
@@ -61168,7 +61162,6 @@ export const businessCourse: CourseData = {
   "totalLessons": 15,
   "estimatedHours": 16,
   "isFree": false,
-  "price": "₹299",
   "lessons": [
     {
       "id": "business-01",
@@ -70421,7 +70414,6 @@ export const travelCourse: CourseData = {
   "totalLessons": 11,
   "estimatedHours": 12,
   "isFree": false,
-  "price": "₹149",
   "lessons": [
     {
       "id": "travel-01",
@@ -77362,7 +77354,6 @@ export const schoolCourse: CourseData = {
   "totalLessons": 12,
   "estimatedHours": 13,
   "isFree": false,
-  "price": "₹149",
   "lessons": [
     {
       "id": "school-01",
@@ -84881,7 +84872,6 @@ export const kidsCourse: CourseData = {
   "totalLessons": 15,
   "estimatedHours": 16,
   "isFree": false,
-  "price": "₹149",
   "lessons": [
     {
       "id": "kids-01",
