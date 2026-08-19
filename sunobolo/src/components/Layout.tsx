@@ -3,7 +3,7 @@ import BottomNav from './BottomNav';
 
 export default function Layout() {
   const location = useLocation();
-  const hideNav = location.pathname.startsWith('/lesson/') || location.pathname === '/onboarding';
+  const hideNav = location.pathname.startsWith('/lesson/') || location.pathname === '/onboarding' || location.pathname === '/free-trial';
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">

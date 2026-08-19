@@ -1,6 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { USER_GOALS, USER_LEVELS } from '../data/goals';
+import { savePrefs, saveUser } from '../lib/progress';
+
+const GOAL_TO_COURSE: Record<string, string> = {
+  'from-zero': 'beginner',
+  'daily-life': 'daily-life',
+  school: 'school',
+  interview: 'interview',
+  corporate: 'corporate',
+  business: 'business',
+  travel: 'travel',
+  kids: 'kids',
+  improve: 'intermediate',
+};
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -9,13 +22,25 @@ export default function Onboarding() {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
   const handleFinish = () => {
-    // Save preferences
-    navigate('/');
+    const courseId =
+      selectedLevel === 'beginner' || selectedLevel === null
+        ? selectedGoal === 'school'
+          ? 'school'
+          : selectedGoal === 'kids'
+            ? 'kids'
+            : 'beginner'
+        : GOAL_TO_COURSE[selectedGoal ?? 'from-zero'] ?? 'beginner';
+    savePrefs({
+      goal: selectedGoal ?? undefined,
+      level: selectedLevel ?? undefined,
+      recommendedCourseId: courseId,
+    });
+    saveUser({ name: 'Learner', createdAt: new Date().toISOString() });
+    navigate(`/course/${courseId}`);
   };
 
   return (
     <div className="min-h-[80vh] flex flex-col animate-fade-in">
-      {/* Progress dots */}
       <div className="flex justify-center gap-2 py-6">
         {[0, 1].map((s) => (
           <div key={s} className={`w-2.5 h-2.5 rounded-full transition-all ${s === step ? 'w-8 bg-brand-500' : 'bg-gray-200'}`} />
@@ -55,8 +80,8 @@ export default function Onboarding() {
 
       {step === 1 && (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
-          <span className="text-5x1 mb-4">📊</span>
-          <h1 className="text-2x1 font-bold text-gray-900 text-center">What is your current level?</h1>
+          <span className="text-5xl mb-4">📊</span>
+          <h1 className="text-2xl font-bold text-gray-900 text-center">What is your current level?</h1>
           <p className="text-gray-500 text-center mt-2 mb-6">This helps us find the right starting point</p>
           {USER_LEVELS.map((level) => (
             <button key={level.id} onClick={() => setSelectedLevel(level.id)}

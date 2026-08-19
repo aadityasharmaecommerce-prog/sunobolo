@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { freeTrialLesson } from '../data/content';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
+import { markSentenceComplete } from '../lib/progress';
 
 type Phase = 'listen' | 'speak';
 
@@ -46,59 +47,73 @@ function Practice() {
   const { status, playOnce, listenThreeTimes, playCount, stop } = useSentenceAudio();
   const autoAdvanceRef = useRef(false);
   const mountedRef = useRef(true);
+  const listenStartedRef = useRef(false);
 
   const sentences = freeTrialLesson.sentences;
   const total = sentences.length;
   const cur = sentences[idx];
 
-  // Cleanup on unmount
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       stop();
     };
-  }, []);
+  }, [stop]);
+
+  const goToIndex = useCallback(
+    (nextIdx: number) => {
+      stop();
+      setIdx(nextIdx);
+      setPhase('listen');
+      setListenCt(0);
+      setSpeakCt(0);
+      autoAdvanceRef.current = false;
+      listenStartedRef.current = false;
+    },
+    [stop],
+  );
 
   const adv = useCallback(() => {
     if (!cur) return;
-    stop(); // 🔑 KEY FIX: Stop any playing audio before advancing to next sentence
+    stop();
     setDone((p) => new Set(p).add(cur.id));
+    markSentenceComplete(cur.id, cur.courseId, cur.lessonId, Math.min(idx + 1, total - 1));
     if (idx < total - 1) {
-      setIdx((p) => p + 1);
-      setPhase('listen');
-      setListenCt(0);
-      setSpeakCt(0);
-      autoAdvanceRef.current = false;
+      goToIndex(idx + 1);
     } else {
       setFinished(true);
     }
-  }, [cur, idx, total, stop]);
+  }, [cur, idx, total, stop, goToIndex]);
 
   const prev = useCallback(() => {
-    if (idx > 0) {
-      stop();
-      setIdx((p) => p - 1);
-      setPhase('listen');
-      setListenCt(0);
-      setSpeakCt(0);
-      autoAdvanceRef.current = false;
-    }
-  }, [idx, stop]);
+    if (idx > 0) goToIndex(idx - 1);
+  }, [idx, goToIndex]);
 
-  // 📌 AUTO-PLAY: plays sentence 3 times when entering listen phase
   useEffect(() => {
     if (phase === 'listen' && cur && listenCt === 0 && status === 'idle' && !autoAdvanceRef.current) {
       const t = setTimeout(() => {
-        if (mountedRef.current && status === 'idle') {
-          listenThreeTimes(cur.id, cur.courseId, cur.english, setListenCt);
+        if (mountedRef.current) {
+          listenThreeTimes(
+            cur.id,
+            cur.courseId,
+            cur.english,
+            setListenCt,
+            cur.hindi,
+            () => {
+              if (mountedRef.current) setPhase('speak');
+            },
+          );
         }
       }, 300);
       return () => clearTimeout(t);
     }
   }, [phase, idx, cur?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 📌 AUTO-ADVANCE after speak 3× completes
+  useEffect(() => {
+    if (phase === 'listen' && listenCt >= 3) setPhase('speak');
+  }, [listenCt, phase]);
+
   useEffect(() => {
     if (phase === 'speak' && speakCt >= 3 && !autoAdvanceRef.current) {
       autoAdvanceRef.current = true;
@@ -109,19 +124,16 @@ function Practice() {
     }
   }, [speakCt, phase, adv]);
 
-  // Manual play button handler - stops auto-play first, then plays once
   const handleManualPlay = useCallback(() => {
+    if (!cur) return;
     stop();
     setTimeout(() => {
       if (mountedRef.current && cur) {
-        playOnce(cur.id, cur.courseId, cur.english, () => {
-          if (mountedRef.current) setPhase('speak');
-        });
+        playOnce(cur.id, cur.courseId, cur.english);
       }
-    }, 100);
+    }, 80);
   }, [stop, playOnce, cur]);
 
-  // Skip during listen phase - stop audio and move to speak
   const handleSkipListen = useCallback(() => {
     stop();
     if (mountedRef.current) {
@@ -130,15 +142,12 @@ function Practice() {
     }
   }, [stop]);
 
-  // Skip during speak phase - just advance
   const handleSkipSpeak = useCallback(() => {
     stop();
-    if (mountedRef.current) {
-      setSpeakCt(3);
-    }
+    if (mountedRef.current) setSpeakCt(3);
   }, [stop]);
 
-  if (finished || done.size >= total) {
+  if (finished) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center">
         <div className="text-5xl mb-4">🎉</div>
@@ -164,7 +173,6 @@ function Practice() {
 
   return (
     <div className="min-h-dvh flex flex-col bg-gradient-to-b from-white to-gray-50">
-      {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-1">
         <button
           onClick={() => { stop(); setFinished(true); }}
@@ -173,17 +181,12 @@ function Practice() {
           ✕
         </button>
         <div className="text-center">
-          <p className="text-[11px] font-bold text-brand-600 uppercase tracking-wider">
-            Free Trial
-          </p>
-          <p className="text-[10px] text-gray-400">
-            {idx + 1} / {total}
-          </p>
+          <p className="text-[11px] font-bold text-brand-600 uppercase tracking-wider">Free Trial</p>
+          <p className="text-[10px] text-gray-400">{idx + 1} / {total}</p>
         </div>
         <div className="w-9 h-9" />
       </div>
 
-      {/* Progress bar */}
       <div className="mx-5 mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"
@@ -191,7 +194,6 @@ function Practice() {
         />
       </div>
 
-      {/* Sentence card */}
       <div className="mx-5 mt-4 flex-1 flex items-start justify-center pt-4">
         <div className="w-full bg-white rounded-[32px] shadow-[0_12px_48px_-12px_rgba(0,0,0,0.12)] px-6 py-8 text-center">
           <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 font-semibold mb-4">
@@ -201,19 +203,15 @@ function Practice() {
             &ldquo;{cur.english}&rdquo;
           </p>
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 font-semibold mb-2">
-              🇮🇳 HINDI
-            </p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-300 font-semibold mb-2">🇮🇳 HINDI</p>
             <p className="text-base text-gray-500">{cur.hindi}</p>
           </div>
         </div>
       </div>
 
-      {/* Controls */}
       <div className="mx-5 mt-auto space-y-3 mb-6">
         {phase === 'listen' && (
           <>
-            {/* LISTEN 3 progress dots */}
             <div className="flex items-center justify-center gap-2 mb-1">
               {[1, 2, 3].map((n) => (
                 <div
@@ -231,7 +229,6 @@ function Practice() {
               ))}
             </div>
 
-            {/* Playing state: show stop/skip button */}
             {(isPlaying || isLoading) && (
               <button
                 onClick={handleSkipListen}
@@ -241,13 +238,20 @@ function Practice() {
               </button>
             )}
 
-            {/* Idle state: show play button */}
             {!isPlaying && !isLoading && (
               <button
-                onClick={handleManualPlay}
+                onClick={() => {
+                  if (listenCt >= 3) {
+                    handleManualPlay();
+                    return;
+                  }
+                  listenThreeTimes(cur.id, cur.courseId, cur.english, setListenCt, cur.hindi, () => {
+                    if (mountedRef.current) setPhase('speak');
+                  });
+                }}
                 className="w-full bg-brand-600 text-white font-bold py-5 rounded-2xl text-base shadow-xl shadow-brand-500/30 active:scale-[.97] transition-all"
               >
-                ▶ Play Once & Speak
+                {listenCt >= 3 ? '🔊 Suno Dobara' : '▶ Suno Aur Bolo'}
               </button>
             )}
           </>
@@ -275,7 +279,6 @@ function Practice() {
               Zor se 3 baar bolkar practice karein
             </p>
 
-            {/* Playing state: show stop button */}
             {(isPlaying || isLoading) && (
               <button
                 onClick={handleSkipSpeak}
@@ -285,7 +288,6 @@ function Practice() {
               </button>
             )}
 
-            {/* Idle state: show speak button */}
             {!isPlaying && !isLoading && (
               <button
                 onClick={() => setSpeakCt((p) => Math.min(p + 1, 3))}
@@ -298,20 +300,11 @@ function Practice() {
 
             <div className="flex gap-2">
               <button
-                onClick={() => {
-                  stop();
-                  setTimeout(() => {
-                    if (mountedRef.current && cur) {
-                      listenThreeTimes(cur.id, cur.courseId, cur.english, setListenCt);
-                      setPhase('listen');
-                      setListenCt(0);
-                    }
-                  }, 100);
-                }}
+                onClick={handleManualPlay}
                 disabled={isPlaying || isLoading}
                 className="flex-1 bg-gray-100 text-gray-600 py-3.5 rounded-xl text-sm disabled:opacity-50"
               >
-                🔊 Listen 3× Again
+                🔊 Suno Dobara
               </button>
               {speakCt >= 3 && !isPlaying && !isLoading && (
                 <button
@@ -329,7 +322,6 @@ function Practice() {
         )}
       </div>
 
-      {/* Bottom nav */}
       <div className="flex items-center justify-between px-6 pb-6 text-xs text-gray-400">
         <button onClick={prev} disabled={idx === 0} className="disabled:opacity-30">
           ← Prev
@@ -339,14 +331,12 @@ function Practice() {
             <div
               key={s.id}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
-                i === idx ? 'w-3 bg-brand-500' : i < done.size ? 'bg-success-400' : 'bg-gray-200'
+                i === idx ? 'w-3 bg-brand-500' : done.has(s.id) ? 'bg-success-400' : 'bg-gray-200'
               }`}
             />
           ))}
         </div>
-        <button onClick={adv} className="disabled:opacity-30">
-          Skip →
-        </button>
+        <button onClick={adv}>Skip →</button>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export function recommendCourse(goal: Goal, level: UserLevel): Recommendation {
       return { courseId: 'school', label: 'School English', reason: 'School ke liye perfect shuruaat.' };
     }
     if (goal === 'interview' || goal === 'job') {
-      return { courseId: 'interview', label: 'Interview English', reason: 'Interview ka confidence pehle banao, phir advanced.' };
+      return { courseId: 'beginner', label: 'Beginner English', reason: 'Pehle basics strong karo — phir Interview English.' };
     }
     return {
       courseId: levelCourse,

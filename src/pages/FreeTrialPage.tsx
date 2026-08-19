@@ -75,15 +75,20 @@ export function FreeTrialPage() {
     );
   }
 
-  /** Audio: tap = 1 play, 3 total */
   const handleListen = () => {
     if (audio.playing) { audio.stop(); return; }
-    if (heard >= 3) return;
-    audio.play(current.id, current.english, () => {
-      const next = heard + 1;
-      setHeard(next);
-      if (next >= 3 && practiced >= 3) markDone();
-    });
+    if (heard >= 3) {
+      audio.play(current.id, current.english);
+      return;
+    }
+    audio.playGuided(
+      { id: current.id, english: current.english, hindi: current.hindi },
+      (n) => setHeard(n),
+      () => {
+        setHeard(3);
+        if (practiced >= 3) markDone();
+      },
+    );
   };
 
   /** User says bolo — manual counter */
@@ -148,9 +153,8 @@ export function FreeTrialPage() {
             type="button"
             className={'trial-play-btn' + (audio.playing ? ' trial-play-btn--active' : '')}
             onClick={handleListen}
-            disabled={heard >= 3}
           >
-            {audio.playing ? '⏹ Ruko' : '▶️'} {heard >= 3 ? 'Suno Dobara' : 'Sunne ke liye play karein'}
+            {audio.playing ? '⏹ Ruko' : '▶️'} {heard >= 3 ? 'Suno Dobara' : 'Suno Aur Bolo'}
           </button>
           <p className="trial-hint">ज़ोर से 3 बार बोलें — muscle memory बनती है</p>
         </div>
@@ -187,7 +191,7 @@ export function FreeTrialPage() {
             type="button"
             className="trial-bolo-btn"
             onClick={handlePractice}
-            disabled={practiced >= 3 || sentenceDone}
+            disabled={heard < 3 || practiced >= 3 || sentenceDone}
           >
             🎤 {practiced === 0 ? 'Ab boliye — 3 baar' : practiced >= 3 ? '3 baar ho gaya!' : 'Aur 1 baar bolo'}
           </button>

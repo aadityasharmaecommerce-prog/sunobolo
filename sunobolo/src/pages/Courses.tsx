@@ -40,6 +40,7 @@ export default function Courses() {
           ].map((level) => (
             <button
               key={level.id}
+              onClick={() => navigate(`/course/${level.id}`)}
               className={`flex-1 py-2 px-3 rounded-xl border text-sm font-medium ${level.color} hover:opacity-80 transition-opacity`}
             >
               {level.label}

@@ -21,10 +21,28 @@ export const packagesService = {
    * Free courses are always unlocked; paid courses need a package.
    */
   async isCourseUnlocked(courseId: string): Promise<boolean> {
+    const user = authService.getCurrentUser();
+    if (isRemoteEnabled()) {
+      try {
+        const [courses, packages] = await Promise.all([
+          apiFetch<Array<{ id: string; isFree?: boolean }>>('/api/courses'),
+          apiFetch<Package[]>('/api/packages'),
+        ]);
+        const course = courses.find((c) => c.id === courseId);
+        if (!course || course.isFree) return true;
+        if (!user?.hasPackage) return false;
+        const pkg = packages.find((p) => p.id === user.hasPackage);
+        if (!pkg) return false;
+        return pkg.courseIds.includes('*') || pkg.courseIds.includes(courseId);
+      } catch {
+        const db = getDB();
+        const local = db.courses.find((c) => c.id === courseId);
+        return !local || local.isFree === true;
+      }
+    }
     const db = getDB();
     const course = db.courses.find((c) => c.id === courseId);
     if (!course || course.isFree) return true;
-    const user = authService.getCurrentUser();
     if (!user?.hasPackage) return false;
     const pkg = db.packages.find((p) => p.id === user.hasPackage);
     if (!pkg) return false;

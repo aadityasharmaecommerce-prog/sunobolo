@@ -24,16 +24,20 @@ export const authService = {
       throw new Error('Invalid credentials. (Mock auth: koi bhi email + 4+ character password chalega.)');
     }
     const normalized = email.trim().toLowerCase();
-    const existing: User | null = readStorage<User | null>(STORAGE_KEYS.user, null);
-    const user: User = existing ?? {
-      id: `u-${Date.now()}`,
-      name: normalized.split('@')[0].replace(/[._-]/g, ' '),
-      email: normalized,
-      avatarColor: randomColor(),
-      createdAt: new Date().toISOString(),
-      isAdmin: normalized === ADMIN_EMAIL,
-    };
-    // Promote if the demo admin email is used.
+    const registry = readStorage<User[]>(STORAGE_KEYS.users, []);
+    let user = registry.find((u) => u.email === normalized);
+    if (!user) {
+      user = {
+        id: `u-${Date.now()}`,
+        name: normalized.split('@')[0].replace(/[._-]/g, ' '),
+        email: normalized,
+        avatarColor: randomColor(),
+        createdAt: new Date().toISOString(),
+        isAdmin: normalized === ADMIN_EMAIL,
+      };
+      registry.push(user);
+      writeStorage(STORAGE_KEYS.users, registry);
+    }
     if (normalized === ADMIN_EMAIL && !user.isAdmin) user.isAdmin = true;
     writeStorage(STORAGE_KEYS.user, user);
     return user;
@@ -45,6 +49,12 @@ export const authService = {
       throw new Error('Please use a valid email and a password with 4+ characters.');
     }
     const normalized = email.trim().toLowerCase();
+    const registry = readStorage<User[]>(STORAGE_KEYS.users, []);
+    const already = registry.find((u) => u.email === normalized);
+    if (already) {
+      writeStorage(STORAGE_KEYS.user, already);
+      return already;
+    }
     const user: User = {
       id: `u-${Date.now()}`,
       name: name.trim() || normalized.split('@')[0],
@@ -53,6 +63,8 @@ export const authService = {
       createdAt: new Date().toISOString(),
       isAdmin: normalized === ADMIN_EMAIL,
     };
+    registry.push(user);
+    writeStorage(STORAGE_KEYS.users, registry);
     writeStorage(STORAGE_KEYS.user, user);
     return user;
   },
@@ -81,6 +93,13 @@ export const authService = {
     };
     const next = { ...current, ...patch };
     writeStorage(STORAGE_KEYS.user, next);
+    if (next.email) {
+      const registry = readStorage<User[]>(STORAGE_KEYS.users, []);
+      const i = registry.findIndex((u) => u.id === next.id || u.email === next.email);
+      if (i >= 0) registry[i] = next;
+      else registry.push(next);
+      writeStorage(STORAGE_KEYS.users, registry);
+    }
     return next;
   },
 

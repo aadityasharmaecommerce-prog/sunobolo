@@ -72,7 +72,7 @@ export const freeTrialSentences: FreeTrialSentence[] = [
   },
   {
     english: 'I would like a cup of tea.',
-    hindi: 'मुझे एक कप चाहिए।',
+    hindi: 'मुझे एक कप चाय चाहिए।',
     difficulty: 'easy',
     topic: 'Food',
   },
@@ -124,7 +124,7 @@ export const freeTrialSentences: FreeTrialSentence[] = [
   },
   {
     english: 'I am sorry, I made a mistake.',
-    hindi: 'माफ़ कीजिए, मैसे गलती हो गई।',
+    hindi: 'माफ़ कीजिए, मुझसे गलती हो गई।',
     difficulty: 'medium',
     topic: 'Apology',
   },

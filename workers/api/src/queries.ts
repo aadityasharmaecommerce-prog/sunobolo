@@ -314,11 +314,18 @@ export async function getProgress(db: D1Database, userId: string) {
     .all<{ activity_date: string }>();
 
   const dailyActivity = activity.map((a) => a.activity_date);
+  const completedSentences: Record<string, true> = {};
+  for (const s of sentences) completedSentences[s.sentence_id] = true;
+  const completedLessons: Record<string, true> = {};
+  for (const l of lessons) completedLessons[l.lesson_id] = true;
   return {
+    completedSentences,
+    completedLessons,
     sentencesPracticed: sentences.length,
     lessonsCompleted: lessons.length,
     currentStreak: computeStreak(dailyActivity),
     dailyActivity,
+    streak: computeStreak(dailyActivity),
   };
 }
 

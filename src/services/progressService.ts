@@ -19,6 +19,11 @@ function emptyProgress(): UserProgress {
   };
 }
 
+function progressKey(): string {
+  const user = authService.getCurrentUser();
+  return user ? `${STORAGE_KEYS.progress}:${user.id}` : STORAGE_KEYS.progress;
+}
+
 function mergeProgress(local: UserProgress, server: Partial<UserProgress> | null): UserProgress {
   if (!server) return local;
   const merged: UserProgress = {
@@ -35,12 +40,12 @@ function mergeProgress(local: UserProgress, server: Partial<UserProgress> | null
 
 export const progressService = {
   getProgress(): UserProgress {
-    const p = readStorage<UserProgress>(STORAGE_KEYS.progress, emptyProgress());
+    const p = readStorage<UserProgress>(progressKey(), emptyProgress());
     return { ...emptyProgress(), ...p };
   },
 
   saveProgress(progress: UserProgress): UserProgress {
-    writeStorage(STORAGE_KEYS.progress, progress);
+    writeStorage(progressKey(), progress);
     return progress;
   },
 

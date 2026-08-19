@@ -25,6 +25,7 @@ export const METHOD = {
 export const STORAGE_KEYS = {
   db: 'sb_db_v1',
   user: 'sb_user_v1',
+  users: 'sb_users_v1',
   progress: 'sb_progress_v1',
   onboarding: 'sb_onboarded_v1',
   prefs: 'sb_prefs_v1',

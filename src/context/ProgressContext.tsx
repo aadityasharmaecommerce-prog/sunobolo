@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { CourseProgress, LessonProgress, Stats, UserProgress } from '@/types';
 import { progressService } from '@/services/progressService';
 import { isRemoteEnabled } from '@/services/apiClient';
+import { useAuth } from '@/context/AuthContext';
 
 interface ProgressContextValue {
   progress: UserProgress;
@@ -19,19 +20,21 @@ interface ProgressContextValue {
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [progress, setProgress] = useState<UserProgress>(() => progressService.getProgress());
 
-  // Remote mode: pull the server-side progress once on mount and merge it locally.
+  // Reload (and optionally merge remote) whenever the signed-in user changes.
   useEffect(() => {
-    if (!isRemoteEnabled()) return;
     let cancelled = false;
+    setProgress(progressService.getProgress());
+    if (!isRemoteEnabled()) return;
     progressService.syncFromServer().then((merged) => {
       if (!cancelled) setProgress(merged);
     });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user?.id]);
 
   const refresh = useCallback(async () => {
     const p = await progressService.syncFromServer();

@@ -113,6 +113,13 @@ router.get('/api/packages', async ({ env }) => {
   return json({ ok: true, data: packages });
 });
 
+router.get('/api/packages/:id', async ({ env, params }) => {
+  const packages = await listPackages(env.DB);
+  const pkg = packages.find((p) => p.id === params.id);
+  if (!pkg) return notFound('Package not found');
+  return json({ ok: true, data: pkg });
+});
+
 // ── Me / Progress (mock auth — real auth Phase 2.5) ──────
 router.get('/api/me', async ({ env, url }) => {
   const userId = url.searchParams.get('userId');

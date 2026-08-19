@@ -1,61 +1,59 @@
 import { useRef, useCallback, useState, useEffect } from 'react';
 
 /**
- * SunoBolo Audio Engine - v6 (bulletproof)
+ * SunoBolo Audio Engine v7
  *
- * v6 fixes:
- * - listenThreeTimes now cleans up old audio at start (prevents ghost audio)
- * - playFileOnce settled flag set before onended can fire
- * - Safety timeout: force-stop after 30 seconds
- * - All functions properly clean up previous audio
+ * Guarantees:
+ * - playFileOnce only settles on ended / error / timeout — NEVER on canplay
+ * - Promise ALWAYS settles
+ * - Generation token: stop() invalidates every in-flight callback
+ * - speechSynthesis.cancel() before every new utterance
+ * - English + Hindi + repeats always come from the same sentence object
  */
 
 const BASE_AUDIO = '/audio';
-const getAudioUrl = (sid: string, cid: string): string =>
-  `${BASE_AUDIO}/${cid}/${sid}.mp3`;
-
-type AudioStatus = 'idle' | 'loading' | 'playing' | 'error';
-
-// Safety timeout: force-stop after 30 seconds of playback
-const PLAYBACK_TIMEOUT_MS = 30_000;
-
-// Cached best voice
-let bestVoice: SpeechSynthesisVoice | null = null;
-
-const pickBestVoice = (): SpeechSynthesisVoice | null => {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length === 0) return null;
-  const score = (v: SpeechSynthesisVoice): number => {
-    const lang = v.lang.toLowerCase();
-    let s = 0;
-    if (lang.includes('en-in')) s += 100;
-    else if (lang.includes('en-gb')) s += 50;
-    else if (lang.includes('en-au')) s += 30;
-    else if (lang.includes('en-us')) s += 10;
-    if (v.name.toLowerCase().includes('female')) s += 5;
-    if (v.default) s += 2;
-    if (v.localService) s += 1;
-    return s;
-  };
-  return [...voices].sort((a, b) => score(b) - score(a))[0] || null;
-};
-
-const ensureVoice = () => {
-  if (!bestVoice) bestVoice = pickBestVoice();
-};
-
-// Track file existence cache - avoid HEAD for every play
-const fileExistsCache = new Map<string, boolean>();
+export const getAudioUrl = (sentenceId: string, courseId: string): string =>
+  `${BASE_AUDIO}/${courseId}/${sentenceId}.mp3`;
 
 export function getAudioUrlStatic(sentenceId: string, courseId: string): string {
   return getAudioUrl(sentenceId, courseId);
 }
 
-async function checkFileExists(url: string): Promise<boolean> {
-  if (fileExistsCache.has(url)) {
-    return fileExistsCache.get(url) === true;
+export interface PracticeSentence {
+  id: string;
+  courseId: string;
+  english: string;
+  hindi: string;
+}
+
+type AudioStatus = 'idle' | 'loading' | 'playing' | 'error';
+
+const PLAYBACK_TIMEOUT_MS = 30_000;
+const REPEAT_GAP_MS = 700;
+
+let bestEnVoice: SpeechSynthesisVoice | null = null;
+let bestHiVoice: SpeechSynthesisVoice | null = null;
+
+const pickVoice = (prefer: string[]): SpeechSynthesisVoice | null => {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+  for (const lang of prefer) {
+    const match = voices.find((v) => v.lang?.toLowerCase().startsWith(lang));
+    if (match) return match;
   }
+  return voices[0] ?? null;
+};
+
+const ensureVoices = () => {
+  if (!bestEnVoice) bestEnVoice = pickVoice(['en-in', 'en-gb', 'en-au', 'en-us', 'en']);
+  if (!bestHiVoice) bestHiVoice = pickVoice(['hi-in', 'hi']);
+};
+
+const fileExistsCache = new Map<string, boolean>();
+
+async function checkFileExists(url: string): Promise<boolean> {
+  if (fileExistsCache.has(url)) return fileExistsCache.get(url) === true;
   try {
     const res = await fetch(url, { method: 'HEAD' });
     const exists = res.ok;
@@ -67,7 +65,6 @@ async function checkFileExists(url: string): Promise<boolean> {
   }
 }
 
-/** Clean up an audio element safely */
 function cleanupAudio(audio: HTMLAudioElement | null) {
   if (!audio) return;
   try {
@@ -77,17 +74,17 @@ function cleanupAudio(audio: HTMLAudioElement | null) {
     audio.pause();
     audio.removeAttribute('src');
     audio.load();
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 export function useSentenceAudio() {
   const [status, setStatus] = useState<AudioStatus>('idle');
   const [playCount, setPlayCount] = useState(0);
 
-  // Playback generation token - bumps on every stop, stale callbacks no-op
   const genRef = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const ttsUttRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timersRef = useRef<number[]>([]);
 
   const clearTimers = () => {
@@ -95,59 +92,79 @@ export function useSentenceAudio() {
     timersRef.current = [];
   };
 
-  // FULL STOP: cancel audio element, cancel any TTS, invalidate token
+  const isLive = (gen: number) => gen === genRef.current;
+
   const stop = useCallback(() => {
-    genRef.current++; // invalidate all in-flight callbacks
+    genRef.current += 1;
     clearTimers();
     cleanupAudio(audioRef.current);
     audioRef.current = null;
     try {
       if (window.speechSynthesis) window.speechSynthesis.cancel();
-    } catch { /* ignore */ }
-    ttsUttRef.current = null;
+    } catch {
+      /* ignore */
+    }
     setStatus('idle');
     setPlayCount(0);
   }, []);
 
-  // Speak text via TTS (only fires when MP3 file is missing)
-  const speakViaTTS = useCallback((text: string, onEnd?: () => void) => {
-    const myGen = genRef.current;
-    if (!window.speechSynthesis) {
-      setStatus('idle');
-      onEnd?.();
-      return;
-    }
-    ensureVoice();
-    try { window.speechSynthesis.cancel(); } catch { /* ignore */ }
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = bestVoice?.lang || 'en-US';
-    utt.rate = 0.85;
-    utt.pitch = 1;
-    if (bestVoice) utt.voice = bestVoice;
-    ttsUttRef.current = utt;
-    let done = false;
-    const finish = () => {
-      if (done) return;
-      done = true;
-      ttsUttRef.current = null;
-      if (myGen === genRef.current) {
-        setStatus('idle');
-        onEnd?.();
+  const speakTTS = useCallback((text: string, lang: 'en' | 'hi', myGen: number): Promise<void> => {
+    return new Promise((resolve) => {
+      if (!isLive(myGen)) {
+        resolve();
+        return;
       }
-    };
-    utt.onstart = () => { if (myGen === genRef.current) setStatus('playing'); };
-    utt.onend = finish;
-    utt.onerror = finish;
-    // Safety timeout for TTS
-    const t = window.setTimeout(finish, PLAYBACK_TIMEOUT_MS);
-    timersRef.current.push(t);
-    try { window.speechSynthesis.speak(utt); } catch { finish(); }
+      if (typeof window === 'undefined' || !window.speechSynthesis) {
+        resolve();
+        return;
+      }
+      ensureVoices();
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        /* ignore */
+      }
+      const utt = new SpeechSynthesisUtterance(text);
+      if (lang === 'hi') {
+        utt.lang = bestHiVoice?.lang || 'hi-IN';
+        if (bestHiVoice) utt.voice = bestHiVoice;
+        utt.rate = 0.95;
+      } else {
+        utt.lang = bestEnVoice?.lang || 'en-IN';
+        if (bestEnVoice) utt.voice = bestEnVoice;
+        utt.rate = 0.88;
+      }
+      utt.pitch = 1;
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        if (isLive(myGen)) setStatus('idle');
+        resolve();
+      };
+      utt.onend = finish;
+      utt.onerror = finish;
+      const t = window.setTimeout(finish, Math.min(PLAYBACK_TIMEOUT_MS, Math.max(4000, text.length * 90)));
+      timersRef.current.push(t);
+      if (isLive(myGen)) setStatus('playing');
+      try {
+        window.speechSynthesis.speak(utt);
+      } catch {
+        finish();
+      }
+    });
   }, []);
 
-  // Play MP3 once - with safety timeout and robust error handling
-  const playFileOnce = useCallback((url: string, myGen: number, onEnd?: () => void): Promise<boolean> => {
+  /**
+   * Play an MP3 once. Promise always settles.
+   * `settled` is ONLY flipped inside finish() — never on canplay / play().
+   */
+  const playFileOnce = useCallback((url: string, myGen: number): Promise<boolean> => {
     return new Promise((resolve) => {
-      // Reset any previous audio
+      if (!isLive(myGen)) {
+        resolve(false);
+        return;
+      }
       cleanupAudio(audioRef.current);
       audioRef.current = null;
 
@@ -159,173 +176,165 @@ export function useSentenceAudio() {
       const finish = (ok: boolean) => {
         if (settled) return;
         settled = true;
-        // Cleanup
         if (audioRef.current === audio) audioRef.current = null;
         cleanupAudio(audio);
-        // Only update status if generation hasn't changed
-        if (myGen === genRef.current) {
-          setStatus('idle');
-          if (ok) onEnd?.();
-        }
+        if (isLive(myGen)) setStatus('idle');
         resolve(ok);
       };
 
-      // Safety timeout: force stop if onended never fires
       const safetyTimer = window.setTimeout(() => {
-        if (!settled) {
-          console.warn('[Audio] Safety timeout - forcing stop after', PLAYBACK_TIMEOUT_MS, 'ms');
-          finish(false);
-        }
+        if (!settled) finish(false);
       }, PLAYBACK_TIMEOUT_MS);
       timersRef.current.push(safetyTimer);
 
-      audio.oncanplay = () => {
-        if (settled || myGen !== genRef.current) return;
-        audio.play().then(() => {
-          if (settled || myGen !== genRef.current) return;
-          settled = true; // Mark settled here to prevent onended double-call issues
-          setStatus('playing');
-          // Don't resolve yet - wait for onended
-        }).catch(() => finish(false));
-      };
       audio.onended = () => finish(true);
       audio.onerror = () => finish(false);
+      audio.oncanplay = () => {
+        if (settled || !isLive(myGen)) {
+          finish(false);
+          return;
+        }
+        audio.play().then(() => {
+          if (settled || !isLive(myGen)) {
+            try {
+              audio.pause();
+            } catch {
+              /* ignore */
+            }
+            if (!settled) finish(false);
+            return;
+          }
+          // Still playing — wait for onended. Do NOT mark settled here.
+          setStatus('playing');
+        }).catch(() => finish(false));
+      };
+
       audio.src = url;
       audio.load();
     });
   }, []);
 
-  // Play exact sentence: premium file if exists, else TTS - never BOTH
+  const playEnglish = useCallback(
+    async (sentence: PracticeSentence, myGen: number): Promise<boolean> => {
+      if (!isLive(myGen)) return false;
+      const url = getAudioUrl(sentence.id, sentence.courseId);
+      const exists = await checkFileExists(url);
+      if (!isLive(myGen)) return false;
+      if (exists) {
+        const ok = await playFileOnce(url, myGen);
+        if (ok || !isLive(myGen)) return ok;
+      }
+      await speakTTS(sentence.english, 'en', myGen);
+      return isLive(myGen);
+    },
+    [playFileOnce, speakTTS],
+  );
+
+  /** Play the current sentence's English once (MP3 or TTS). */
   const playOnce = useCallback(
     async (sentenceId: string, courseId: string, english: string, onEnd?: () => void) => {
       stop();
       const myGen = genRef.current;
-      const url = getAudioUrl(sentenceId, courseId);
-      const exists = await checkFileExists(url);
-      if (myGen !== genRef.current) return;
-      if (exists) {
-        await playFileOnce(url, myGen, onEnd);
-      } else {
-        speakViaTTS(english, onEnd);
-      }
+      const sentence: PracticeSentence = { id: sentenceId, courseId, english, hindi: '' };
+      await playEnglish(sentence, myGen);
+      if (isLive(myGen)) onEnd?.();
     },
-    [stop, playFileOnce, speakViaTTS]
+    [stop, playEnglish],
   );
 
-  // Listen 3 times - CRITICAL FIX: cleanup old audio at start
+  /**
+   * Suno Aur Bolo guided flow for ONE sentence:
+   *   English
+   *   "मतलब {hindi}"
+   *   "मेरे साथ 3 बार रिपीट करो।"
+   *   English  ×3 with pauses
+   */
   const listenThreeTimes = useCallback(
-    async (sentenceId: string, courseId: string, english: string, onProgress?: (count: number) => void) => {
-      // 🔑 KEY FIX: Stop any previously playing audio FIRST
+    async (
+      sentenceId: string,
+      courseId: string,
+      english: string,
+      onProgress?: (count: number) => void,
+      hindi?: string,
+      onComplete?: () => void,
+    ) => {
       cleanupAudio(audioRef.current);
       audioRef.current = null;
-      try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch {}
-      ttsUttRef.current = null;
-
+      try {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+      } catch {
+        /* ignore */
+      }
       const myGen = ++genRef.current;
       clearTimers();
       setPlayCount(0);
       setStatus('idle');
 
-      const url = getAudioUrl(sentenceId, courseId);
-      const exists = await checkFileExists(url);
-      if (myGen !== genRef.current) return;
-
-      let count = 0;
-
-      const playOneFile = (onDone: () => void): void => {
-        if (myGen !== genRef.current) { onDone(); return; }
-        cleanupAudio(audioRef.current);
-        audioRef.current = null;
-
-        const audio = new Audio();
-        audioRef.current = audio;
-        let settled = false;
-
-        const finish = () => {
-          if (settled) return;
-          settled = true;
-          if (audioRef.current === audio) audioRef.current = null;
-          cleanupAudio(audio);
-          onDone();
-        };
-
-        // Safety timeout
-        const t = window.setTimeout(() => {
-          if (!settled) {
-            console.warn('[Audio:listen3x] Safety timeout');
-            finish();
-          }
-        }, PLAYBACK_TIMEOUT_MS);
-        timersRef.current.push(t);
-
-        audio.oncanplay = () => {
-          if (settled || myGen !== genRef.current) return;
-          audio.play().then(() => {
-            if (settled || myGen !== genRef.current) return;
-            setStatus('playing');
-          }).catch(() => finish());
-        };
-        audio.onended = finish;
-        audio.onerror = finish;
-        audio.src = url;
-        audio.load();
+      const sentence: PracticeSentence = {
+        id: sentenceId,
+        courseId,
+        english,
+        hindi: hindi ?? '',
       };
 
-      const playOneTTS = (onDone: () => void): void => {
-        if (myGen !== genRef.current) { onDone(); return; }
-        ensureVoice();
-        try { window.speechSynthesis.cancel(); } catch { /* ignore */ }
-        const utt = new SpeechSynthesisUtterance(english);
-        utt.lang = bestVoice?.lang || 'en-US';
-        utt.rate = 0.85;
-        if (bestVoice) utt.voice = bestVoice;
-        let done = false;
-        const finish = () => {
-          if (done) return;
-          done = true;
-          onDone();
-        };
-        utt.onstart = () => { if (myGen === genRef.current) setStatus('playing'); };
-        utt.onend = finish;
-        utt.onerror = finish;
-        // Safety timeout for TTS
-        const t = window.setTimeout(finish, PLAYBACK_TIMEOUT_MS);
-        timersRef.current.push(t);
-        try { window.speechSynthesis.speak(utt); } catch { finish(); }
-      };
+      // Intro: English + Hindi meaning + instruction
+      await playEnglish(sentence, myGen);
+      if (!isLive(myGen)) return;
 
-      const step = () => {
-        if (myGen !== genRef.current) return;
-        if (count >= 3) { setStatus('idle'); return; }
-        const onDone = () => {
-          if (myGen !== genRef.current) return;
-          count++;
-          setPlayCount(count);
-          onProgress?.(count);
-          if (count < 3) {
-            const t = window.setTimeout(step, 400);
+      if (sentence.hindi) {
+        await speakTTS(`मतलब ${sentence.hindi}`, 'hi', myGen);
+        if (!isLive(myGen)) return;
+      }
+
+      await speakTTS('मेरे साथ 3 बार रिपीट करो।', 'hi', myGen);
+      if (!isLive(myGen)) return;
+
+      for (let i = 0; i < 3; i++) {
+        if (!isLive(myGen)) return;
+        await playEnglish(sentence, myGen);
+        if (!isLive(myGen)) return;
+        const count = i + 1;
+        setPlayCount(count);
+        onProgress?.(count);
+        if (i < 2) {
+          await new Promise<void>((resolve) => {
+            const t = window.setTimeout(resolve, REPEAT_GAP_MS);
             timersRef.current.push(t);
-          } else {
-            setStatus('idle');
-          }
-        };
-        if (exists) playOneFile(onDone);
-        else playOneTTS(onDone);
-      };
-      step();
+          });
+        }
+      }
+
+      if (isLive(myGen)) {
+        setStatus('idle');
+        onComplete?.();
+      }
     },
-    []
+    [playEnglish, speakTTS],
   );
 
-  // Initialize voice cache on mount
   useEffect(() => {
-    ensureVoice();
+    ensureVoices();
+    const onVoices = () => {
+      bestEnVoice = null;
+      bestHiVoice = null;
+      ensureVoices();
+    };
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.addEventListener('voiceschanged', onVoices);
+    }
     return () => {
-      genRef.current++;
+      genRef.current += 1;
       clearTimers();
       cleanupAudio(audioRef.current);
       audioRef.current = null;
-      try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch {}
+      try {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.removeEventListener('voiceschanged', onVoices);
+          window.speechSynthesis.cancel();
+        }
+      } catch {
+        /* ignore */
+      }
     };
   }, []);
 

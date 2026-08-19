@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Course } from '@/types';
 import { ROUTES } from '@/constants';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -7,7 +8,7 @@ import { coursesService } from '@/services/coursesService';
 import { Button } from '@/components/ui/Button';
 import { Section } from '@/components/ui/Section';
 import { CourseCard } from '@/components/course/CourseCard';
-import { LoadingState } from '@/components/ui/States';
+import { LoadingState, ErrorState } from '@/components/ui/States';
 
 export function HomePage() {
   usePageMeta(
@@ -18,13 +19,18 @@ export function HomePage() {
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { getCourseProgress } = useProgress();
 
   useEffect(() => {
     let cancelled = false;
-    coursesService.getCourses().then((c) => {
-      if (!cancelled) { setCourses(c); setLoading(false); }
-    });
+    coursesService.getCourses()
+      .then((c) => {
+        if (!cancelled) { setCourses(c); setError(false); setLoading(false); }
+      })
+      .catch(() => {
+        if (!cancelled) { setError(true); setLoading(false); }
+      });
     return () => { cancelled = true; };
   }, []);
 
@@ -51,7 +57,7 @@ export function HomePage() {
             <p className="hero-v2__desc">
               Roz 10–15 minute ki practice se English speaking confidence dheere dheere badhta hai.
             </p>
-            <div className="hero-v2__cta-card">
+            <Link to="/free-trial" className="hero-v2__cta-card">
               <div className="hero-v2__cta-left">
                 <span className="hero-v2__cta-icon">🎁</span>
                 <div>
@@ -60,7 +66,7 @@ export function HomePage() {
                 </div>
               </div>
               <span className="hero-v2__cta-arrow">→</span>
-            </div>
+            </Link>
           </div>
 
           {/* RIGHT — Hero illustration */}
@@ -551,6 +557,8 @@ export function HomePage() {
           <Section eyebrow="Courses" title="Apne Goal Ke Hisaab Se Seekho" align="left">
             {loading ? (
               <LoadingState label="Courses load ho rahe hain…" />
+            ) : error ? (
+              <ErrorState onRetry={() => window.location.reload()} />
             ) : (
               <div className="home-courses">
                 {courses.map((c) => (

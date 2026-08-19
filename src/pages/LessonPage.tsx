@@ -30,6 +30,7 @@ export function LessonPage() {
   const [heard, setHeard] = useState(0);
   const [practiced, setPracticed] = useState(0);
   const [sentenceDone, setSentenceDone] = useState(false);
+  const [phase, setPhase] = useState<'listen' | 'speak'>('listen');
 
   const total = sentences.length;
   const current = sentences[idx] ?? null;
@@ -55,6 +56,11 @@ export function LessonPage() {
         setLesson(l);
         setSentences(ss);
         setLocked(!isUnlocked);
+        setIdx(0);
+        setHeard(0);
+        setPracticed(0);
+        setSentenceDone(false);
+        setPhase('listen');
       } catch {
         if (!cancelled) setError(true);
       } finally {
@@ -90,15 +96,25 @@ export function LessonPage() {
     );
   }
 
-  /** Tap = 1 baar audio play (SkillShakti style) */
+  /** Tap starts guided Suno Aur Bolo, or replays the SAME sentence after 3 listens. */
   const handleListen = () => {
     if (audio.playing) { audio.stop(); return; }
-    if (heard >= METHOD.listenCount) return;
-    audio.play(current.id, current.english, () => {
-      const next = heard + 1;
-      setHeard(next);
-      if (next >= METHOD.listenCount && practiced >= METHOD.speakCount) markDone();
-    });
+    if (heard >= METHOD.listenCount) {
+      audio.play(current.id, current.english);
+      return;
+    }
+    audio.playGuided(
+      { id: current.id, english: current.english, hindi: current.hindi },
+      (n) => {
+        setHeard(n);
+        if (n >= METHOD.listenCount) setPhase('speak');
+      },
+      () => {
+        setHeard(METHOD.listenCount);
+        setPhase('speak');
+        if (practiced >= METHOD.speakCount) markDone();
+      },
+    );
   };
 
   /** User says "bolo" — manual counter (no mic needed) */
@@ -106,7 +122,7 @@ export function LessonPage() {
     if (practiced >= METHOD.speakCount) return;
     const next = practiced + 1;
     setPracticed(next);
-    if (heard >= METHOD.listenCount && next >= METHOD.speakCount) markDone();
+    if ((heard >= METHOD.listenCount || phase === 'speak') && next >= METHOD.speakCount) markDone();
   };
 
   const markDone = () => {
@@ -128,6 +144,7 @@ export function LessonPage() {
     setHeard(0);
     setPracticed(0);
     setSentenceDone(false);
+    setPhase('listen');
     setLastLesson(courseId, lessonId, idx + 1);
   };
 
@@ -206,13 +223,17 @@ export function LessonPage() {
             ))}
           </div>
           <span className="shakti-counter__status">
-            {practiced >= METHOD.speakCount ? '✅ Bola!' : `Bolo ${practiced} / ${METHOD.speakCount}`}
+            {heard < METHOD.listenCount
+              ? 'Pehle 3 baar suno'
+              : practiced >= METHOD.speakCount
+                ? '✅ Bola!'
+                : `Bolo ${practiced} / ${METHOD.speakCount}`}
           </span>
           <button
             type="button"
             className="shakti-bolo-btn"
             onClick={handlePractice}
-            disabled={practiced >= METHOD.speakCount || sentenceDone}
+            disabled={heard < METHOD.listenCount || practiced >= METHOD.speakCount || sentenceDone}
           >
             🎤 {practiced === 0 ? 'Ab boliye — 3 baar' : practiced >= METHOD.speakCount ? '3 baar ho gaya!' : 'Aur 1 baar bolo'}
           </button>
