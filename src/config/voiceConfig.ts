@@ -1,13 +1,13 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * Voice: hi-IN-MadhurNeural (Indian Male, Friendly, Positive)
- * SAME voice for English + Hindi — one teacher throughout.
- * Rate: +5% (natural, not slow, not robotic)
+ * Audio: gTTS (Google Translate TTS) — 44.1kHz MP3, iOS-compatible
+ * English: Google TTS (en) — natural Indian-friendly accent
+ * Hindi: Google TTS (hi) — native Hindi voice
+ * Same Google TTS engine for both — consistent quality.
  */
 
 export const PRACTICE_VOICE = {
-  /** Single voice for everything — English + Hindi. */
   edgeTtsVoiceId: 'hi-IN-MadhurNeural',
   edgeTtsHindiVoiceId: 'hi-IN-MadhurNeural',
   englishLocale: 'en-IN',
@@ -15,8 +15,7 @@ export const PRACTICE_VOICE = {
 } as const;
 
 /**
- * Centralized timing — REDUCED pauses for natural flow.
- * Flow: English → (short pause) → Hindi → (short pause) → Instruction → (pause) → Rep×3
+ * REDUCED pauses for natural, engaging flow.
  */
 export const PRACTICE_TIMING = {
   englishToHindi: 1000,
@@ -25,24 +24,18 @@ export const PRACTICE_TIMING = {
   betweenRepeats: 1500,
 } as const;
 
-/** Speech rate for TTS fallback. */
 export const SPEECH_RATE = 0.85;
 
-/** Instruction phrase. */
 export const REPEAT_INSTRUCTION_TEXT = 'मेरे साथ 3 बार रिपीट करो।';
-
-/** Hindi meaning prefix. */
 export const HINDI_MEANING_PREFIX = 'मतलब';
 
 /**
- * Cache-busting version for all audio URLs.
- * Bump to '11' after regenerating with same male voice.
+ * Cache-busting version — bump to '12' for gTTS iOS fix.
  */
-export const AUDIO_VERSION = '11';
+export const AUDIO_VERSION = '12';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
-/** Static MP3 paths. */
 export const AUDIO_PATHS = {
   english: (courseId: string, sentenceId: string): string =>
     withVersion(`/audio/${courseId}/${sentenceId}.mp3`),
@@ -51,9 +44,6 @@ export const AUDIO_PATHS = {
   instruction: withVersion('/audio/shared/repeat-instruction.mp3'),
 } as const;
 
-/**
- * Browser TTS fallback: pick ONE single voice for EVERY language.
- */
 let cachedVoice: SpeechSynthesisVoice | null | undefined;
 
 export function pickPracticeVoice(): SpeechSynthesisVoice | null {
@@ -74,7 +64,6 @@ export function pickPracticeVoice(): SpeechSynthesisVoice | null {
   return cachedVoice;
 }
 
-/** Invalidate the cached browser voice. */
 export function resetPracticeVoiceCache(): void {
   cachedVoice = undefined;
 }
