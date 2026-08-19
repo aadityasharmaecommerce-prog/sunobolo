@@ -1,90 +1,70 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * PRIMARY: gTTS (Google Translate TTS) — free, natural human-like voice
- *   - English: Google TTS (en) with Indian English accent
- *   - Hindi: Google TTS (hi) native Hindi voice
- *   - Generated via: scripts/gen_gtts_25.py
+ * PRIMARY: edge-tts with male Indian voices
+ *   - English: en-IN-PrabhatNeural (Indian English Male, Friendly, Positive)
+ *   - Hindi: hi-IN-MadhurNeural (Hindi Male, Friendly, Positive)
+ *   - Generated via: scripts/gen_male_25.py
  *
- * FALLBACK: edge-tts (free, decent quality)
- *   - Voice: hi-IN-SwaraNeural (Microsoft Azure)
- *   - Generated via: scripts/regenerate_voice.py
+ * FALLBACK: browser SpeechSynthesis
  *
  * Both options use ONE voice for the entire guided flow:
  *   English → Hindi → Instruction → 3× Repetitions
- *
- * The same voice reads Devanagari AND English — ONE teacher throughout.
  */
 
 export const PRACTICE_VOICE = {
-  /** Primary: gTTS voice (Google Translate TTS). */
-  gTTSLanguage: 'en',
-  /** Fallback: edge-tts voice ID. */
-  edgeTtsVoiceId: 'hi-IN-SwaraNeural',
-  /** Locale labels (used for reporting + fallback lang hints only). */
+  /** Primary English voice (edge-tts). */
+  edgeTtsVoiceId: 'en-IN-PrabhatNeural',
+  /** Primary Hindi voice (edge-tts). */
+  edgeTtsHindiVoiceId: 'hi-IN-MadhurNeural',
+  /** Locale labels. */
   englishLocale: 'en-IN',
   hindiLocale: 'hi-IN',
 } as const;
 
 /**
  * Centralized timing for the guided practice flow.
- * All values in milliseconds. Adjust these to change pacing globally.
- *
- * Flow: English → (pause) → Hindi → (pause) → Instruction → (pause) → Rep×3
+ * All values in milliseconds.
  */
 export const PRACTICE_TIMING = {
-  /** Pause after English finishes, before Hindi starts. */
   englishToHindi: 1500,
-  /** Pause after Hindi finishes, before instruction starts. */
   hindiToInstruction: 1500,
-  /** Pause after instruction finishes, before first repetition starts. */
   instructionToRepeat: 2000,
-  /** Pause between repetitions (repeat N → repeat N+1). */
   betweenRepeats: 2500,
 } as const;
 
 /**
  * Speech rate for TTS fallback.
  * 0.82 = clear, natural, patient teacher-like speed.
- * Range: 0.80–0.85 acceptable.
  */
 export const SPEECH_RATE = 0.82;
 
-/** Instruction phrase spoken after the Hindi meaning (same voice). */
+/** Instruction phrase spoken after the Hindi meaning. */
 export const REPEAT_INSTRUCTION_TEXT = 'मेरे साथ 3 बार रिपीट करो।';
 
-/** Hindi meaning prefix spoken before the meaning (same voice). */
+/** Hindi meaning prefix. */
 export const HINDI_MEANING_PREFIX = 'मतलब';
 
 /**
- * Deterministic cache-busting version for all audio URLs.
- * Bump this number whenever ANY audio file is regenerated — it forces
- * browsers, proxies and CDN edge caches to fetch the new assets instead
- * of serving stale MP3s (the classic "old audio keeps playing" bug).
- *
- * Bump to '9' after regenerating with Google TTS (gTTS).
+ * Cache-busting version for all audio URLs.
+ * Bump to '10' after regenerating with male Indian voices.
  */
-export const AUDIO_VERSION = '9';
+export const AUDIO_VERSION = '10';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 
-/** Static MP3 paths — all pre-generated with the same voice. */
+/** Static MP3 paths. */
 export const AUDIO_PATHS = {
-  /** English sentence MP3 (sentence→file mapping unchanged). */
   english: (courseId: string, sentenceId: string): string =>
     withVersion(`/audio/${courseId}/${sentenceId}.mp3`),
-  /** Hindi meaning MP3 — same voice as the English MP3. */
   hindi: (courseId: string, sentenceId: string): string =>
     withVersion(`/audio/${courseId}/${sentenceId}.hindi.mp3`),
-  /** Instruction MP3 — same voice as everything else. */
   instruction: withVersion('/audio/shared/repeat-instruction.mp3'),
 } as const;
 
 /**
- * Browser TTS fallback: pick ONE single voice and use it for EVERY language.
- * Prefers a hi-IN voice (bilingual — reads English with a natural Indian
- * accent), so even the fallback keeps English + Hindi + instruction as ONE
- * speaker. We deliberately do NOT pick a separate voice for English text.
+ * Browser TTS fallback: pick ONE single voice for EVERY language.
+ * Prefers hi-IN voice (bilingual).
  */
 let cachedVoice: SpeechSynthesisVoice | null | undefined;
 
@@ -106,7 +86,7 @@ export function pickPracticeVoice(): SpeechSynthesisVoice | null {
   return cachedVoice;
 }
 
-/** Invalidate the cached browser voice (call on `voiceschanged`). */
+/** Invalidate the cached browser voice. */
 export function resetPracticeVoiceCache(): void {
   cachedVoice = undefined;
 }
