@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-accent-50: #faf5ff;
+  --color-accent-100: #f3e8ff;
+  --color-accent-200: #e9d5ff;
+  --color-accent-300: #d8b4fe;
+  --color-accent-400: #c084fc;
+  --color-accent-500: #a855f7;
+  --color-accent-600: #9333ea;
+  --color-accent-700: #7e22ce;
+  --color-accent-800: #6b21a8;
+  --color-accent-900: #581c87;
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+}
+
+/* smooth mobile-app transitions */
+@media (prefers-reduced-motion: no-preference) {
+  .sentence-card {
+    animation: cardIn 380ms cubic-bezier(.22, 1, .36, 1) both;
+    transform-origin: center top;
+    will-change: transform, opacity;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(28px) scale(.985); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  .chip-pop { animation: chipPop 320ms cubic-bezier(.34, 1.56, .64, 1) both; }
+  @keyframes chipPop {
+    from { transform: scale(.6); }
+    to   { transform: scale(1); }
+  }
+}
+
+/* safer mobile tap targets + iOS smooth scroll */
+html, body { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+input, select, textarea { font-size: 16px; }
+
+/* big sticky play button */
+.play-sticky {
+  box-shadow: 0 6px 0 -2px rgb(0 0 0 / .08), 0 12px 28px -8px rgb(99 102 241 / .55);
+  transition: transform .15s ease;
+}
+.play-sticky:active { transform: scale(.96); }
+
+/* hide scrollbar in horizontal step rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
