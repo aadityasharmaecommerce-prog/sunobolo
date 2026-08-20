@@ -71,11 +71,11 @@ export default function Lesson() {
   const [listenCt, setListenCt] = useState(0);
   const [speakCt, setSpeakCt] = useState(0);
   const [done, setDone] = useState<Set<string>>(new Set());
-  const [newBadges, setNewBadges] = useState<Badge[]>([]);
+  const [badgeQueue, setBadgeQueue] = useState<Badge[]>([]);
   const [lessonFinished, setLessonFinished] = useState(false);
 
-  const dismissBadge = useCallback((id: string) => {
-    setNewBadges((prev) => prev.filter((b) => b.id !== id));
+  const dismissBadge = useCallback(() => {
+    setBadgeQueue((prev) => prev.slice(1));
   }, []);
   const { status, playOnce, listenThreeTimes, playCount, stop } = useSentenceAudio();
   const autoAdvanceRef = useRef(false);
@@ -169,7 +169,7 @@ export default function Lesson() {
     markSentenceComplete(cur.id, cur.courseId, lessonId, Math.min(idx + 1, total - 1));
     const progress = getProgress();
     const earned = checkAndPersistBadges(progress);
-    if (earned.length > 0) setNewBadges((prev) => [...prev, ...earned]);
+    if (earned.length > 0) setBadgeQueue((prev) => [...prev, ...earned.slice(0, 3)]);
     if (idx < total - 1) {
       goToIndex(idx + 1);
     } else {
@@ -276,12 +276,10 @@ export default function Lesson() {
 
   return (
     <div className="min-h-dvh flex flex-col page-canvas overflow-x-hidden">
-      {/* Badge toasts */}
-      {newBadges.length > 0 && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 space-y-2">
-          {newBadges.map((b) => (
-            <BadgeToast key={b.id} badge={b} onDismiss={() => dismissBadge(b.id)} />
-          ))}
+      {/* Badge toast — one at a time, top-right */}
+      {badgeQueue.length > 0 && (
+        <div className="fixed top-4 right-4 z-50">
+          <BadgeToast key={badgeQueue[0].id} badge={badgeQueue[0]} onDismiss={dismissBadge} />
         </div>
       )}
 
