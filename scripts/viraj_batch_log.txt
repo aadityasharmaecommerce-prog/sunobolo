@@ -1,0 +1,1392 @@
+Parsing content.ts...
+Total course sentences: 8100
+Already have audio: 1964
+Missing (to generate): 6136
+[1/6136] intermediate/intermediate-257
+  EN: 38914 bytes
+  HI: 377043 bytes
+[2/6136] intermediate/intermediate-258
+  EN: 44347 bytes
+  HI: 379968 bytes
+[3/6136] intermediate/intermediate-259
+  EN: 41839 bytes
+  HI: 310169 bytes
+[4/6136] intermediate/intermediate-260
+  EN: 41839 bytes
+  HI: 379968 bytes
+[5/6136] intermediate/intermediate-261
+  EN: 50199 bytes
+  HI: 257506 bytes
+[6/6136] intermediate/intermediate-262
+  EN: 41004 bytes
+  HI: 231593 bytes
+[7/6136] intermediate/intermediate-263
+  EN: 42675 bytes
+  HI: 379968 bytes
+[8/6136] intermediate/intermediate-264
+  EN: 29301 bytes
+  HI: 254999 bytes
+[9/6136] intermediate/intermediate-265
+  EN: 41839 bytes
+  HI: 379968 bytes
+[10/6136] intermediate/intermediate-266
+  EN: 40586 bytes
+  HI: 379968 bytes
+[11/6136] intermediate/intermediate-267
+  EN: 32226 bytes
+  HI: 281748 bytes
+[12/6136] intermediate/intermediate-268
+  EN: 41004 bytes
+  HI: 290107 bytes
+[13/6136] intermediate/intermediate-269
+  EN: 38914 bytes
+  HI: 379968 bytes
+[14/6136] intermediate/intermediate-270
+  EN: 29301 bytes
+  HI: 277568 bytes
+[15/6136] intermediate/intermediate-271
+  EN: 38078 bytes
+  HI: 379968 bytes
+[16/6136] intermediate/intermediate-272
+  EN: 35988 bytes
+  HI: 379968 bytes
+[17/6136] intermediate/intermediate-273
+  EN: 44765 bytes
+  HI: 379968 bytes
+[18/6136] intermediate/intermediate-274
+  EN: 47273 bytes
+  HI: 379968 bytes
+[19/6136] intermediate/intermediate-275
+  EN: 28465 bytes
+  HI: 285092 bytes
+[20/6136] intermediate/intermediate-276
+  EN: 43511 bytes
+  HI: 238280 bytes
+  --- Progress: 20/6136 done, 0 errors ---
+[21/6136] intermediate/intermediate-277
+  EN: 41839 bytes
+  HI: 379968 bytes
+[22/6136] intermediate/intermediate-278
+  EN: 34316 bytes
+  HI: 282584 bytes
+[23/6136] intermediate/intermediate-279
+  EN: 38078 bytes
+  HI: 238698 bytes
+[24/6136] intermediate/intermediate-280
+  EN: 35152 bytes
+  HI: 379968 bytes
+[25/6136] intermediate/intermediate-281
+  EN: 30973 bytes
+  HI: 341934 bytes
+[26/6136] intermediate/intermediate-282
+  EN: 38078 bytes
+  HI: 314767 bytes
+[27/6136] intermediate/intermediate-283
+  EN: 36824 bytes
+  HI: 221562 bytes
+[28/6136] intermediate/intermediate-284
+  EN: 37660 bytes
+  HI: 379968 bytes
+[29/6136] intermediate/intermediate-285
+  EN: 33898 bytes
+  HI: 297631 bytes
+[30/6136] intermediate/intermediate-286
+  EN: 32226 bytes
+  HI: 239534 bytes
+[31/6136] intermediate/intermediate-287
+  EN: 31391 bytes
+  HI: 308497 bytes
+[32/6136] intermediate/intermediate-288
+  EN: 32226 bytes
+  HI: 379968 bytes
+[33/6136] intermediate/intermediate-289
+  EN: 38914 bytes
+  HI: 377879 bytes
+[34/6136] intermediate/intermediate-290
+  EN: 35152 bytes
+  HI: 379968 bytes
+[35/6136] intermediate/intermediate-291
+  EN: 29301 bytes
+  HI: 317693 bytes
+[36/6136] intermediate/intermediate-292
+  EN: 30973 bytes
+  HI: 379968 bytes
+[37/6136] intermediate/intermediate-293
+  EN: 33898 bytes
+  HI: 321454 bytes
+[38/6136] intermediate/intermediate-294
+  EN: 38078 bytes
+  HI: 379968 bytes
+[39/6136] intermediate/intermediate-295
+  EN: 29301 bytes
+  HI: 206933 bytes
+[40/6136] intermediate/intermediate-296
+  EN: 34316 bytes
+  HI: 379968 bytes
+  --- Progress: 40/6136 done, 0 errors ---
+[41/6136] intermediate/intermediate-297
+  EN: 27629 bytes
+  HI: 379968 bytes
+[42/6136] intermediate/intermediate-298
+  EN: 38078 bytes
+  HI: 379968 bytes
+[43/6136] intermediate/intermediate-299
+  EN: 37660 bytes
+  HI: 287182 bytes
+[44/6136] intermediate/intermediate-300
+  EN: 38914 bytes
+  HI: 229921 bytes
+[45/6136] intermediate/intermediate-301
+  EN: 33062 bytes
+  HI: 261686 bytes
+[46/6136] intermediate/intermediate-302
+  EN: 35152 bytes
+  HI: 379968 bytes
+[47/6136] intermediate/intermediate-303
+  EN: 35988 bytes
+  HI: 355309 bytes
+[48/6136] intermediate/intermediate-304
+  EN: 32226 bytes
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 81 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[49/6136] intermediate/intermediate-305
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[50/6136] intermediate/intermediate-306
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 26 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[51/6136] intermediate/intermediate-307
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 24 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[52/6136] intermediate/intermediate-308
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[53/6136] intermediate/intermediate-309
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 27 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[54/6136] intermediate/intermediate-310
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 26 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[55/6136] intermediate/intermediate-311
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[56/6136] intermediate/intermediate-312
+  EN: 30973 bytes
+  HI: 321872 bytes
+[57/6136] intermediate/intermediate-313
+  EN: 24703 bytes
+  HI: 222398 bytes
+[58/6136] intermediate/intermediate-314
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 22 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[59/6136] intermediate/intermediate-315
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 21 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[60/6136] intermediate/intermediate-316
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 24 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[61/6136] intermediate/intermediate-317
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 18 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[62/6136] intermediate/intermediate-318
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[63/6136] intermediate/intermediate-319
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 22 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[64/6136] intermediate/intermediate-320
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[65/6136] intermediate/intermediate-321
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[66/6136] intermediate/intermediate-322
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[67/6136] intermediate/intermediate-323
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 16 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[68/6136] intermediate/intermediate-324
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 20 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[69/6136] intermediate/intermediate-325
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[70/6136] intermediate/intermediate-326
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[71/6136] intermediate/intermediate-327
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[72/6136] intermediate/intermediate-328
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[73/6136] intermediate/intermediate-329
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[74/6136] intermediate/intermediate-330
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[75/6136] intermediate/intermediate-331
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[76/6136] intermediate/intermediate-332
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[77/6136] intermediate/intermediate-333
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[78/6136] intermediate/intermediate-334
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[79/6136] intermediate/intermediate-335
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[80/6136] intermediate/intermediate-336
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[81/6136] intermediate/intermediate-337
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[82/6136] intermediate/intermediate-338
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[83/6136] intermediate/intermediate-339
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[84/6136] intermediate/intermediate-340
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[85/6136] intermediate/intermediate-341
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[86/6136] intermediate/intermediate-342
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[87/6136] intermediate/intermediate-343
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[88/6136] intermediate/intermediate-344
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[89/6136] intermediate/intermediate-345
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[90/6136] intermediate/intermediate-346
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 31 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[91/6136] intermediate/intermediate-347
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[92/6136] intermediate/intermediate-348
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 27 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[93/6136] intermediate/intermediate-349
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[94/6136] intermediate/intermediate-350
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[95/6136] intermediate/intermediate-257
+[96/6136] intermediate/intermediate-258
+[97/6136] intermediate/intermediate-259
+[98/6136] intermediate/intermediate-260
+[99/6136] intermediate/intermediate-261
+[100/6136] intermediate/intermediate-262
+[101/6136] intermediate/intermediate-263
+[102/6136] intermediate/intermediate-264
+[103/6136] intermediate/intermediate-265
+[104/6136] intermediate/intermediate-266
+[105/6136] intermediate/intermediate-267
+  --- Progress: 60/6136 done, 45 errors ---
+[106/6136] intermediate/intermediate-268
+[107/6136] intermediate/intermediate-269
+[108/6136] intermediate/intermediate-270
+[109/6136] intermediate/intermediate-271
+[110/6136] intermediate/intermediate-272
+[111/6136] intermediate/intermediate-273
+[112/6136] intermediate/intermediate-274
+[113/6136] intermediate/intermediate-275
+[114/6136] intermediate/intermediate-276
+[115/6136] intermediate/intermediate-277
+[116/6136] intermediate/intermediate-278
+[117/6136] intermediate/intermediate-279
+[118/6136] intermediate/intermediate-280
+[119/6136] intermediate/intermediate-281
+[120/6136] intermediate/intermediate-282
+[121/6136] intermediate/intermediate-283
+[122/6136] intermediate/intermediate-284
+[123/6136] intermediate/intermediate-285
+[124/6136] intermediate/intermediate-286
+[125/6136] intermediate/intermediate-287
+  --- Progress: 80/6136 done, 45 errors ---
+[126/6136] intermediate/intermediate-288
+[127/6136] intermediate/intermediate-289
+[128/6136] intermediate/intermediate-290
+[129/6136] intermediate/intermediate-291
+[130/6136] intermediate/intermediate-292
+[131/6136] intermediate/intermediate-293
+[132/6136] intermediate/intermediate-294
+[133/6136] intermediate/intermediate-295
+[134/6136] intermediate/intermediate-296
+[135/6136] intermediate/intermediate-297
+[136/6136] intermediate/intermediate-298
+[137/6136] intermediate/intermediate-299
+[138/6136] intermediate/intermediate-300
+[139/6136] intermediate/intermediate-301
+[140/6136] intermediate/intermediate-302
+[141/6136] intermediate/intermediate-303
+[142/6136] intermediate/intermediate-304
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 81 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[143/6136] intermediate/intermediate-305
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[144/6136] intermediate/intermediate-306
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 26 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[145/6136] intermediate/intermediate-307
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 24 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[146/6136] intermediate/intermediate-308
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[147/6136] intermediate/intermediate-309
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 27 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[148/6136] intermediate/intermediate-310
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 26 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[149/6136] intermediate/intermediate-311
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[150/6136] intermediate/intermediate-312
+[151/6136] intermediate/intermediate-313
+[152/6136] intermediate/intermediate-314
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 22 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[153/6136] intermediate/intermediate-315
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 21 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[154/6136] intermediate/intermediate-316
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 24 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[155/6136] intermediate/intermediate-317
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 18 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[156/6136] intermediate/intermediate-318
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[157/6136] intermediate/intermediate-319
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 22 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[158/6136] intermediate/intermediate-320
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[159/6136] intermediate/intermediate-321
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[160/6136] intermediate/intermediate-322
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[161/6136] intermediate/intermediate-323
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 16 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[162/6136] intermediate/intermediate-324
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 20 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[163/6136] intermediate/intermediate-325
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[164/6136] intermediate/intermediate-326
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[165/6136] intermediate/intermediate-327
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[166/6136] intermediate/intermediate-328
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[167/6136] intermediate/intermediate-329
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[168/6136] intermediate/intermediate-330
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[169/6136] intermediate/intermediate-331
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[170/6136] intermediate/intermediate-332
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[171/6136] intermediate/intermediate-333
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[172/6136] intermediate/intermediate-334
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[173/6136] intermediate/intermediate-335
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[174/6136] intermediate/intermediate-336
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[175/6136] intermediate/intermediate-337
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[176/6136] intermediate/intermediate-338
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[177/6136] intermediate/intermediate-339
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[178/6136] intermediate/intermediate-340
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[179/6136] intermediate/intermediate-341
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[180/6136] intermediate/intermediate-342
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[181/6136] intermediate/intermediate-343
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[182/6136] intermediate/intermediate-344
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[183/6136] intermediate/intermediate-345
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[184/6136] intermediate/intermediate-346
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 31 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[185/6136] intermediate/intermediate-347
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[186/6136] intermediate/intermediate-348
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 27 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[187/6136] intermediate/intermediate-349
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[188/6136] intermediate/intermediate-350
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[189/6136] advanced/advanced-002
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[190/6136] advanced/advanced-003
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[191/6136] advanced/advanced-004
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[192/6136] advanced/advanced-005
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 56 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[193/6136] advanced/advanced-006
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[194/6136] advanced/advanced-007
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 60 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[195/6136] advanced/advanced-008
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[196/6136] advanced/advanced-009
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[197/6136] advanced/advanced-010
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[198/6136] advanced/advanced-011
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[199/6136] advanced/advanced-012
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[200/6136] advanced/advanced-013
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[201/6136] advanced/advanced-014
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 59 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[202/6136] advanced/advanced-015
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[203/6136] advanced/advanced-016
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[204/6136] advanced/advanced-017
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[205/6136] advanced/advanced-018
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[206/6136] advanced/advanced-019
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[207/6136] advanced/advanced-020
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 60 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[208/6136] advanced/advanced-021
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[209/6136] advanced/advanced-022
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[210/6136] advanced/advanced-023
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 54 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[211/6136] advanced/advanced-024
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[212/6136] advanced/advanced-025
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 55 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[213/6136] advanced/advanced-026
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 67 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[214/6136] advanced/advanced-027
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[215/6136] advanced/advanced-028
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 56 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[216/6136] advanced/advanced-029
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 56 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[217/6136] advanced/advanced-030
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[218/6136] advanced/advanced-031
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[219/6136] advanced/advanced-032
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[220/6136] advanced/advanced-033
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[221/6136] advanced/advanced-034
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[222/6136] advanced/advanced-035
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[223/6136] advanced/advanced-036
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 55 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[224/6136] advanced/advanced-037
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 59 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[225/6136] advanced/advanced-038
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[226/6136] advanced/advanced-039
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[227/6136] advanced/advanced-040
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[228/6136] advanced/advanced-041
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[229/6136] advanced/advanced-042
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[230/6136] advanced/advanced-043
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[231/6136] advanced/advanced-044
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[232/6136] advanced/advanced-045
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[233/6136] advanced/advanced-046
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[234/6136] advanced/advanced-047
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[235/6136] advanced/advanced-048
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[236/6136] advanced/advanced-049
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[237/6136] advanced/advanced-050
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[238/6136] advanced/advanced-051
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[239/6136] advanced/advanced-052
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[240/6136] advanced/advanced-053
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 62 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[241/6136] advanced/advanced-054
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[242/6136] advanced/advanced-055
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[243/6136] advanced/advanced-056
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[244/6136] advanced/advanced-057
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[245/6136] advanced/advanced-058
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[246/6136] advanced/advanced-059
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[247/6136] advanced/advanced-060
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[248/6136] advanced/advanced-061
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[249/6136] advanced/advanced-062
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 53 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[250/6136] advanced/advanced-063
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[251/6136] advanced/advanced-064
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[252/6136] advanced/advanced-065
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[253/6136] advanced/advanced-066
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[254/6136] advanced/advanced-067
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[255/6136] advanced/advanced-068
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[256/6136] advanced/advanced-069
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[257/6136] advanced/advanced-070
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[258/6136] advanced/advanced-071
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[259/6136] advanced/advanced-072
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[260/6136] advanced/advanced-073
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[261/6136] advanced/advanced-074
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[262/6136] advanced/advanced-075
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[263/6136] advanced/advanced-076
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[264/6136] advanced/advanced-077
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[265/6136] advanced/advanced-078
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[266/6136] advanced/advanced-079
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[267/6136] advanced/advanced-080
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[268/6136] advanced/advanced-081
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[269/6136] advanced/advanced-082
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[270/6136] advanced/advanced-083
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[271/6136] advanced/advanced-084
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[272/6136] advanced/advanced-085
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[273/6136] advanced/advanced-086
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[274/6136] advanced/advanced-087
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[275/6136] advanced/advanced-088
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[276/6136] advanced/advanced-089
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[277/6136] advanced/advanced-090
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[278/6136] advanced/advanced-091
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[279/6136] advanced/advanced-092
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[280/6136] advanced/advanced-093
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[281/6136] advanced/advanced-094
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[282/6136] advanced/advanced-095
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[283/6136] advanced/advanced-096
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[284/6136] advanced/advanced-097
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[285/6136] advanced/advanced-098
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 53 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[286/6136] advanced/advanced-099
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[287/6136] advanced/advanced-100
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[288/6136] advanced/advanced-101
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[289/6136] advanced/advanced-102
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[290/6136] advanced/advanced-103
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[291/6136] advanced/advanced-104
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[292/6136] advanced/advanced-105
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[293/6136] advanced/advanced-106
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 27 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[294/6136] advanced/advanced-107
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[295/6136] advanced/advanced-108
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[296/6136] advanced/advanced-109
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[297/6136] advanced/advanced-110
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[298/6136] advanced/advanced-111
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[299/6136] advanced/advanced-112
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[300/6136] advanced/advanced-113
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[301/6136] advanced/advanced-114
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[302/6136] advanced/advanced-115
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 55 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[303/6136] advanced/advanced-116
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[304/6136] advanced/advanced-117
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[305/6136] advanced/advanced-118
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[306/6136] advanced/advanced-119
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[307/6136] advanced/advanced-120
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[308/6136] advanced/advanced-121
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[309/6136] advanced/advanced-122
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[310/6136] advanced/advanced-123
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[311/6136] advanced/advanced-124
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[312/6136] advanced/advanced-125
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[313/6136] advanced/advanced-126
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[314/6136] advanced/advanced-127
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[315/6136] advanced/advanced-128
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[316/6136] advanced/advanced-129
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[317/6136] advanced/advanced-130
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[318/6136] advanced/advanced-131
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[319/6136] advanced/advanced-132
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[320/6136] advanced/advanced-133
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[321/6136] advanced/advanced-134
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[322/6136] advanced/advanced-135
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[323/6136] advanced/advanced-136
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[324/6136] advanced/advanced-137
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[325/6136] advanced/advanced-138
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[326/6136] advanced/advanced-139
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[327/6136] advanced/advanced-140
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[328/6136] advanced/advanced-141
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[329/6136] advanced/advanced-142
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[330/6136] advanced/advanced-143
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[331/6136] advanced/advanced-144
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[332/6136] advanced/advanced-145
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[333/6136] advanced/advanced-146
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[334/6136] advanced/advanced-147
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[335/6136] advanced/advanced-148
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[336/6136] advanced/advanced-149
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[337/6136] advanced/advanced-150
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[338/6136] advanced/advanced-151
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 53 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[339/6136] advanced/advanced-152
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[340/6136] advanced/advanced-153
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[341/6136] advanced/advanced-154
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[342/6136] advanced/advanced-155
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[343/6136] advanced/advanced-156
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[344/6136] advanced/advanced-157
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[345/6136] advanced/advanced-158
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[346/6136] advanced/advanced-159
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[347/6136] advanced/advanced-160
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[348/6136] advanced/advanced-161
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[349/6136] advanced/advanced-162
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[350/6136] advanced/advanced-163
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[351/6136] advanced/advanced-164
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[352/6136] advanced/advanced-165
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[353/6136] advanced/advanced-166
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[354/6136] advanced/advanced-167
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[355/6136] advanced/advanced-168
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[356/6136] advanced/advanced-169
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[357/6136] advanced/advanced-170
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[358/6136] advanced/advanced-171
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[359/6136] advanced/advanced-172
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[360/6136] advanced/advanced-173
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[361/6136] advanced/advanced-174
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[362/6136] advanced/advanced-175
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[363/6136] advanced/advanced-176
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[364/6136] advanced/advanced-177
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[365/6136] advanced/advanced-178
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[366/6136] advanced/advanced-179
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[367/6136] advanced/advanced-180
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[368/6136] advanced/advanced-181
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[369/6136] advanced/advanced-182
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[370/6136] advanced/advanced-183
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[371/6136] advanced/advanced-184
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[372/6136] advanced/advanced-185
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[373/6136] advanced/advanced-186
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[374/6136] advanced/advanced-187
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[375/6136] advanced/advanced-188
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[376/6136] advanced/advanced-189
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[377/6136] advanced/advanced-190
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[378/6136] advanced/advanced-191
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[379/6136] advanced/advanced-192
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[380/6136] advanced/advanced-193
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[381/6136] advanced/advanced-194
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[382/6136] advanced/advanced-195
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[383/6136] advanced/advanced-196
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[384/6136] advanced/advanced-197
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[385/6136] advanced/advanced-198
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[386/6136] advanced/advanced-199
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[387/6136] advanced/advanced-200
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[388/6136] advanced/advanced-201
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[389/6136] advanced/advanced-202
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[390/6136] advanced/advanced-203
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[391/6136] advanced/advanced-204
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[392/6136] advanced/advanced-205
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[393/6136] advanced/advanced-206
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 54 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[394/6136] advanced/advanced-207
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[395/6136] advanced/advanced-208
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[396/6136] advanced/advanced-209
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[397/6136] advanced/advanced-210
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[398/6136] advanced/advanced-211
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[399/6136] advanced/advanced-212
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 53 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[400/6136] advanced/advanced-213
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[401/6136] advanced/advanced-214
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[402/6136] advanced/advanced-215
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[403/6136] advanced/advanced-216
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[404/6136] advanced/advanced-217
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[405/6136] advanced/advanced-218
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[406/6136] advanced/advanced-219
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 49 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[407/6136] advanced/advanced-220
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 53 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[408/6136] advanced/advanced-221
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[409/6136] advanced/advanced-222
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[410/6136] advanced/advanced-223
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[411/6136] advanced/advanced-224
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[412/6136] advanced/advanced-225
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[413/6136] advanced/advanced-226
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[414/6136] advanced/advanced-227
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[415/6136] advanced/advanced-228
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 55 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[416/6136] advanced/advanced-229
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[417/6136] advanced/advanced-230
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[418/6136] advanced/advanced-231
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 31 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[419/6136] advanced/advanced-232
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[420/6136] advanced/advanced-233
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 32 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[421/6136] advanced/advanced-234
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[422/6136] advanced/advanced-235
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[423/6136] advanced/advanced-236
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[424/6136] advanced/advanced-237
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[425/6136] advanced/advanced-238
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 24 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[426/6136] advanced/advanced-239
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[427/6136] advanced/advanced-240
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 29 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[428/6136] advanced/advanced-241
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[429/6136] advanced/advanced-242
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[430/6136] advanced/advanced-243
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 31 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[431/6136] advanced/advanced-244
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 30 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[432/6136] advanced/advanced-245
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 28 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[433/6136] advanced/advanced-246
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[434/6136] advanced/advanced-247
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[435/6136] advanced/advanced-248
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[436/6136] advanced/advanced-249
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[437/6136] advanced/advanced-250
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[438/6136] advanced/advanced-251
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[439/6136] advanced/advanced-252
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[440/6136] advanced/advanced-253
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[441/6136] advanced/advanced-254
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[442/6136] advanced/advanced-255
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[443/6136] advanced/advanced-256
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[444/6136] advanced/advanced-257
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[445/6136] advanced/advanced-258
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[446/6136] advanced/advanced-259
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[447/6136] advanced/advanced-260
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[448/6136] advanced/advanced-261
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[449/6136] advanced/advanced-262
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[450/6136] advanced/advanced-263
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[451/6136] advanced/advanced-264
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[452/6136] advanced/advanced-265
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 47 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[453/6136] advanced/advanced-266
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[454/6136] advanced/advanced-267
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[455/6136] advanced/advanced-268
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[456/6136] advanced/advanced-269
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[457/6136] advanced/advanced-270
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[458/6136] advanced/advanced-271
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 33 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[459/6136] advanced/advanced-272
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[460/6136] advanced/advanced-273
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[461/6136] advanced/advanced-274
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[462/6136] advanced/advanced-275
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 39 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[463/6136] advanced/advanced-276
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[464/6136] advanced/advanced-277
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[465/6136] advanced/advanced-278
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 41 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[466/6136] advanced/advanced-279
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[467/6136] advanced/advanced-280
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 46 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[468/6136] advanced/advanced-281
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 36 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[469/6136] advanced/advanced-282
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[470/6136] advanced/advanced-283
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[471/6136] advanced/advanced-284
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[472/6136] advanced/advanced-285
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 44 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[473/6136] advanced/advanced-286
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[474/6136] advanced/advanced-287
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[475/6136] advanced/advanced-288
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 38 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[476/6136] advanced/advanced-289
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[477/6136] advanced/advanced-290
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[478/6136] advanced/advanced-291
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[479/6136] advanced/advanced-292
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[480/6136] advanced/advanced-293
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[481/6136] advanced/advanced-294
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 35 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[482/6136] advanced/advanced-295
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 43 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[483/6136] advanced/advanced-296
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 42 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[484/6136] advanced/advanced-297
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 40 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[485/6136] advanced/advanced-298
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 34 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[486/6136] advanced/advanced-299
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 45 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[487/6136] advanced/advanced-300
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 37 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[488/6136] advanced/advanced-002
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 57 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[489/6136] advanced/advanced-003
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 51 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[490/6136] advanced/advanced-004
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 48 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[491/6136] advanced/advanced-005
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 56 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[492/6136] advanced/advanced-006
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 52 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[493/6136] advanced/advanced-007
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 60 credits are required for this request.","status"
+  FAILED: HTTP Error 401: Unauthorized
+[494/6136] advanced/advanced-008
+    API key error: {"detail":{"type":"invalid_request","code":"quota_exceeded","message":"This request exceeds your quota of 10000. You have 0 credits remaining, while 50 credits are required for this request.","status"

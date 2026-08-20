@@ -13,12 +13,6 @@ import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailure from './pages/PaymentFailure';
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminMembers from './pages/admin/Members';
-import AdminMemberDetail from './pages/admin/MemberDetail';
-import AdminPayments from './pages/admin/Payments';
-import AdminReports from './pages/admin/Reports';
 
 export default function App() {
   return (
@@ -37,14 +31,6 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="payment/success" element={<PaymentSuccess />} />
           <Route path="payment/failure" element={<PaymentFailure />} />
-        </Route>
-        {/* Admin Panel — separate layout, server-side auth */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="members" element={<AdminMembers />} />
-          <Route path="members/:id" element={<AdminMemberDetail />} />
-          <Route path="payments" element={<AdminPayments />} />
-          <Route path="reports" element={<AdminReports />} />
         </Route>
       </Routes>
     </AuthProvider>

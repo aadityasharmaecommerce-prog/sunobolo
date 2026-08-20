@@ -1,3 +1,5 @@
-# Cloudflare Pages SPA routing - /api/* handled by Pages Functions, everything else → index.html
-/api/*
-/*    /index.html   200
+# API routes → handled by Pages Functions
+/api/*          200
+
+# SPA fallback — all other routes serve index.html for client-side routing
+/*              /index.html   200
