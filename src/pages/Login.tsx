@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-const GOOGLE_CLIENT_ID = ''; // User must set this in Cloudflare Pages env vars or paste here
+const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '';
 
 export default function Login() {
   const { user, loading, login, signup, loginWithGoogle } = useAuth();
