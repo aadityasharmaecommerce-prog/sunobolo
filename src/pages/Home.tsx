@@ -3,6 +3,7 @@ import { useAuth } from '../lib/auth';
 import { allCourses } from '../data/content';
 import { USER_GOALS } from '../data/goals';
 import { PLAN_LIST, type Plan } from '../config/plans';
+import InstallAppButton from '../components/InstallAppButton';
 
 const TESTIMONIALS = [
   {
@@ -265,6 +266,9 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* ══════════ INSTALL APP ══════════ */}
+      <InstallAppButton variant="home" />
 
       {/* ══════════ PURCHASE PLAN ══════════ */}
       {!subscription.active && (

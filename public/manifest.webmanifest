@@ -1,0 +1,33 @@
+{
+  "name": "SunoBolo English",
+  "short_name": "SunoBolo",
+  "description": "Learn to speak English confidently with 5000+ practical sentences. Listen, speak, repeat — English seekho apni bhasha mein.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#4F46E5",
+  "background_color": "#F5F3FF",
+  "lang": "en-IN",
+  "categories": ["education", "language"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

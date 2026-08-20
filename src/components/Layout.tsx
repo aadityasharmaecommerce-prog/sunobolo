@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import InstallAppButton from './InstallAppButton';
 
 export default function Layout() {
   const location = useLocation();
@@ -19,9 +20,7 @@ export default function Layout() {
             </div>
           </a>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-2.5 py-1 shadow-sm">
-              <span className="stars text-[11px]">★</span> 4.9 · 10,000+ learners
-            </span>
+            <InstallAppButton variant="header" />
             <a href="/free-trial" className="btn-premium px-3.5 py-1.5 text-xs btn-premium-gradient rounded-full">
               🎧 Try Free
             </a>
