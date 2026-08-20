@@ -21,7 +21,7 @@ export default function Pricing() {
         <p className="kicker">Simple & honest pricing</p>
         <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Choose Your Learning Plan</h1>
         <p className="text-gray-500 text-sm mt-1.5">One-time payment. No monthly subscription. No auto-debit. Pay once, learn forever.</p>
-        <div className="inline-flex items-center gap-1.5 mt-2.5 text-[10px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
+        <div className="inline-flex items-center gap-1.5 mt-2.5 text-[11px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
           <span className="stars">★★★★★</span> 4.9 · 10,000+ learners trust SunoBolo
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function Pricing() {
             }`}
           >
             {plan.id === 'one_year' && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-[10px] font-extrabold px-4 py-1 rounded-full shadow-glow-brand tracking-wide">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-[11px] font-extrabold px-4 py-1 rounded-full shadow-glow-brand tracking-wide">
                 ⭐ BEST VALUE
               </div>
             )}
@@ -55,13 +55,13 @@ export default function Pricing() {
               </div>
               <div className="text-right">
                 <span className="text-2xl font-extrabold text-gray-900">₹{plan.amountRupees}</span>
-                <p className="text-[9px] text-gray-400 font-semibold uppercase tracking-wide">{plan.durationLabel}</p>
+                <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">{plan.durationLabel}</p>
               </div>
             </div>
             <ul className="space-y-2 mb-4">
               {plan.features.map((f) => (
                 <li key={f} className="flex items-center gap-2 text-[13px] text-gray-700">
-                  <span className="w-5 h-5 rounded-full bg-success-100 text-success-700 border border-success-200 flex items-center justify-center text-[10px] font-bold shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-success-100 text-success-700 border border-success-200 flex items-center justify-center text-[11px] font-bold shrink-0">
                     ✓
                   </span>
                   {f}
@@ -91,8 +91,8 @@ export default function Pricing() {
         ].map((x) => (
           <div key={x.t} className="card-premium !rounded-xl px-2 py-3 text-center">
             <div className="text-base mb-1">{x.e}</div>
-            <p className="text-[10px] font-bold text-gray-900 leading-tight">{x.t}</p>
-            <p className="text-[9px] text-gray-500 mt-0.5 leading-tight">{x.d}</p>
+            <p className="text-[11px] font-bold text-gray-900 leading-tight">{x.t}</p>
+            <p className="text-[11px] text-gray-500 mt-0.5 leading-tight">{x.d}</p>
           </div>
         ))}
       </div>

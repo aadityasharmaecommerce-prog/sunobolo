@@ -4,6 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { allCourses } from '../data/content';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
 import { getProgress, markLessonComplete, markSentenceComplete } from '../lib/progress';
+import BadgeToast from '../components/BadgeToast';
+import { checkAndPersistBadges } from '../lib/badges';
+import type { Badge } from '../config/badges';
 
 export default function Lesson() {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
@@ -13,6 +16,11 @@ export default function Lesson() {
   const [listenCt, setListenCt] = useState(0);
   const [speakCt, setSpeakCt] = useState(0);
   const [done, setDone] = useState<Set<string>>(new Set());
+  const [newBadges, setNewBadges] = useState<Badge[]>([]);
+
+  const dismissBadge = useCallback((id: string) => {
+    setNewBadges((prev) => prev.filter((b) => b.id !== id));
+  }, []);
   const { status, playOnce, listenThreeTimes, playCount, stop } = useSentenceAudio();
   const autoAdvanceRef = useRef(false);
   const mountedRef = useRef(true);
@@ -102,6 +110,10 @@ export default function Lesson() {
     }
     setDone((p) => new Set(p).add(cur.id));
     markSentenceComplete(cur.id, cur.courseId, lessonId, Math.min(idx + 1, total - 1));
+    // Check for new badges
+    const progress = getProgress();
+    const earned = checkAndPersistBadges(progress);
+    if (earned.length > 0) setNewBadges((prev) => [...prev, ...earned]);
     if (idx < total - 1) {
       goToIndex(idx + 1);
     } else {
@@ -201,13 +213,21 @@ export default function Lesson() {
 
   return (
     <div className="min-h-dvh flex flex-col page-canvas overflow-x-hidden">
+      {/* Badge toasts */}
+      {newBadges.length > 0 && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 space-y-2">
+          {newBadges.map((b) => (
+            <BadgeToast key={b.id} badge={b} onDismiss={() => dismissBadge(b.id)} />
+          ))}
+        </div>
+      )}
       <div className="flex items-center justify-between px-5 pt-4 pb-1">
         <button onClick={() => { stop(); navigate(-1); }} aria-label="Back" className="w-9 h-9 rounded-full glass shadow-sm flex items-center justify-center text-base text-gray-500 hover:text-gray-800 transition-colors">
           ←
         </button>
         <div className="text-center">
           <p className="text-[11px] font-extrabold text-brand-600 uppercase tracking-widest">{lesson.title}</p>
-          <p className="text-[10px] text-gray-400 font-semibold">{idx + 1} / {total}</p>
+          <p className="text-[11px] text-gray-400 font-semibold">{idx + 1} / {total}</p>
         </div>
         <div className="w-9 h-9" />
       </div>
@@ -223,14 +243,14 @@ export default function Lesson() {
           <div className="absolute -top-12 -right-12 w-36 h-36 bg-gradient-to-br from-brand-50 to-accent-50 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-14 -left-14 w-36 h-36 bg-gradient-to-tr from-accent-50 to-brand-50 rounded-full blur-2xl pointer-events-none" />
           <div className="relative">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-brand-400 font-extrabold mb-4">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-brand-400 font-extrabold mb-4">
               Sentence {idx + 1} <span className="text-gray-300">of</span> {total}
             </p>
             <p className="text-xl sm:text-2xl font-extrabold leading-snug text-gray-900">
               &ldquo;{cur.english}&rdquo;
             </p>
             <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-gray-300 font-extrabold mb-2">🇮🇳 Hindi Meaning</p>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-gray-300 font-extrabold mb-2">🇮🇳 Hindi Meaning</p>
               <p className="text-base text-gray-600">{cur.hindi}</p>
             </div>
           </div>
@@ -341,7 +361,7 @@ export default function Lesson() {
                 </button>
               )}
             </div>
-            <p className="text-[10px] text-gray-400 text-center mt-1">
+            <p className="text-[11px] text-gray-400 text-center mt-1">
               {speakCt >= 3 ? '⏳ Agla sentence 1.5s me...' : 'Baar baar zor se bole, confidence badhega!'}
             </p>
           </>

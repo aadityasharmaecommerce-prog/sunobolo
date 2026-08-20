@@ -23,7 +23,7 @@ export default function BottomNav() {
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 aria-label={tab.label}
-                className={`relative flex flex-col items-center justify-center gap-0.5 py-1.5 px-2.5 rounded-xl transition-all duration-300 ${
+                className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-3 rounded-xl transition-all duration-300 ${
                   isActive
                     ? 'text-brand-700'
                     : 'text-gray-400 hover:text-gray-600'
@@ -33,13 +33,13 @@ export default function BottomNav() {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-to-r from-brand-500 to-accent-500" />
                 )}
                 <span
-                  className={`text-xl leading-none transition-transform duration-300 ${
+                  className={`text-2xl leading-none transition-transform duration-300 ${
                     isActive ? 'scale-110 -translate-y-0.5' : ''
                   }`}
                 >
                   {tab.icon}
                 </span>
-                <span className={`text-[10px] font-semibold ${isActive ? 'text-brand-700' : ''}`}>
+                <span className={`text-[11px] font-semibold ${isActive ? 'text-brand-700' : ''}`}>
                   {tab.label}
                 </span>
                 {isActive && (

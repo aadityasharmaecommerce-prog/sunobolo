@@ -36,14 +36,14 @@ export default function Courses() {
                 {course.icon}
               </div>
               {course.isFree ? (
-                <span className="text-[9px] font-extrabold text-success-700 bg-success-100 border border-success-200 px-2 py-0.5 rounded-full">FREE</span>
+                <span className="text-[11px] font-extrabold text-success-700 bg-success-100 border border-success-200 px-2 py-0.5 rounded-full">FREE</span>
               ) : (
-                <span className="text-[9px] font-extrabold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">🔒 PREMIUM</span>
+                <span className="text-[11px] font-extrabold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">🔒 PREMIUM</span>
               )}
             </div>
             <h3 className="font-extrabold text-gray-900 mt-2.5 group-hover:text-brand-700 transition-colors">{course.title}</h3>
             <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">{course.shortDescription}</p>
-            <div className="flex items-center gap-2 mt-2.5 text-[10px] font-semibold text-gray-400">
+            <div className="flex items-center gap-2 mt-2.5 text-[11px] font-semibold text-gray-400">
               <span>{course.totalLessons} lessons</span>
               <span>·</span>
               <span>{course.totalSentences} sentences</span>

@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { allCourses } from '../data/content';
 import { USER_GOALS } from '../data/goals';
+import { PLAN_LIST, type Plan } from '../config/plans';
 
 const TESTIMONIALS = [
   {
@@ -30,6 +31,14 @@ const TESTIMONIALS = [
 export default function Home() {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
+
+  const handleSelectPlan = (plan: Plan) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    navigate(`/payment/success?plan=${plan.id}`);
+  };
 
   return (
     <div className="space-y-5 -mt-1 pb-2 animate-fade-in w-full max-w-full overflow-x-hidden">
@@ -90,7 +99,7 @@ export default function Home() {
             ].map((s) => (
               <div key={s.l} className="glass-dark rounded-xl px-2 py-2.5 text-center">
                 <p className="text-sm sm:text-base font-extrabold leading-none">{s.v}</p>
-                <p className="text-[9px] sm:text-[10px] text-white/70 font-medium mt-1">{s.l}</p>
+                <p className="text-[11px] sm:text-[11px] text-white/70 font-medium mt-1">{s.l}</p>
               </div>
             ))}
           </div>
@@ -100,14 +109,14 @@ export default function Home() {
       {/* ══════════ TRUST STRIP ══════════ */}
       <section className="grid grid-cols-3 gap-1.5 sm:gap-2 animate-fade-up-1">
         {[
-          { e: '🔒', t: '100% Secure', d: 'No spam, ever' },
-          { e: '🎧', t: 'Free to Try', d: '25 sentences free' },
-          { e: '⚡', t: 'Instant Access', d: 'No waiting' },
+          { e: '🔒', t: '100% Secure', d: 'No spam, ever', bg: 'from-emerald-50 to-green-50' },
+          { e: '🎧', t: 'Free to Try', d: '25 sentences free', bg: 'from-violet-50 to-purple-50' },
+          { e: '⚡', t: 'Instant Access', d: 'No waiting', bg: 'from-amber-50 to-orange-50' },
         ].map((x) => (
-          <div key={x.t} className="card-premium !rounded-xl px-2 py-2.5 text-center">
+          <div key={x.t} className={`bg-gradient-to-b ${x.bg} border border-gray-100 !rounded-xl px-2 py-2.5 text-center shadow-sm`}>
             <div className="text-base mb-0.5">{x.e}</div>
-            <p className="text-[10px] font-bold text-gray-900 leading-tight">{x.t}</p>
-            <p className="text-[9px] text-gray-500 leading-tight mt-0.5">{x.d}</p>
+            <p className="text-[11px] font-bold text-gray-900 leading-tight">{x.t}</p>
+            <p className="text-[11px] text-gray-500 leading-tight mt-0.5">{x.d}</p>
           </div>
         ))}
       </section>
@@ -129,12 +138,12 @@ export default function Home() {
             <div key={s.step} className="card-premium !rounded-2xl p-3 text-center">
               <div className={`relative w-11 h-11 mx-auto rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-lg mb-2 ${s.glow}`}>
                 {s.emoji}
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border border-gray-100 shadow-sm text-[9px] font-extrabold text-gray-600 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border border-gray-100 shadow-sm text-[11px] font-extrabold text-gray-600 flex items-center justify-center">
                   {s.step}
                 </span>
               </div>
               <p className="font-extrabold text-xs text-gray-900 leading-tight">{s.title}</p>
-              <p className="text-[9px] text-gray-500 mt-1 leading-snug">{s.desc}</p>
+              <p className="text-[11px] text-gray-500 mt-1 leading-snug">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -165,17 +174,30 @@ export default function Home() {
           <Link to="/courses" className="text-[11px] text-brand-600 font-bold hover:text-brand-700">See all →</Link>
         </div>
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-          {USER_GOALS.slice(0, 9).map((g) => (
-            <button
-              key={g.id}
-              onClick={() => navigate('/courses')}
-              className="bg-gradient-to-b from-gray-50 to-white hover:from-brand-50 hover:to-accent-50 border border-gray-100 hover:border-brand-200 rounded-xl p-2 text-center transition-all active:scale-95 shadow-sm hover:shadow-md"
-              title={g.label}
-            >
-              <div className="text-base mb-0.5 leading-none">{g.emoji}</div>
-              <p className="text-[9px] sm:text-[10px] font-semibold text-gray-700 leading-tight line-clamp-2 min-h-[20px] flex items-center justify-center">{g.label}</p>
-            </button>
-          ))}
+          {USER_GOALS.slice(0, 9).map((g, i) => {
+            const warmTints = [
+              'from-blue-50 to-sky-50 hover:from-blue-100 hover:to-sky-100 border-blue-100 hover:border-blue-200',
+              'from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-100 hover:border-rose-200',
+              'from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-100 hover:border-amber-200',
+              'from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 border-emerald-100 hover:border-emerald-200',
+              'from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-violet-100 hover:border-violet-200',
+              'from-cyan-50 to-teal-50 hover:from-cyan-100 hover:to-teal-100 border-cyan-100 hover:border-cyan-200',
+              'from-orange-50 to-amber-50 hover:from-orange-100 hover:to-amber-100 border-orange-100 hover:border-orange-200',
+              'from-pink-50 to-fuchsia-50 hover:from-pink-100 hover:to-fuchsia-100 border-pink-100 hover:border-pink-200',
+              'from-lime-50 to-green-50 hover:from-lime-100 hover:to-green-100 border-lime-100 hover:border-lime-200',
+            ];
+            return (
+              <button
+                key={g.id}
+                onClick={() => navigate('/courses')}
+                className={`bg-gradient-to-b ${warmTints[i % warmTints.length]} border rounded-xl p-2 text-center transition-all active:scale-95 shadow-sm hover:shadow-md`}
+                title={g.label}
+              >
+                <div className="text-base mb-0.5 leading-none">{g.emoji}</div>
+                <p className="text-[11px] sm:text-[11px] font-semibold text-gray-700 leading-tight line-clamp-2 min-h-[20px] flex items-center justify-center">{g.label}</p>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -201,13 +223,13 @@ export default function Home() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-[13px] text-gray-900 truncate group-hover:text-brand-700 transition-colors">{course.title}</h3>
-                  <p className="text-[10px] text-gray-500 mt-0.5">{course.totalSentences} sentences · {course.totalLessons} lessons</p>
+                  <p className="text-[11px] text-gray-500 mt-0.5">{course.totalSentences} sentences · {course.totalLessons} lessons</p>
                 </div>
                 <div className="text-right shrink-0">
                   {course.isFree ? (
-                    <span className="text-[9px] font-extrabold text-success-700 bg-success-100 border border-success-200 px-2 py-1 rounded-full">FREE</span>
+                    <span className="text-[11px] font-extrabold text-success-700 bg-success-100 border border-success-200 px-2 py-1 rounded-full">FREE</span>
                   ) : (
-                    <span className="text-[9px] font-extrabold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-1 rounded-full">PREMIUM</span>
+                    <span className="text-[11px] font-extrabold text-gray-500 bg-gray-100 border border-gray-200 px-2 py-1 rounded-full">PREMIUM</span>
                   )}
                 </div>
               </div>
@@ -234,7 +256,7 @@ export default function Home() {
                     <p className="font-bold text-[13px] text-gray-900 truncate">{t.name}</p>
                     <span className="stars text-[11px] shrink-0">★★★★★</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 font-medium">{t.role}</p>
+                  <p className="text-[11px] text-gray-400 font-medium">{t.role}</p>
                   <p className="text-xs text-gray-600 leading-relaxed mt-1.5">“{t.text}”</p>
                 </div>
               </div>
@@ -252,32 +274,49 @@ export default function Home() {
             <h2 className="font-extrabold text-base text-gray-900 mt-0.5">One-Time Payment. No Monthly Fees.</h2>
             <p className="text-gray-500 text-xs mt-1">Pay once, learn forever. No auto-debit.</p>
           </div>
-          <div className="card-premium !rounded-2xl p-5 border-brand-200 bg-gradient-to-b from-brand-50/50 to-white">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-extrabold text-gray-900">1 Year Full Access</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Best value · Save ₹1,100</p>
-              </div>
-              <div className="text-right">
-                <span className="text-3xl font-extrabold text-gray-900">₹1,700</span>
-                <p className="text-[9px] text-gray-400 font-semibold">ONE TIME</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {['5,000+ Sentences', 'All Courses', 'Viraj Premium Voice', 'Progress Tracking'].map(f => (
-                <div key={f} className="flex items-center gap-1.5 text-[11px] text-gray-600">
-                  <span className="w-4 h-4 rounded-full bg-success-100 text-success-700 border border-success-200 flex items-center justify-center text-[8px] font-bold shrink-0">✓</span>
-                  {f}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {PLAN_LIST.map((plan) => (
+              <div
+                key={plan.id}
+                className={`card-premium relative p-4 flex flex-col ${
+                  plan.id === 'one_year'
+                    ? '!border-brand-300 shadow-ring-brand bg-gradient-to-b from-brand-50/70 to-white'
+                    : ''
+                }`}
+              >
+                {plan.id === 'one_year' && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-600 to-accent-600 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-glow-brand tracking-wide whitespace-nowrap">
+                    ⭐ BEST VALUE
+                  </div>
+                )}
+                <div className="mb-3">
+                  <h3 className="font-extrabold text-gray-900 text-sm">{plan.name} Full Access</h3>
+                  <p className="text-[11px] text-gray-500 mt-0.5">One-time payment · No auto-renewal</p>
                 </div>
-              ))}
-            </div>
-            <button
-              onClick={() => navigate(user ? '/pricing' : '/login')}
-              className="btn-premium btn-premium-gradient w-full py-3.5 text-sm font-bold rounded-xl"
-            >
-              {user ? 'Choose Your Plan →' : 'Sign Up & Get Access →'}
-            </button>
-            <p className="text-center text-[10px] text-gray-400 mt-2.5">No monthly charges · No auto-renewal · Cancel anytime</p>
+                <div className="mb-3">
+                  <span className="text-2xl font-extrabold text-gray-900">₹{plan.amountRupees}</span>
+                  <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">ONE TIME · {plan.durationLabel}</p>
+                </div>
+                <ul className="space-y-1.5 mb-4 flex-1">
+                  {plan.features.slice(0, 5).map((f) => (
+                    <li key={f} className="flex items-center gap-1.5 text-[11px] text-gray-600">
+                      <span className="w-4 h-4 rounded-full bg-success-100 text-success-700 border border-success-200 flex items-center justify-center text-[8px] font-bold shrink-0">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handleSelectPlan(plan)}
+                  className={`btn-premium w-full py-3 text-sm font-bold rounded-xl ${
+                    plan.id === 'one_year'
+                      ? 'btn-premium-gradient'
+                      : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-brand-300 hover:text-brand-700'
+                  }`}
+                >
+                  {user ? `Get ${plan.durationLabel} — ₹${plan.amountRupees}` : 'Sign Up & Get Access →'}
+                </button>
+              </div>
+            ))}
           </div>
           <div className="grid grid-cols-3 gap-2 mt-3">
             {[
@@ -287,7 +326,7 @@ export default function Home() {
             ].map(x => (
               <div key={x.t} className="card-premium !rounded-xl px-2 py-2.5 text-center">
                 <div className="text-base mb-0.5">{x.e}</div>
-                <p className="text-[9px] font-bold text-gray-900 leading-tight">{x.t}</p>
+                <p className="text-[11px] font-bold text-gray-900 leading-tight">{x.t}</p>
                 <p className="text-[8px] text-gray-500 leading-tight mt-0.5">{x.d}</p>
               </div>
             ))}
@@ -298,17 +337,17 @@ export default function Home() {
       {/* ══════════ FOOTER ══════════ */}
       <footer className="text-center pt-1 pb-2">
         <div className="hairline mb-3" />
-        <div className="flex items-center justify-center gap-3 text-[9px] text-gray-400 font-medium">
-          <span className="inline-flex items-center gap-1"><span className="stars text-[10px]">★</span> 4.9 rated</span>
+        <div className="flex items-center justify-center gap-3 text-[11px] text-gray-400 font-medium">
+          <span className="inline-flex items-center gap-1"><span className="stars text-[11px]">★</span> 4.9 rated</span>
           <span>·</span>
           <span>🔒 Secure</span>
           <span>·</span>
           <span>🇮🇳 Made in India</span>
         </div>
-        <p className="text-[10px] text-gray-400 mt-2">
+        <p className="text-[11px] text-gray-400 mt-2">
           Made with ❤️ by <span className="text-gray-600 font-bold">Pankaj Upadhyay</span>
         </p>
-        <p className="text-gray-300 mt-0.5 text-[10px]">Suno · Bolo · Repeat</p>
+        <p className="text-gray-300 mt-0.5 text-[11px]">Suno · Bolo · Repeat</p>
       </footer>
     </div>
   );

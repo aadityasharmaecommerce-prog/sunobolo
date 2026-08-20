@@ -1,5 +1,6 @@
 import { allCourses } from '../data/content';
 import { computeStreak, getProgress } from '../lib/progress';
+import { checkBadges } from '../config/badges';
 
 export default function ProgressPage() {
   const progress = getProgress();
@@ -50,6 +51,52 @@ export default function ProgressPage() {
           <p className="text-xs text-gray-500">Minutes Practiced</p>
         </div>
       </div>
+
+      {/* ══════════ BADGES ══════════ */}
+      {(() => {
+        const badgeChecks = checkBadges(progress);
+        const earnedCount = badgeChecks.filter((b) => b.earned).length;
+        return (
+          <div className="card-premium p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="font-bold text-gray-900">Achievements</h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">{earnedCount} of {badgeChecks.length} unlocked</p>
+              </div>
+              <span className="text-2xl">🏆</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {badgeChecks.map(({ badge, earned }) => (
+                <div
+                  key={badge.id}
+                  className={`relative flex flex-col items-center p-3 rounded-xl transition-all ${
+                    earned
+                      ? 'bg-gradient-to-b from-brand-50 to-accent-50 border border-brand-100'
+                      : 'bg-gray-50 border border-gray-100 opacity-50 grayscale'
+                  }`}
+                >
+                  <div
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl mb-1.5 ${
+                      earned
+                        ? `bg-gradient-to-br ${badge.gradient} shadow-md`
+                        : 'bg-gray-200'
+                    }`}
+                  >
+                    {badge.emoji}
+                  </div>
+                  <p className="text-[11px] font-bold text-gray-800 text-center leading-tight">{badge.name}</p>
+                  <p className="text-[10px] text-gray-400 text-center leading-tight mt-0.5 line-clamp-2">{badge.description}</p>
+                  {earned && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+                      ✓
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="card p-5">
         <h2 className="font-bold text-gray-900 mb-3">Overall Learning</h2>
