@@ -348,6 +348,9 @@ export default function Home() {
           <span>·</span>
           <span>🇮🇳 Made in India</span>
         </div>
+        <div className="mt-3">
+          <InstallAppButton variant="footer" />
+        </div>
         <p className="text-[11px] text-gray-400 mt-2">
           Made with ❤️ by <span className="text-gray-600 font-bold">Pankaj Upadhyay</span>
         </p>

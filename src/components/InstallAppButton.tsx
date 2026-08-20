@@ -28,7 +28,7 @@ function isIOS(): boolean {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-export default function InstallAppButton({ variant = 'header' }: { variant?: 'header' | 'home' }) {
+export default function InstallAppButton({ variant = 'header' }: { variant?: 'header' | 'home' | 'footer' }) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
@@ -86,29 +86,28 @@ export default function InstallAppButton({ variant = 'header' }: { variant?: 'he
   // Already installed — don't show anything
   if (installed || !showInstall) return null;
 
-  // ── Header variant (compact pill) ──
+  // ── Header variant (compact pill — visible on all screens) ──
   if (variant === 'header') {
-    // iOS: show small install text
-    if (showIOSGuide) {
-      return (
-        <button
-          onClick={() => setShowIOSGuide(true)}
-          className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full px-2.5 py-1 shadow-sm hover:bg-indigo-100 transition-colors cursor-pointer"
-          aria-label="Install SunoBolo App"
-        >
-          📲 Install
-        </button>
-      );
-    }
-
-    // Android/Chrome/Desktop
     return (
       <button
-        onClick={handleInstall}
-        className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full px-2.5 py-1 shadow-sm hover:bg-indigo-100 transition-colors cursor-pointer"
+        onClick={showIOSGuide ? () => setShowIOSGuide(true) : handleInstall}
+        className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full px-2.5 py-1 shadow-sm hover:bg-indigo-100 transition-colors cursor-pointer"
         aria-label="Install SunoBolo App"
       >
         📲 Install
+      </button>
+    );
+  }
+
+  // ── Footer variant (small text link) ──
+  if (variant === 'footer') {
+    return (
+      <button
+        onClick={showIOSGuide ? () => setShowIOSGuide(true) : handleInstall}
+        className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-500 hover:text-indigo-700 transition-colors cursor-pointer"
+        aria-label="Install SunoBolo App"
+      >
+        📲 Install App
       </button>
     );
   }
