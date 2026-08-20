@@ -26,7 +26,7 @@ export interface CourseData {
   icon: string; color: string; difficulty: string; targetAudience: string[];
   totalSentences: number; totalLessons: number; estimatedHours: number;
   isFree: boolean; price?: string; lessons: LessonData[];
-  modules: { id: string; courseId: string; moduleId?: string; order: number; title: string; description: string; difficulty?: string; topic?: string; lessons: LessonData[] }[];
+  modules: { id: string; courseId: string; moduleId?: string; order: number; title: string; description: string; difficulty?: string; topic?: string; sentenceCount?: number; estimatedMinutes?: number; lessons: LessonData[] }[];
 }
 
 export const freeTrialLesson: LessonData = {
