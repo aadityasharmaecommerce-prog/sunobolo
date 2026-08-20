@@ -1,6 +1,6 @@
 /**
- * SunoBolo Auth — Email/Password + localStorage
- * No backend needed. All data stored in browser localStorage.
+ * SunoBolo Auth — Google One Tap + Email/Password + Forgot Password
+ * All data stored in browser localStorage.
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
@@ -11,6 +11,8 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  avatar?: string;
+  provider?: 'google' | 'email';
 }
 
 export interface Subscription {
@@ -26,6 +28,9 @@ interface AuthState {
   loading: boolean;
   signup: (name: string, email: string, password: string, phone?: string) => Promise<{ error?: string }>;
   login: (email: string, password: string) => Promise<{ error?: string }>;
+  loginWithGoogle: (credential: string) => Promise<{ error?: string }>;
+  forgotPassword: (email: string) => Promise<{ error?: string; success?: boolean; resetCode?: string }>;
+  resetPassword: (email: string, code: string, newPassword: string) => Promise<{ error?: string; success?: boolean }>;
   logout: () => void;
   refreshAuth: () => void;
   activateSubscription: (planId: string) => void;
@@ -37,6 +42,9 @@ const AuthContext = createContext<AuthState>({
   loading: true,
   signup: async () => ({}),
   login: async () => ({}),
+  loginWithGoogle: async () => ({}),
+  forgotPassword: async () => ({}),
+  resetPassword: async () => ({}),
   logout: () => {},
   refreshAuth: () => {},
   activateSubscription: () => {},
@@ -50,12 +58,23 @@ export function useAuth() {
 const USERS_KEY = 'sb_users';
 const SESSION_KEY = 'sb_session';
 const SUB_KEY = 'sb_subscription';
+const RESET_KEY = 'sb_password_resets';
 
-function getUsers(): Record<string, { id: string; name: string; email: string; phone?: string; password: string }> {
+interface StoredUser {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  password?: string;
+  avatar?: string;
+  provider?: 'google' | 'email';
+}
+
+function getUsers(): Record<string, StoredUser> {
   try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch { return {}; }
 }
 
-function saveUsers(users: Record<string, { id: string; name: string; email: string; phone?: string; password: string }>) {
+function saveUsers(users: Record<string, StoredUser>) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
@@ -76,6 +95,14 @@ function saveSubscriptions(subs: Record<string, Subscription>) {
   localStorage.setItem(SUB_KEY, JSON.stringify(subs));
 }
 
+function getResets(): Record<string, { code: string; expiresAt: string }> {
+  try { return JSON.parse(localStorage.getItem(RESET_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveResets(resets: Record<string, { code: string; expiresAt: string }>) {
+  localStorage.setItem(RESET_KEY, JSON.stringify(resets));
+}
+
 function simpleHash(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -84,6 +111,26 @@ function simpleHash(str: string): string {
     hash |= 0;
   }
   return 'h_' + Math.abs(hash).toString(36);
+}
+
+function generateResetCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+/** Decode a Google JWT payload (client-side, no verification — for localStorage demo) */
+function decodeGoogleJWT(token: string): { sub: string; email: string; name: string; picture?: string } | null {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return {
+      sub: decoded.sub,
+      email: decoded.email,
+      name: decoded.name || decoded.given_name || 'User',
+      picture: decoded.picture,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -132,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, [refreshAuth]);
 
+  // ── Email/Password Signup ──
   const signup = useCallback(async (name: string, email: string, password: string, phone?: string) => {
     const users = getUsers();
     const lowerEmail = email.toLowerCase().trim();
@@ -144,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    users[lowerEmail] = { id, name: name.trim(), email: lowerEmail, phone, password: simpleHash(password) };
+    users[lowerEmail] = { id, name: name.trim(), email: lowerEmail, phone, password: simpleHash(password), provider: 'email' };
     saveUsers(users);
 
     saveSession(lowerEmail);
@@ -154,6 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
+  // ── Email/Password Login ──
   const login = useCallback(async (email: string, password: string) => {
     const users = getUsers();
     const lowerEmail = email.toLowerCase().trim();
@@ -181,12 +230,127 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
+  // ── Google One Tap Login ──
+  const loginWithGoogle = useCallback(async (credential: string) => {
+    const payload = decodeGoogleJWT(credential);
+    if (!payload || !payload.email) {
+      return { error: 'Invalid Google token. Please try again.' };
+    }
+
+    const users = getUsers();
+    const lowerEmail = payload.email.toLowerCase().trim();
+    const existingUser = users[lowerEmail];
+
+    if (existingUser) {
+      // Update avatar if changed
+      if (payload.picture && existingUser.avatar !== payload.picture) {
+        existingUser.avatar = payload.picture;
+        existingUser.provider = 'google';
+        saveUsers(users);
+      }
+    } else {
+      // Create new account from Google
+      const id = 'g_' + payload.sub;
+      users[lowerEmail] = {
+        id,
+        name: payload.name,
+        email: lowerEmail,
+        avatar: payload.picture,
+        provider: 'google',
+      };
+      saveUsers(users);
+    }
+
+    saveSession(lowerEmail);
+    const { password: _, ...safeUser } = users[lowerEmail];
+    setUser(safeUser);
+
+    // Load subscription
+    const subs = getSubscriptions();
+    const sub = subs[lowerEmail];
+    if (sub && sub.active && sub.expires_at && new Date(sub.expires_at) > new Date()) {
+      setSubscription(sub);
+    } else {
+      setSubscription({ active: false });
+    }
+    return {};
+  }, []);
+
+  // ── Forgot Password: generate reset code ──
+  const forgotPassword = useCallback(async (email: string) => {
+    const users = getUsers();
+    const lowerEmail = email.toLowerCase().trim();
+
+    if (!users[lowerEmail]) {
+      return { error: 'No account found with this email.' };
+    }
+    if (users[lowerEmail].provider === 'google') {
+      return { error: 'This account uses Google login. No password to reset.' };
+    }
+
+    const code = generateResetCode();
+    const resets = getResets();
+    resets[lowerEmail] = {
+      code: simpleHash(code),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(), // 15 minutes
+    };
+    saveResets(resets);
+
+    // In production, this would send an email. For localStorage demo, we return the code.
+    return { success: true, resetCode: code };
+  }, []);
+
+  // ── Reset Password with code ──
+  const resetPassword = useCallback(async (email: string, code: string, newPassword: string) => {
+    if (newPassword.length < 6) {
+      return { error: 'Password must be at least 6 characters.' };
+    }
+
+    const users = getUsers();
+    const lowerEmail = email.toLowerCase().trim();
+    const userData = users[lowerEmail];
+
+    if (!userData) {
+      return { error: 'Account not found.' };
+    }
+
+    const resets = getResets();
+    const reset = resets[lowerEmail];
+
+    if (!reset) {
+      return { error: 'No reset request found. Please try again.' };
+    }
+
+    if (new Date(reset.expiresAt) < new Date()) {
+      delete resets[lowerEmail];
+      saveResets(resets);
+      return { error: 'Reset code expired. Please request a new one.' };
+    }
+
+    if (reset.code !== simpleHash(code)) {
+      return { error: 'Incorrect reset code. Please check and try again.' };
+    }
+
+    // Update password
+    userData.password = simpleHash(newPassword);
+    users[lowerEmail] = userData;
+    saveUsers(users);
+
+    // Clean up reset
+    delete resets[lowerEmail];
+    saveResets(resets);
+
+    return { success: true };
+  }, []);
+
+  // ── Logout ──
   const logout = useCallback(() => {
     saveSession(null);
     setUser(null);
     setSubscription({ active: false });
   }, []);
 
+  // ── Activate Subscription ──
   const activateSubscription = useCallback((planId: string) => {
     if (!user) return;
 
@@ -210,7 +374,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, subscription, loading, signup, login, logout, refreshAuth, activateSubscription }}>
+    <AuthContext.Provider value={{
+      user, subscription, loading,
+      signup, login, loginWithGoogle,
+      forgotPassword, resetPassword,
+      logout, refreshAuth, activateSubscription,
+    }}>
       {children}
     </AuthContext.Provider>
   );
