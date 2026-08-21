@@ -68,8 +68,6 @@ const json = (data: unknown, init: ResponseInit = {}) =>
 
 const err = (msg: string, status = 400) => json({ error: msg }, { status });
 
-const PASSWORD_PEPPER = 'sunobolo-secret-key-2024';
-
 async function hashToken(token: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(token + secret);
@@ -78,13 +76,7 @@ async function hashToken(token: string, secret: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + PASSWORD_PEPPER);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+
 
 function extractSessionToken(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null;
@@ -349,9 +341,23 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
   }
 
   try {
-    const crypto_ = await import('crypto');
-    const expectedSig = crypto_.createHmac('sha256', env.RAZORPAY_KEY_SECRET)
-      .update(`${body.razorpay_order_id}|${body.razorpay_payment_id}`).digest('hex');
+    // Web Crypto API HMAC verification (Cloudflare Workers compatible)
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(env.RAZORPAY_KEY_SECRET),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign', 'verify']
+    );
+    const sigBuffer = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(`${body.razorpay_order_id}|${body.razorpay_payment_id}`)
+    );
+    const expectedSig = Array.from(new Uint8Array(sigBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     if (expectedSig !== body.razorpay_signature) {
       await env.DB.prepare(`UPDATE payments SET status = 'failed' WHERE razorpay_order_id = ?`).bind(body.razorpay_order_id).run();
       return err('Payment verification failed', 400);
