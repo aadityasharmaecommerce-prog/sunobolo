@@ -32,7 +32,7 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
 /**
  * Cache-busting version — bump to '14' for Viraj premium voice audio.
  */
-export const AUDIO_VERSION = '14';
+export const AUDIO_VERSION = '17';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 

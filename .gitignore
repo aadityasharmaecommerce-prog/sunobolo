@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Audio files (deployed via wrangler pages deploy — too large for git)
-public/audio/
+# Scripts state/logs (local only)
+scripts/viraj_replace_state.json
+scripts/viraj_replace_log.txt
+scripts/viraj_batch_state.json
+scripts/viraj_batch_log.txt
