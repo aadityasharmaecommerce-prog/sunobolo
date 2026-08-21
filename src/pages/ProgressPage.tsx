@@ -54,7 +54,17 @@ export default function ProgressPage() {
 
       {/* ══════════ BADGES ══════════ */}
       {(() => {
-        const badgeChecks = checkBadges(progress);
+        // Compute courseLessonCounts for course-based badges
+        const courseLessonCounts: Record<string, number> = {};
+        for (const course of allCourses) {
+          const completed = course.lessons.filter((l) => {
+            if (progress.completedLessons[l.id]) return true;
+            const ids = l.sentences.map((s) => s.id);
+            return ids.length > 0 && ids.every((id) => progress.completedSentences[id]);
+          }).length;
+          if (completed > 0) courseLessonCounts[course.id] = completed;
+        }
+        const badgeChecks = checkBadges(progress, courseLessonCounts);
         const earnedCount = badgeChecks.filter((b) => b.earned).length;
         return (
           <div className="card-premium p-5">

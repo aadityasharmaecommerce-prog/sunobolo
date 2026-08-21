@@ -130,7 +130,7 @@ function Practice() {
     stop();
     if (typeof window !== 'undefined' && window.speechSynthesis) window.speechSynthesis.cancel();
     setDone((p) => new Set(p).add(cur.id));
-    markSentenceComplete(cur.id, cur.courseId, cur.lessonId, Math.min(idx + 1, total - 1));
+    markSentenceComplete(cur.id, cur.courseId, freeTrialLesson.id, Math.min(idx + 1, total - 1));
     const progress = getProgress();
     const earned = checkAndPersistBadges(progress);
     if (earned.length > 0) setBadgeQueue((prev) => [...prev, ...earned.slice(0, 3)]);
