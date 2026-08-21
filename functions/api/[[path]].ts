@@ -68,9 +68,19 @@ const json = (data: unknown, init: ResponseInit = {}) =>
 
 const err = (msg: string, status = 400) => json({ error: msg }, { status });
 
+const PASSWORD_PEPPER = 'sunobolo-secret-key-2024';
+
 async function hashToken(token: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(token + secret);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + PASSWORD_PEPPER);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
