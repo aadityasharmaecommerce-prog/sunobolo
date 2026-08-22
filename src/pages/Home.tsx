@@ -82,7 +82,7 @@ function FloatingElements() {
   return (
     <>
       {/* Audio waveform */}
-      <div className="absolute top-8 left-4 float-slow">
+      <div className="absolute top-8 left-4 float-slow hidden sm:block">
         <div className="dark-card-solid !rounded-xl p-2 flex items-center gap-1">
           {[1,2,3,4,5].map(i => (
             <div key={i} className="w-[3px] rounded-full bg-brand-400/80" style={{ height: `${8 + Math.sin(i) * 12}px` }} />
@@ -91,22 +91,22 @@ function FloatingElements() {
       </div>
 
       {/* Microphone icon */}
-      <div className="absolute top-4 right-8 float-medium">
+      <div className="absolute top-4 right-8 float-medium hidden sm:block">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500/30 to-rose-500/20 border border-pink-400/30 flex items-center justify-center">
           <Mic size={16} className="text-pink-300" strokeWidth={2} />
         </div>
       </div>
 
       {/* Sentence card */}
-      <div className="absolute bottom-12 left-2 float-medium" style={{ animationDelay: '1s' }}>
+      <div className="absolute bottom-12 left-2 float-medium hidden sm:block" style={{ animationDelay: '1s' }}>
         <div className="dark-card-solid !rounded-lg px-3 py-2 max-w-[160px]">
-          <p className="text-[9px] text-white/80 font-semibold leading-tight">"I am learning English."</p>
+          <p className="text-[9px] text-white/80 font-semibold leading-tight">\u201cI am learning English.\u201d</p>
           <p className="text-[8px] text-white/40 mt-0.5">मैं अंग्रेज़ी सीख रहा हूँ।</p>
         </div>
       </div>
 
       {/* Speaking/pronunciation card */}
-      <div className="absolute bottom-6 right-4 float-fast" style={{ animationDelay: '0.5s' }}>
+      <div className="absolute bottom-6 right-4 float-fast hidden sm:block" style={{ animationDelay: '0.5s' }}>
         <div className="dark-card-solid !rounded-lg px-3 py-2 flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center">
             <Play size={10} className="text-emerald-300 ml-0.5" fill="currentColor" />
@@ -119,7 +119,7 @@ function FloatingElements() {
       </div>
 
       {/* Learning/graduation icon */}
-      <div className="absolute top-16 right-0 float-fast" style={{ animationDelay: '2s' }}>
+      <div className="absolute top-16 right-0 float-fast hidden sm:block" style={{ animationDelay: '2s' }}>
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/30 to-yellow-500/20 border border-amber-400/30 flex items-center justify-center">
           <GraduationCap size={14} className="text-amber-300" strokeWidth={2} />
         </div>
@@ -206,21 +206,18 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Character illustration area */}
-            <div className="flex-1 w-full max-w-md lg:max-w-lg relative hidden sm:block">
-              {/* ═══ HERO IMAGE PLACEHOLDER ═══
-                  Replace the contents of this div with:
-                  <img src="/images/hero-characters.webp" alt="..." className="w-full h-auto" />
-                  when the character illustration is ready.
-              */}
-              <div className="hero-placeholder aspect-[6/5] w-full" aria-label="Hero character illustration — image to be provided">
-                <div className="relative z-10 text-center px-4">
-                  <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center mx-auto mb-3">
-                    <Headphones size={36} className="text-white/50" strokeWidth={1.5} />
-                  </div>
-                  <p className="text-white/40 text-xs font-semibold">Hero Character Area</p>
-                  <p className="text-white/25 text-[10px] mt-1">Replace with: &lt;img src="/images/hero-characters.webp" /&gt;</p>
-                </div>
+            {/* Right: Character illustration */}
+            <div className="flex-1 w-full max-w-md lg:max-w-lg relative">
+              <div className="relative">
+                <img
+                  src="/images/hero.webp"
+                  alt="SunoBolo — Listen, Speak, Improve"
+                  className="w-full h-auto object-contain max-h-[400px] sm:max-h-[460px]"
+                  loading="eager"
+                  width="600"
+                  height="500"
+                />
+                {/* Floating UI elements overlay */}
                 <FloatingElements />
               </div>
             </div>
