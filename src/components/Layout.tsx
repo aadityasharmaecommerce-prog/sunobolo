@@ -24,12 +24,9 @@ export default function Layout() {
             <img
               src="/images/logo.png"
               alt="SunoBolo"
-              className="h-9 w-auto object-contain brightness-0 invert"
-              style={{ maxHeight: '36px' }}
+              className="h-10 w-auto object-contain brightness-0 invert"
+              style={{ maxHeight: '40px' }}
             />
-            <span className="text-base font-extrabold text-white tracking-tight hidden sm:inline">
-              Suno<span className="text-brand-400">Bolo</span>
-            </span>
           </a>
 
           {/* Desktop Navigation */}

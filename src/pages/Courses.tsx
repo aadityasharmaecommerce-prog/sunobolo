@@ -22,7 +22,7 @@ export default function Courses() {
         <p className="dark-kicker">Choose a course</p>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">Choose Your English Journey</h1>
         <p className="text-white/35 text-sm mt-1.5 max-w-md mx-auto">
-          {subscription.active ? 'Full access active — all courses unlocked' : 'Start free · Upgrade anytime'}
+          {subscription.active ? 'Full access active — all courses unlocked' : '25 free sentences · Upgrade for full access'}
         </p>
       </div>
 
@@ -34,7 +34,12 @@ export default function Courses() {
             <CourseIcon courseId={featured.id} size="lg" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-[10px] font-extrabold text-emerald-300 bg-emerald-500/12 px-2 py-0.5 rounded-full">FREE</span>
+                {!featured.isFree && !subscription.active && (
+                  <span className="text-[10px] font-extrabold text-brand-300 bg-brand-500/12 px-2 py-0.5 rounded-full">PREMIUM</span>
+                )}
+                {!featured.isFree && subscription.active && (
+                  <span className="text-[10px] font-extrabold text-emerald-300 bg-emerald-500/12 px-2 py-0.5 rounded-full">ACTIVE</span>
+                )}
                 <span className="text-[10px] font-extrabold text-white/25 bg-white/5 px-2 py-0.5 rounded-full">RECOMMENDED</span>
               </div>
               <h2 className="font-extrabold text-white text-lg group-hover:text-brand-300 transition-colors">{featured.title}</h2>
@@ -47,8 +52,14 @@ export default function Courses() {
                 <span className="inline-flex items-center gap-1"><Clock size={12} strokeWidth={2} /> ~{featured.estimatedHours}h</span>
               </div>
             </div>
-            <span className="text-xs font-bold text-emerald-300 bg-emerald-500/12 px-4 py-2 rounded-full group-hover:bg-emerald-500/20 transition-colors shrink-0">
-              Start Free →
+            <span className={`text-xs font-bold px-4 py-2 rounded-full transition-colors shrink-0 ${
+              featured.isFree
+                ? 'text-emerald-300 bg-emerald-500/12 group-hover:bg-emerald-500/20'
+                : subscription.active
+                  ? 'text-emerald-300 bg-emerald-500/12 group-hover:bg-emerald-500/20'
+                  : 'text-brand-300 bg-brand-500/12 group-hover:bg-brand-500/20'
+            }`}>
+              {featured.isFree ? 'Start Free →' : subscription.active ? 'Continue →' : 'Unlock Course →'}
             </span>
           </div>
         </button>
