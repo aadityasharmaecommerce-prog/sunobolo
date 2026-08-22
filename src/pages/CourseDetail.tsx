@@ -10,19 +10,19 @@ import { Check, ChevronRight, Clock, ArrowLeft } from 'lucide-react';
 function CourseDetailSkeleton() {
   return (
     <div className="space-y-5 animate-pulse">
-      <div className="rounded-3xl bg-surface-100 h-48" />
-      <div className="card-premium p-5">
-        <div className="h-4 bg-surface-100 rounded w-1/3 mb-3" />
-        <div className="h-2.5 bg-surface-100 rounded-full" />
+      <div className="rounded-3xl dark-skeleton h-48" />
+      <div className="dark-card-page p-5">
+        <div className="h-4 dark-skeleton rounded w-1/3 mb-3" />
+        <div className="h-2.5 dark-skeleton rounded-full" />
       </div>
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="card-premium p-4">
+          <div key={i} className="dark-card-page p-4">
             <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-surface-100" />
+              <div className="w-11 h-11 rounded-xl dark-skeleton" />
               <div className="flex-1">
-                <div className="h-4 bg-surface-100 rounded w-2/3 mb-2" />
-                <div className="h-3 bg-surface-100 rounded w-1/2" />
+                <div className="h-4 dark-skeleton rounded w-2/3 mb-2" />
+                <div className="h-3 dark-skeleton rounded w-1/2" />
               </div>
             </div>
           </div>
@@ -56,12 +56,12 @@ export default function CourseDetail() {
   if (!course) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-surface-100 flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
           <span className="text-2xl">🔍</span>
         </div>
-        <h2 className="text-xl font-extrabold text-gray-900 mt-4">Course not found</h2>
-        <p className="text-gray-500 mt-1 text-sm">The course you are looking for does not exist.</p>
-        <button onClick={() => navigate('/courses')} className="btn-premium btn-premium-gradient px-6 py-3 text-sm rounded-2xl mt-6">
+        <h2 className="text-xl font-extrabold text-white mt-4">Course not found</h2>
+        <p className="text-white/45 mt-1 text-sm">The course you are looking for does not exist.</p>
+        <button onClick={() => navigate('/courses')} className="btn-premium btn-premium-gradient px-6 py-3 text-sm rounded-xl mt-6">
           Browse Courses
         </button>
       </div>
@@ -75,7 +75,6 @@ export default function CourseDetail() {
     return ids.length > 0 && ids.every((id) => progress.completedSentences[id]);
   }).length;
 
-  // Course gradient based on ID
   const COURSE_GRADIENTS: Record<string, string> = {
     'beginner': 'from-emerald-500 to-teal-600',
     'intermediate': 'from-blue-500 to-indigo-600',
@@ -95,19 +94,17 @@ export default function CourseDetail() {
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
+        className="flex items-center gap-2 text-sm text-white/50 hover:text-white font-medium transition-colors"
       >
         <ArrowLeft size={16} strokeWidth={2.5} />
         Back
       </button>
 
-      {/* ── Premium Course Hero ── */}
-      <div className={`relative overflow-hidden rounded-3xl text-white p-5 sm:p-6 shadow-premium-lg bg-gradient-to-br ${heroGradient}`}>
-        {/* Decorative elements */}
+      {/* ── Course Hero ── */}
+      <div className={`relative overflow-hidden rounded-3xl text-white p-5 sm:p-6 bg-gradient-to-br ${heroGradient}`}>
         <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute -left-6 bottom-0 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-        
+
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
             <CourseIcon courseId={course.id} size="lg" />
@@ -131,20 +128,20 @@ export default function CourseDetail() {
       </div>
 
       {/* ── Progress ── */}
-      <div className="card-premium p-5">
+      <div className="dark-card-page p-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold text-gray-900">Your Progress</h2>
-          <span className="text-sm text-gray-500">{completedLessons} / {course.totalLessons} lessons</span>
+          <h2 className="font-bold text-white">Your Progress</h2>
+          <span className="text-sm text-white/45">{completedLessons} / {course.totalLessons} lessons</span>
         </div>
-        <div className="h-2.5 bg-surface-100 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"
+        <div className="dark-progress h-2.5">
+          <div className="dark-progress-fill"
             style={{ width: `${(completedLessons / Math.max(course.totalLessons, 1)) * 100}%` }} />
         </div>
       </div>
 
       {/* ── Lessons ── */}
       <div>
-        <h2 className="text-lg font-extrabold text-gray-900 mb-3">Lessons</h2>
+        <h2 className="text-lg font-extrabold text-white mb-3">Lessons</h2>
         <div className="space-y-2">
           {course.lessons.map((lesson, idx) => {
             const doneCount = lesson.sentences.filter((s) => progress.completedSentences[s.id]).length;
@@ -153,28 +150,27 @@ export default function CourseDetail() {
               <button
                 key={lesson.id}
                 onClick={() => navigate(`/lesson/${course.id}/${lesson.id}`)}
-                className="w-full card-premium card-interactive p-4 text-left group"
+                className="w-full dark-card p-4 text-left group active:scale-[0.99]"
               >
                 <div className="flex items-center gap-4">
-                  {/* Lesson number badge */}
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 ${
                     isDone
                       ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
-                      : 'bg-surface-100 text-surface-500'
+                      : 'bg-white/5 text-white/40 border border-white/10'
                   }`}>
                     {isDone ? <Check size={16} strokeWidth={3} /> : String(idx + 1).padStart(2, '0')}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-700 transition-colors">
+                    <h3 className="font-semibold text-white text-sm group-hover:text-brand-300 transition-colors">
                       {lesson.title}
                     </h3>
-                    <p className="text-[11px] text-gray-500 mt-0.5 inline-flex items-center gap-1.5">
+                    <p className="text-[11px] text-white/35 mt-0.5 inline-flex items-center gap-1.5">
                       <span>{doneCount}/{lesson.sentences.length} sentences</span>
                       <span>·</span>
                       <span className="inline-flex items-center gap-0.5"><Clock size={10} strokeWidth={2} /> ~{lesson.estimatedMinutes} min</span>
                     </p>
                   </div>
-                  <ChevronRight size={16} className="text-surface-300 group-hover:text-surface-500 transition-colors shrink-0" strokeWidth={2} />
+                  <ChevronRight size={16} className="text-white/20 group-hover:text-white/50 transition-colors shrink-0" strokeWidth={2} />
                 </div>
               </button>
             );
