@@ -1,70 +1,88 @@
-# 🎙️ SunoBolo — Voice Consistency Fix (ONE teacher, ONE voice)
+# 🎙️ SunoBolo — Voice System: Sarvam AI Premium Voice
 
-## What changed
+## Voice Architecture
 
-| Part of guided flow | Before | After |
+| Part of guided flow | Voice | Engine |
 |---|---|---|
-| English sentence | MP3 — `en-IN-NeerjaNeural` (English-only voice) | MP3 — `hi-IN-SwaraNeural` (same voice as Hindi) |
-| Hindi meaning ("मतलब ...") | Browser TTS — device-dependent Hindi voice | MP3 — `hi-IN-SwaraNeural` (SAME voice) |
-| "मेरे साथ 3 बार रिपीट करो।" | Browser TTS — same device Hindi voice | MP3 — `hi-IN-SwaraNeural` (SAME voice) |
-| 3 repetitions | Same English MP3 (Neerja) | Same English MP3 (Swara) — identical voice, zero switching |
+| English sentence | shubh (Male, Indian) | Sarvam AI bulbul:v3 |
+| Hindi meaning ("मतलब ...") | shubh (Male, Indian) | Sarvam AI bulbul:v3 |
+| "मेरे साथ 3 बार रिपीट करो।" | shubh (Male, Indian) | Sarvam AI bulbul:v3 |
+| 3 repetitions | Same English MP3 | Sarvam AI bulbul:v3 |
 
-**Result: the complete guided flow is now ONE speaker (Swara — female,
-native Hindi, natural Indian English).**
+**Result: the complete guided flow is ONE speaker (Shubh — premium Indian male voice).**
 
-Why the old voice could not stay: `en-IN-NeerjaNeural` cannot speak Hindi at
-all — it produces no audio for Devanagari text (verified). Keeping it would
-mean two different teachers, which was the bug. `hi-IN-SwaraNeural` is
-bilingual, so every part of the flow comes from the same person.
+## What changed (v18)
+
+- **Removed**: All Viraj/ElevenLabs George voice audio
+- **Added**: All sentences regenerated with Sarvam AI (shubh, bulbul:v3)
+- **English**: `en-IN` language code — natural Indian-friendly accent
+- **Hindi**: `hi-IN` language code — native Hindi voice
+- **Instruction**: Also regenerated with Sarvam Hindi voice
+- **Audio version**: Bumped to `18` for cache busting
 
 ## Files
 
 - `src/config/voiceConfig.ts` — ONE centralized voice configuration.
-  No component picks its own voice anymore.
-- `src/hooks/useSentenceAudio.ts` — v8 engine: MP3-first for English +
-  Hindi + instruction; browser TTS is only a fallback and also locks ONE
-  bilingual voice for every language.
-- `public/audio/<courseId>/<id>.mp3` — regenerated English (same paths,
-  sentence→file mapping UNCHANGED).
-- `public/audio/<courseId>/<id>.hindi.mp3` — NEW: Hindi meanings.
-- `public/audio/shared/repeat-instruction.mp3` — NEW: instruction.
-- `scripts/regenerate_voice.py` — regenerates everything with one command.
-- `package.json` — `npm run audio:gen` now uses the new script.
+  `AUDIO_VERSION = '18'` forces fresh audio downloads.
+- `src/hooks/useSentenceAudio.ts` — Audio engine: MP3-first with
+  browser TTS fallback (ONE bilingual voice).
+- `public/audio/<courseId>/<id>.mp3` — English sentences (Sarvam)
+- `public/audio/<courseId>/<id>.hindi.mp3` — Hindi meanings (Sarvam)
+- `public/audio/shared/repeat-instruction.mp3` — Instruction (Sarvam)
+- `scripts/sarvam_replace_all.py` — **REGENERATE ALL** audio with Sarvam AI
 
-## How to apply (deploy)
+## How to regenerate audio
 
-1. Download `sunobolo-voice-fix.zip` from the workspace.
-2. Extract it INTO your repo root (so the `sunobolo/` folder gets the new
-   files). Overwrite when asked.
-3. Commit and push:
+### Generate missing only (safe, resume-ready):
+```bash
+python3 scripts/sarvam_replace_all.py
+```
 
+### Force replace ALL existing audio:
+```bash
+python3 scripts/sarvam_replace_all.py --force
+```
+
+### Preview without generating:
+```bash
+python3 scripts/sarvam_replace_all.py --dry-run
+```
+
+### Generate specific course only:
+```bash
+python3 scripts/sarvam_replace_all.py --course beginner
+python3 scripts/sarvam_replace_all.py --course free-trial
+```
+
+### With custom API key:
+```bash
+SARVAM_API_KEY=your_key python3 scripts/sarvam_replace_all.py --force
+```
+
+## API Details
+
+- **Provider**: Sarvam AI (api.sarvam.ai)
+- **Model**: bulbul:v3
+- **Speaker**: shubh (Male, Indian, Natural)
+- **Sample Rate**: 24000 Hz
+- **Pace**: 0.95 (natural speed)
+- **Format**: MP3 (iOS-compatible)
+
+## Deploy
+
+1. Regenerate audio with the script above
+2. Commit and push:
 ```bash
 git add -A
-git commit -m "fix: one consistent voice (hi-IN-SwaraNeural) for entire guided flow"
+git commit -m "feat: replace all voice with Sarvam AI premium (shubh) voice"
 git push
 ```
+3. Cloudflare Pages auto-deploys
 
-4. Cloudflare Pages settings (already correct from the deploy fix):
-   Root directory `sunobolo` | Build command `npm run build` | Output `dist`
+## Technical Notes
 
-## Regenerate audio in the future
-
-```bash
-pip install edge-tts
-python3 scripts/regenerate_voice.py
-```
-
-With `ffmpeg` on PATH, leading/trailing silence is trimmed (internal sentence
-pauses are preserved for learners) and files are smaller. Without ffmpeg,
-audio stays 48 kbps — still correct.
-
-## Honest technical notes
-
-- Production (Cloudflare Pages): YES, one voice everywhere — all MP3s are
-  generated with the same edge-tts voice id.
-- Offline/missing-file fallback (browser TTS): the app uses ONE single
-  bilingual voice (hi-IN preferred) for all text. That fallback voice is a
-  different speaker than Swara (browser voices are device-dependent and
-  cannot be shipped), but it is still ONE consistent voice — never an
-  English/Hindi pair.
-- Sentence/audio mapping was NOT changed; sentence content was NOT changed.
+- Sarvam AI API key: stored in `scripts/sarvam_replace_all.py` or env `SARVAM_API_KEY`
+- Rate limiting: script includes automatic retry with exponential backoff
+- Progress saved every 10 sentences for resume capability
+- Browser TTS fallback uses ONE bilingual voice (hi-IN preferred) — never English/Hindi pair
+- Old Viraj scripts remain in `scripts/` for historical reference only

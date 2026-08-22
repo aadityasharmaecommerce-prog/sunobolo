@@ -30,6 +30,7 @@ export const PLANS = {
     features: [
       'Full App Access',
       '5,000+ English Sentences',
+      '📘 English Grammar / 12 Tenses',
       'Beginner · Daily Life · Interview',
       'Business · Corporate · Travel',
       'School · Kids',
@@ -50,6 +51,7 @@ export const PLANS = {
     features: [
       'Full App Access',
       '5,000+ English Sentences',
+      '📘 English Grammar / 12 Tenses',
       'All Courses',
       'Hindi Meaning',
       'Listen & Speak Practice',
@@ -68,6 +70,7 @@ export const PLANS = {
     features: [
       'Full App Access',
       '5,000+ English Sentences',
+      '📘 English Grammar / 12 Tenses',
       'All Courses',
       'Hindi Meaning',
       'Listen & Speak Practice',

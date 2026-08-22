@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunoBolo - Razorpay Test</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        h2 { font-size: 18px; margin-bottom: 12px; }
+        .plan { border: 2px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+        .plan:hover { border-color: #6366f1; background: #f5f3ff; }
+        .plan.selected { border-color: #6366f1; background: #f5f3ff; }
+        .plan h3 { font-size: 16px; margin-bottom: 4px; }
+        .plan p { color: #64748b; font-size: 14px; }
+        .plan .price { font-size: 24px; font-weight: bold; color: #6366f1; }
+        button { background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; }
+        button:hover { background: #4f46e5; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+        .status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; }
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .info { background: #e0e7ff; color: #3730a3; }
+        .test-card { background: #fef3c7; border: 1px solid #fcd34d; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🎙️ SunoBolo - Razorpay Test</h1>
+            <p style="color: #64748b; margin-bottom: 16px;">Test payment integration before going live</p>
+            
+            <h2>Select Plan</h2>
+            <div class="plan selected" onclick="selectPlan('three_month', 59900, '3 Months')" id="plan-three_month">
+                <div class="flex">
+                    <div>
+                        <h3>3 Months</h3>
+                        <p>Full access to all courses</p>
+                    </div>
+                    <div class="price">₹599</div>
+                </div>
+            </div>
+            
+            <div class="plan" onclick="selectPlan('six_month', 99900, '6 Months')" id="plan-six_month">
+                <div class="flex">
+                    <div>
+                        <h3>6 Months</h3>
+                        <p>Best value for learners</p>
+                    </div>
+                    <div class="price">₹999</div>
+                </div>
+            </div>
+            
+            <div class="plan" onclick="selectPlan('one_year', 170000, '1 Year')" id="plan-one_year">
+                <div class="flex">
+                    <div>
+                        <h3>1 Year</h3>
+                        <p>Complete learning journey</p>
+                    </div>
+                    <div class="price">₹1,700</div>
+                </div>
+            </div>
+            
+            <button onclick="startPayment()" id="pay-btn">
+                Pay Now
+            </button>
+            
+            <div id="status"></div>
+            
+            <div class="test-card">
+                <strong>🧪 Test Card Details:</strong><br>
+                Card: 4111 1111 1111 1111<br>
+                Expiry: Any future date<br>
+                CVV: Any 3 digits<br>
+                OTP: 1234
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Test Results</h2>
+            <div id="results">No payments tested yet</div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = 'three_month';
+        let selectedAmount = 59900;
+        let testResults = [];
+
+        function selectPlan(planId, amount, name) {
+            selectedPlan = planId;
+            selectedAmount = amount;
+            
+            // Update UI
+            document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+            document.getElementById('plan-' + planId).classList.add('selected');
+            document.getElementById('pay-btn').textContent = `Pay ${name} — ₹${amount/100}`;
+        }
+
+        async function startPayment() {
+            const btn = document.getElementById('pay-btn');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            status.innerHTML = '<div class="info">Creating order...</div>';
+
+            try {
+                // 1. Create order
+                const orderRes = await fetch('/api/payment/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ planId: selectedPlan }),
+                });
+
+                if (!orderRes.ok) {
+                    const err = await orderRes.json();
+                    throw new Error(err.error || 'Failed to create order');
+                }
+
+                const orderData = await orderRes.json();
+                status.innerHTML = `<div class="info">Order created: ${orderData.orderId}</div>`;
+
+                // 2. Open Razorpay
+                const options = {
+                    key: orderData.keyId,
+                    amount: orderData.amount,
+                    currency: orderData.currency || 'INR',
+                    name: 'SunoBolo English',
+                    description: `${selectedPlan} — Test Payment`,
+                    order_id: orderData.orderId,
+                    handler: async function(response) {
+                        status.innerHTML = `<div class="info">Payment successful! Verifying...</div>`;
+                        
+                        // 3. Verify payment
+                        try {
+                            const verifyRes = await fetch('/api/payment/verify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    planId: selectedPlan,
+                                }),
+                            });
+
+                            if (verifyRes.ok) {
+                                status.innerHTML = '<div class="success">✅ Payment verified successfully! Subscription activated.</div>';
+                                addResult('success', selectedPlan, response.razorpay_payment_id);
+                            } else {
+                                const err = await verifyRes.json();
+                                status.innerHTML = `<div class="error">❌ Verification failed: ${err.error}</div>`;
+                                addResult('error', selectedPlan, err.error);
+                            }
+                        } catch (e) {
+                            status.innerHTML = `<div class="error">❌ Verification error: ${e.message}</div>`;
+                            addResult('error', selectedPlan, e.message);
+                        }
+                    },
+                    prefill: {
+                        name: 'Test User',
+                        email: 'test@sunoBolo.com',
+                    },
+                    theme: {
+                        color: '#6366f1',
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            status.innerHTML = '<div class="info">Payment cancelled</div>';
+                            btn.disabled = false;
+                            btn.textContent = 'Pay Now';
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function(response) {
+                    status.innerHTML = `<div class="error">❌ Payment failed: ${response.error.description}</div>`;
+                    addResult('failed', selectedPlan, response.error.description);
+                    btn.disabled = false;
+                    btn.textContent = 'Pay Now';
+                });
+                rzp.open();
+
+            } catch (error) {
+                status.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                addResult('error', selectedPlan, error.message);
+                btn.disabled = false;
+                btn.textContent = 'Pay Now';
+            }
+        }
+
+        function addResult(type, plan, details) {
+            testResults.unshift({
+                time: new Date().toLocaleTimeString(),
+                type,
+                plan,
+                details
+            });
+            updateResults();
+        }
+
+        function updateResults() {
+            const el = document.getElementById('results');
+            if (testResults.length === 0) {
+                el.innerHTML = 'No payments tested yet';
+                return;
+            }
+            el.innerHTML = testResults.map(r => 
+                `<div style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+                    <strong>${r.type === 'success' ? '✅' : '❌'} ${r.plan}</strong>
+                    <div style="font-size: 12px; color: #64748b;">${r.time} — ${r.details}</div>
+                </div>`
+            ).join('');
+        }
+    </script>
+</body>
+</html>

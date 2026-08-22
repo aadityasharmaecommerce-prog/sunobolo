@@ -28,3 +28,11 @@ scripts/viraj_replace_state.json
 scripts/viraj_replace_log.txt
 scripts/viraj_batch_state.json
 scripts/viraj_batch_log.txt
+scripts/sarvam_replace_state.json
+scripts/sarvam_output.log
+
+# Environment files (API keys — NEVER commit)
+.env
+.env.local
+.env.production
+.env.*.local

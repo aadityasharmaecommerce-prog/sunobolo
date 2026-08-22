@@ -1,10 +1,10 @@
 /**
  * SunoBolo — ONE central voice configuration for the ENTIRE guided flow.
  *
- * Audio: gTTS (Google Translate TTS) — 44.1kHz MP3, iOS-compatible
- * English: Google TTS (en) — natural Indian-friendly accent
- * Hindi: Google TTS (hi) — native Hindi voice
- * Same Google TTS engine for both — consistent quality.
+ * Audio: Sarvam AI (bulbul:v3, shubh speaker) — 24kHz MP3, premium quality
+ * English: Sarvam AI (en-IN) — natural Indian-friendly accent
+ * Hindi: Sarvam AI (hi-IN) — native Hindi voice
+ * Same Sarvam voice for both — consistent, premium quality.
  */
 
 export const PRACTICE_VOICE = {
@@ -18,10 +18,10 @@ export const PRACTICE_VOICE = {
  * REDUCED pauses for natural, engaging flow.
  */
 export const PRACTICE_TIMING = {
-  englishToHindi: 1000,
-  hindiToInstruction: 1000,
-  instructionToRepeat: 1500,
-  betweenRepeats: 1500,
+  englishToHindi: 400,
+  hindiToInstruction: 600,
+  instructionToRepeat: 800,
+  betweenRepeats: 1200,
 } as const;
 
 export const SPEECH_RATE = 0.85;
@@ -30,9 +30,9 @@ export const REPEAT_INSTRUCTION_TEXT = 'मेरे साथ 3 बार र�
 export const HINDI_MEANING_PREFIX = 'मतलब';
 
 /**
- * Cache-busting version — bump to '14' for Viraj premium voice audio.
+ * Cache-busting version — bump to '18' for Sarvam AI premium voice audio.
  */
-export const AUDIO_VERSION = '17';
+export const AUDIO_VERSION = '22';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 

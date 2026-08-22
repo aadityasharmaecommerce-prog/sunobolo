@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Home, BookOpen, Download, Mic, TrendingUp, User } from 'lucide-react';
 
 const tabs = [
-  { id: 'home', label: 'Home', icon: '🏠', path: '/' },
-  { id: 'learn', label: 'Learn', icon: '📚', path: '/courses' },
-  { id: 'install', label: 'Install', icon: '📲', path: '__install__' },
-  { id: 'practice', label: 'Practice', icon: '🎤', path: '/free-trial' },
-  { id: 'progress', label: 'Progress', icon: '📈', path: '/progress' },
-  { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
+  { id: 'home', label: 'Home', icon: Home, path: '/' },
+  { id: 'learn', label: 'Learn', icon: BookOpen, path: '/courses' },
+  { id: 'install', label: 'Install', icon: Download, path: '__install__' },
+  { id: 'practice', label: 'Practice', icon: Mic, path: '/free-trial' },
+  { id: 'progress', label: 'Progress', icon: TrendingUp, path: '/progress' },
+  { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
 ] as const;
 
 interface BeforeInstallPromptEvent extends Event {
@@ -84,65 +85,65 @@ export default function BottomNav() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowIOSGuide(false)}>
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-4">
-              <div className="text-4xl mb-2">📲</div>
-              <h3 className="text-lg font-bold text-gray-900">Install SunoBolo</h3>
+              <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mx-auto mb-3">
+                <Download size={24} className="text-brand-600" strokeWidth={2} />
+              </div>
+              <h3 className="text-lg font-extrabold text-gray-900">Install SunoBolo</h3>
+              <p className="text-sm text-gray-500 mt-1">Add to your home screen for the best experience</p>
             </div>
             <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
-                <span className="text-lg">1️⃣</span>
+              <div className="flex items-start gap-3 p-3 bg-surface-50 rounded-xl">
+                <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center shrink-0">1</span>
                 <span>Tap the <strong>Share</strong> button (box with arrow) at the bottom of Safari</span>
               </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
-                <span className="text-lg">2️⃣</span>
+              <div className="flex items-start gap-3 p-3 bg-surface-50 rounded-xl">
+                <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center shrink-0">2</span>
                 <span>Scroll down and select <strong>"Add to Home Screen"</strong></span>
               </div>
-              <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
-                <span className="text-lg">3️⃣</span>
+              <div className="flex items-start gap-3 p-3 bg-surface-50 rounded-xl">
+                <span className="w-6 h-6 rounded-full bg-brand-100 text-brand-700 text-xs font-bold flex items-center justify-center shrink-0">3</span>
                 <span>Tap <strong>"Add"</strong> in the top-right corner</span>
               </div>
             </div>
-            <button onClick={() => setShowIOSGuide(false)} className="w-full mt-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold text-sm">Got it!</button>
+            <button onClick={() => setShowIOSGuide(false)} className="w-full mt-4 py-3 btn-premium btn-premium-gradient rounded-xl text-sm font-bold">
+              Got it
+            </button>
           </div>
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 pb-[max(env(safe-area-inset-bottom),10px)] pointer-events-none">
+      {/* ── Premium Floating Bottom Nav ── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 pb-[max(env(safe-area-inset-bottom),8px)] pointer-events-none">
         <div className="max-w-xl mx-auto px-3 pointer-events-auto">
-          <div className="glass rounded-2xl border border-white/70 shadow-[0_8px_32px_-6px_rgb(15_23_42_/_0.18)] flex items-center justify-around px-1.5 py-1.5">
+          <div className="glass rounded-2xl border border-surface-200/80 shadow-[0_-2px_16px_rgba(15,23,42,0.06),0_8px_32px_-6px_rgba(15,23,42,0.12)] flex items-center justify-around px-1 py-1.5">
             {visibleTabs.map((tab) => {
               const isActive = tab.id !== 'install' && location.pathname === tab.path;
               const isInstall = tab.id === 'install';
+              const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabClick(tab)}
                   aria-label={tab.label}
-                  className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-2 sm:px-3 rounded-xl transition-all duration-300 ${
+                  className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-2.5 sm:px-3 rounded-xl transition-all duration-200 ${
                     isInstall
-                      ? 'text-indigo-600'
+                      ? 'text-brand-600'
                       : isActive
-                        ? 'text-brand-700'
-                        : 'text-gray-400 hover:text-gray-600'
+                        ? 'nav-pill-active'
+                        : 'text-surface-400 hover:text-surface-600'
                   }`}
                 >
-                  {isActive && (
-                    <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-to-r from-brand-500 to-accent-500" />
-                  )}
-                  <span
-                    className={`text-2xl leading-none transition-transform duration-300 ${
-                      isActive ? 'scale-110 -translate-y-0.5' : ''
-                    }`}
-                  >
-                    {tab.icon}
-                  </span>
-                  <span className={`text-[10px] sm:text-[11px] font-semibold ${
-                    isInstall ? 'text-indigo-600 font-bold' : isActive ? 'text-brand-700' : ''
+                  <Icon
+                    size={20}
+                    strokeWidth={isActive ? 2.5 : 1.8}
+                    className={`transition-all duration-200 ${isActive ? 'scale-105' : ''}`}
+                    fill={isActive ? 'currentColor' : 'none'}
+                  />
+                  <span className={`text-[10px] sm:text-[11px] font-semibold leading-none mt-0.5 ${
+                    isInstall ? 'text-brand-600 font-bold' : isActive ? 'text-brand-700' : ''
                   }`}>
                     {tab.label}
                   </span>
-                  {isActive && (
-                    <span className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-b from-brand-50 to-accent-50 border border-brand-100/80" />
-                  )}
                 </button>
               );
             })}

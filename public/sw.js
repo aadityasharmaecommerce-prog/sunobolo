@@ -12,8 +12,8 @@
  * - Never caches POST requests or sensitive endpoints
  */
 
-const CACHE_NAME = 'sunobolo-v1';
-const AUDIO_CACHE = 'sunobolo-audio-v1';
+const CACHE_NAME = 'sunobolo-v2';
+const AUDIO_CACHE = 'sunobolo-audio-v2';
 
 // App shell assets to pre-cache on install
 const SHELL_ASSETS = [
@@ -119,16 +119,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── Static assets (JS, CSS, images): Cache-first ──
+  // ── Static assets (JS, CSS, images): Stale-while-revalidate ──
+  // Serves cached version fast, but fetches fresh version in background
+  // This prevents white screen after deployment (old JS references new HTML)
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        }
-        return response;
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(request).then((cached) => {
+        const fetchPromise = fetch(request).then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        }).catch(() => cached);
+        return cached || fetchPromise;
       });
     })
   );

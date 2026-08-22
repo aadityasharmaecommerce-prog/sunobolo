@@ -1,6 +1,7 @@
-import { allCourses } from '../data/content';
+import { courseMetadata } from '../data/content';
 import { computeStreak, getProgress } from '../lib/progress';
 import { checkBadges } from '../config/badges';
+import { TrendingUp, BookOpen, Flame, Clock, Award } from 'lucide-react';
 
 export default function ProgressPage() {
   const progress = getProgress();
@@ -8,6 +9,8 @@ export default function ProgressPage() {
   const lessonsDone = Object.keys(progress.completedLessons).length;
   const streak = computeStreak(progress.dailyActivity);
   const minutes = Math.max(sentencesDone * 2, 0);
+  const badgeChecks = checkBadges(progress);
+  const earnedBadges = badgeChecks.filter(b => b.earned);
 
   const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   const today = new Date();
@@ -18,142 +21,105 @@ export default function ProgressPage() {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${d.getFullYear()}-${m}-${day}`;
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${m}-${dd}`;
   });
+  const weekActivity = weekKeys.map(k => progress.dailyActivity.includes(k));
+  const isToday = (i: number) => i === dow;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Your Progress</h1>
-        <p className="text-gray-500 mt-1">Track your English learning journey</p>
+    <div className="space-y-5 animate-fade-in">
+      <div className="text-center pt-2">
+        <p className="kicker">Your progress</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Learning Dashboard</h1>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="card p-4 text-center">
-          <span className="text-3xl">📚</span>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{lessonsDone}</p>
-          <p className="text-xs text-gray-500">Lessons Done</p>
-        </div>
-        <div className="card p-4 text-center">
-          <span className="text-3xl">💬</span>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{sentencesDone}</p>
-          <p className="text-xs text-gray-500">Sentences Practiced</p>
-        </div>
-        <div className="card p-4 text-center">
-          <span className="text-3xl">🔥</span>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{streak}</p>
-          <p className="text-xs text-gray-500">Day Streak</p>
-        </div>
-        <div className="card p-4 text-center">
-          <span className="text-3xl">⏱️</span>
-          <p className="text-2xl font-bold text-gray-900 mt-2">~{minutes}</p>
-          <p className="text-xs text-gray-500">Minutes Practiced</p>
+        {[
+          { value: sentencesDone, label: 'Sentences Done', Icon: BookOpen, color: 'text-brand-600', bg: 'bg-brand-50' },
+          { value: `${streak}d`, label: 'Day Streak', Icon: Flame, color: 'text-orange-600', bg: 'bg-orange-50' },
+          { value: `${minutes}m`, label: 'Practice Time', Icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { value: lessonsDone, label: 'Lessons Done', Icon: TrendingUp, color: 'text-success-600', bg: 'bg-success-50' },
+        ].map(s => (
+          <div key={s.label} className="card-premium p-4 text-center">
+            <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mx-auto mb-2`}>
+              <s.Icon size={18} className={s.color} strokeWidth={2} />
+            </div>
+            <p className="text-xl font-extrabold text-gray-900">{s.value}</p>
+            <p className="text-[11px] text-gray-500 font-medium mt-0.5">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Weekly Activity */}
+      <div className="card-premium p-5">
+        <h2 className="font-bold text-gray-900 mb-3">This Week</h2>
+        <div className="flex items-center justify-between gap-1">
+          {weekDays.map((day, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5 flex-1">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                weekActivity[i]
+                  ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white'
+                  : isToday(i)
+                  ? 'bg-brand-100 text-brand-700 border border-brand-300'
+                  : 'bg-surface-100 text-surface-400'
+              }`}>
+                {weekActivity[i] ? '✓' : day}
+              </div>
+              <span className={`text-[10px] font-semibold ${isToday(i) ? 'text-brand-700' : 'text-surface-400'}`}>{day}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* ══════════ BADGES ══════════ */}
-      {(() => {
-        // Compute courseLessonCounts for course-based badges
-        const courseLessonCounts: Record<string, number> = {};
-        for (const course of allCourses) {
-          const completed = course.lessons.filter((l) => {
-            if (progress.completedLessons[l.id]) return true;
-            const ids = l.sentences.map((s) => s.id);
-            return ids.length > 0 && ids.every((id) => progress.completedSentences[id]);
-          }).length;
-          if (completed > 0) courseLessonCounts[course.id] = completed;
-        }
-        const badgeChecks = checkBadges(progress, courseLessonCounts);
-        const earnedCount = badgeChecks.filter((b) => b.earned).length;
-        return (
-          <div className="card-premium p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h2 className="font-bold text-gray-900">Achievements</h2>
-                <p className="text-[11px] text-gray-500 mt-0.5">{earnedCount} of {badgeChecks.length} unlocked</p>
+      {/* Badges */}
+      {earnedBadges.length > 0 && (
+        <div className="card-premium p-5">
+          <h2 className="font-bold text-gray-900 mb-3 inline-flex items-center gap-2">
+            <Award size={16} strokeWidth={2} className="text-amber-500" />
+            Badges Earned
+          </h2>
+          <div className="grid grid-cols-3 gap-2">
+            {earnedBadges.map(bc => (
+              <div key={bc.badge.id} className="text-center p-3 bg-surface-50 rounded-xl">
+                <div className="text-2xl mb-1">{bc.badge.emoji}</div>
+                <p className="text-[11px] font-bold text-gray-900">{bc.badge.name}</p>
               </div>
-              <span className="text-2xl">🏆</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {badgeChecks.map(({ badge, earned }) => (
-                <div
-                  key={badge.id}
-                  className={`relative flex flex-col items-center p-3 rounded-xl transition-all ${
-                    earned
-                      ? 'bg-gradient-to-b from-brand-50 to-accent-50 border border-brand-100'
-                      : 'bg-gray-50 border border-gray-100 opacity-50 grayscale'
-                  }`}
-                >
-                  <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl mb-1.5 ${
-                      earned
-                        ? `bg-gradient-to-br ${badge.gradient} shadow-md`
-                        : 'bg-gray-200'
-                    }`}
-                  >
-                    {badge.emoji}
-                  </div>
-                  <p className="text-[11px] font-bold text-gray-800 text-center leading-tight">{badge.name}</p>
-                  <p className="text-[10px] text-gray-400 text-center leading-tight mt-0.5 line-clamp-2">{badge.description}</p>
-                  {earned && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
-                      ✓
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
-        );
-      })()}
+        </div>
+      )}
 
-      <div className="card p-5">
-        <h2 className="font-bold text-gray-900 mb-3">Overall Learning</h2>
-        <div className="space-y-4">
-          {allCourses.map((course) => {
-            const done = course.lessons.filter((l) => {
-              if (progress.completedLessons[l.id]) return true;
-              const ids = l.sentences.map((s) => s.id);
-              return ids.length > 0 && ids.every((id) => progress.completedSentences[id]);
-            }).length;
-            const pct = course.totalLessons === 0 ? 0 : Math.round((done / course.totalLessons) * 100);
+      {/* Course Progress */}
+      <div className="card-premium p-5">
+        <h2 className="font-bold text-gray-900 mb-3">Course Progress</h2>
+        <div className="space-y-3">
+          {courseMetadata.map(course => {
+            const totalSentences = course.totalSentences;
+            // Count completed sentences for this course from progress
+            let doneSentences = 0;
+            Object.keys(progress.completedSentences).forEach(sentId => {
+              if (sentId.startsWith(course.id + '-') && progress.completedSentences[sentId]) {
+                doneSentences++;
+              }
+            });
+            const pct = totalSentences > 0 ? (doneSentences / totalSentences) * 100 : 0;
+            if (pct === 0) return null;
             return (
               <div key={course.id}>
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="font-medium text-gray-700">{course.title}</span>
-                  <span className="text-gray-500">{done} / {course.totalLessons}</span>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-semibold text-gray-700">{course.title}</span>
+                  <span className="text-xs text-gray-500">{doneSentences}/{totalSentences}</span>
                 </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="card p-5">
-        <h2 className="font-bold text-gray-900 mb-3">This Week</h2>
-        <div className="flex justify-between">
-          {weekDays.map((day, i) => {
-            const active = progress.dailyActivity.includes(weekKeys[i]);
-            return (
-              <div key={`${day}-${i}`} className="flex flex-col items-center gap-1">
-                <span className="text-xs text-gray-400">{day}</span>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm ${active ? 'bg-brand-100 text-brand-700 font-bold' : 'bg-gray-100 text-gray-300'}`}>
-                  {active ? '✓' : ''}
+                <div className="h-2 bg-surface-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%` }} />
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
-
-      <div className="card p-5 text-center">
-        <span className="text-4xl">💪</span>
-        <h3 className="font-bold text-gray-900 mt-2">Keep Going!</h3>
-        <p className="text-sm text-gray-500 mt-1">Practice 10-15 minutes daily for best results</p>
       </div>
     </div>
   );

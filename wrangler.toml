@@ -10,3 +10,4 @@ migrations_dir = "migrations"
 
 [vars]
 ENVIRONMENT = "production"
+APP_BASE_URL = "https://sunobolo.in"

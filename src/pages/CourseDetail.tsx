@@ -1,19 +1,67 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { allCourses } from '../data/content';
+import { useState, useEffect } from 'react';
+import { loadCourse } from '../data/content';
+import type { CourseData } from '../data/content';
 import { getProgress } from '../lib/progress';
+import CourseIcon from '../components/CourseIcon';
+import { Check, ChevronRight, Clock } from 'lucide-react';
+
+/* ── Loading skeleton ── */
+function CourseDetailSkeleton() {
+  return (
+    <div className="space-y-5 animate-pulse">
+      <div className="rounded-3xl bg-surface-100 h-48" />
+      <div className="card-premium p-5">
+        <div className="h-4 bg-surface-100 rounded w-1/3 mb-3" />
+        <div className="h-2.5 bg-surface-100 rounded-full" />
+      </div>
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="card-premium p-4">
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-surface-100" />
+              <div className="flex-1">
+                <div className="h-4 bg-surface-100 rounded w-2/3 mb-2" />
+                <div className="h-3 bg-surface-100 rounded w-1/2" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const course = allCourses.find((c) => c.id === courseId);
+  const [course, setCourse] = useState<CourseData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!courseId) { setLoading(false); return; }
+    let cancelled = false;
+    setLoading(true);
+    loadCourse(courseId).then((c) => {
+      if (!cancelled) {
+        setCourse(c);
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [courseId]);
+
+  if (loading) return <CourseDetailSkeleton />;
 
   if (!course) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <span className="text-4xl">🔍</span>
-        <h2 className="text-xl font-bold text-gray-900 mt-4">Course not found</h2>
-        <p className="text-gray-500 mt-1">The course you are looking for does not exist.</p>
-        <button onClick={() => navigate('/courses')} className="btn-primary btn-md mt-6">
+        <div className="w-16 h-16 rounded-2xl bg-surface-100 flex items-center justify-center mx-auto mb-4">
+          <span className="text-2xl">🔍</span>
+        </div>
+        <h2 className="text-xl font-extrabold text-gray-900 mt-4">Course not found</h2>
+        <p className="text-gray-500 mt-1 text-sm">The course you are looking for does not exist.</p>
+        <button onClick={() => navigate('/courses')} className="btn-premium btn-premium-gradient px-6 py-3 text-sm rounded-2xl mt-6">
           Browse Courses
         </button>
       </div>
@@ -27,43 +75,67 @@ export default function CourseDetail() {
     return ids.length > 0 && ids.every((id) => progress.completedSentences[id]);
   }).length;
 
+  // Course gradient based on ID
+  const COURSE_GRADIENTS: Record<string, string> = {
+    'beginner': 'from-emerald-500 to-teal-600',
+    'intermediate': 'from-blue-500 to-indigo-600',
+    'advanced': 'from-purple-500 to-violet-700',
+    'daily-life': 'from-amber-500 to-orange-600',
+    'business': 'from-sky-500 to-blue-700',
+    'corporate': 'from-slate-600 to-gray-800',
+    'interview': 'from-rose-500 to-pink-700',
+    'kids': 'from-pink-500 to-fuchsia-600',
+    'school': 'from-indigo-500 to-blue-700',
+    'travel': 'from-cyan-500 to-teal-600',
+  };
+  const heroGradient = COURSE_GRADIENTS[courseId || ''] || 'from-brand-500 to-accent-600';
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="card p-6 bg-gradient-to-br from-brand-500 to-accent-500 text-white border-0">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
-            {course.icon}
+    <div className="space-y-5 animate-fade-in">
+      {/* ── Premium Course Hero ── */}
+      <div className={`relative overflow-hidden rounded-3xl text-white p-5 sm:p-6 shadow-premium-lg bg-gradient-to-br ${heroGradient}`}>
+        {/* Decorative elements */}
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -left-6 bottom-0 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-3">
+            <CourseIcon courseId={course.id} size="lg" />
+            <div>
+              <h1 className="text-xl font-extrabold">{course.title}</h1>
+              <p className="text-white/70 text-sm">{course.difficulty} · {course.totalLessons} lessons</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold">{course.title}</h1>
-            <p className="text-white/70 text-sm">{course.difficulty} · {course.totalLessons} lessons</p>
+          <p className="text-white/80 text-sm leading-relaxed">{course.description}</p>
+          <div className="flex items-center gap-4 mt-3 text-sm text-white/60">
+            <span className="inline-flex items-center gap-1">{course.totalSentences} sentences</span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1"><Clock size={12} strokeWidth={2} /> ~{course.estimatedHours} hours</span>
           </div>
+          {course.isFree && (
+            <div className="mt-3 inline-flex bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold">
+              Free Course
+            </div>
+          )}
         </div>
-        <p className="text-white/80 text-sm">{course.description}</p>
-        <div className="flex items-center gap-4 mt-4 text-sm text-white/70">
-          <span>{course.totalSentences} sentences</span>
-          <span>·</span>
-          <span>~{course.estimatedHours} hours</span>
-        </div>
-        {course.isFree && (
-          <div className="mt-3 inline-flex bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">
-            Free Course
-          </div>
-        )}
       </div>
 
-      <div className="card p-5">
+      {/* ── Progress ── */}
+      <div className="card-premium p-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-bold text-gray-900">Your Progress</h2>
           <span className="text-sm text-gray-500">{completedLessons} / {course.totalLessons} lessons</span>
         </div>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${(completedLessons / Math.max(course.totalLessons, 1)) * 100}%` }} />
+        <div className="h-2.5 bg-surface-100 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"
+            style={{ width: `${(completedLessons / Math.max(course.totalLessons, 1)) * 100}%` }} />
         </div>
       </div>
 
+      {/* ── Lessons ── */}
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-3">Lessons</h2>
+        <h2 className="text-lg font-extrabold text-gray-900 mb-3">Lessons</h2>
         <div className="space-y-2">
           {course.lessons.map((lesson, idx) => {
             const doneCount = lesson.sentences.filter((s) => progress.completedSentences[s.id]).length;
@@ -72,27 +144,28 @@ export default function CourseDetail() {
               <button
                 key={lesson.id}
                 onClick={() => navigate(`/lesson/${course.id}/${lesson.id}`)}
-                className="w-full card p-4 text-left hover:shadow-md transition-all group"
+                className="w-full card-premium card-interactive p-4 text-left group"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+                  {/* Lesson number badge */}
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 ${
                     isDone
-                      ? 'bg-success-100 text-success-700'
-                      : 'bg-gray-100 text-gray-500'
+                      ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
+                      : 'bg-surface-100 text-surface-500'
                   }`}>
-                    {isDone ? '✓' : String(idx + 1).padStart(2, '0')}
+                    {isDone ? <Check size={16} strokeWidth={3} /> : String(idx + 1).padStart(2, '0')}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 text-sm group-hover:text-brand-700 transition-colors">
                       {lesson.title}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {doneCount}/{lesson.sentences.length} sentences · ~{lesson.estimatedMinutes} min
+                    <p className="text-[11px] text-gray-500 mt-0.5 inline-flex items-center gap-1.5">
+                      <span>{doneCount}/{lesson.sentences.length} sentences</span>
+                      <span>·</span>
+                      <span className="inline-flex items-center gap-0.5"><Clock size={10} strokeWidth={2} /> ~{lesson.estimatedMinutes} min</span>
                     </p>
                   </div>
-                  <svg className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <ChevronRight size={16} className="text-surface-300 group-hover:text-surface-500 transition-colors shrink-0" strokeWidth={2} />
                 </div>
               </button>
             );

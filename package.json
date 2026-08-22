@@ -15,7 +15,7 @@
     "db:seed:remote": "wrangler d1 execute sunobolo-db --remote --file=./migrations/0002_seed.sql",
     "db:seed:local": "wrangler d1 execute sunobolo-db --local --file=./migrations/0002_seed.sql",
     "db:create": "wrangler d1 create sunobolo-db",
-    "audio:gen": "python3 scripts/regenerate_voice.py"
+    "audio:gen": "python3 scripts/sarvam_replace_all.py"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

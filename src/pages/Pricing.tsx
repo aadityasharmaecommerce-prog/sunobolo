@@ -1,18 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { useRazorpay } from '../hooks/useRazorpay';
 import { PLAN_LIST, type Plan } from '../config/plans';
 
 export default function Pricing() {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
+  const { checkout, loading, error } = useRazorpay();
 
-  const handleSelect = (plan: Plan) => {
+  const handleSelect = async (plan: Plan) => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // One-time payment — activate directly
-    navigate(`/payment/success?plan=${plan.id}`);
+    // Razorpay checkout
+    const success = await checkout(plan.id, plan.name, plan.amountRupees);
+    if (success) {
+      navigate(`/payment/success?plan=${plan.id}`);
+    }
   };
 
   return (
@@ -70,13 +75,14 @@ export default function Pricing() {
             </ul>
             <button
               onClick={() => handleSelect(plan)}
+              disabled={loading}
               className={`btn-premium w-full py-3 text-sm ${
                 plan.id === 'one_year'
                   ? 'btn-premium-gradient'
                   : 'bg-white border-2 border-gray-200 text-gray-800 hover:border-brand-300 hover:text-brand-700'
-              }`}
+              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Get {plan.durationLabel} — ₹{plan.amountRupees}
+              {loading ? 'Processing...' : `Get ${plan.durationLabel} — ₹${plan.amountRupees}`}
             </button>
           </div>
         ))}
@@ -108,6 +114,13 @@ export default function Pricing() {
           Start Free Trial →
         </button>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+          <p className="text-sm text-red-700 font-medium">{error}</p>
+          <button onClick={() => window.location.reload()} className="mt-2 text-xs text-red-600 underline">Try again</button>
+        </div>
+      )}
 
       <div className="h-6" />
     </div>

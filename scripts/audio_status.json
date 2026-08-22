@@ -1,0 +1,447 @@
+{
+  "generated_at": "2026-08-21",
+  "totals": {
+    "sentences": 2597,
+    "audio_files": 5074,
+    "audio_size_mb": 198.8,
+    "en_valid": 2542,
+    "hi_valid": 2532,
+    "both_valid": 2532,
+    "en_missing": 55,
+    "hi_missing": 65
+  },
+  "courses": {
+    "unknown": {
+      "total": 18,
+      "en_valid": 18,
+      "hi_valid": 9,
+      "both_valid": 9,
+      "missing": 9
+    },
+    "advanced": {
+      "total": 313,
+      "en_valid": 302,
+      "hi_valid": 302,
+      "both_valid": 302,
+      "missing": 11
+    },
+    "beginner": {
+      "total": 755,
+      "en_valid": 755,
+      "hi_valid": 755,
+      "both_valid": 755,
+      "missing": 0
+    },
+    "business": {
+      "total": 104,
+      "en_valid": 101,
+      "hi_valid": 101,
+      "both_valid": 101,
+      "missing": 3
+    },
+    "corporate": {
+      "total": 104,
+      "en_valid": 100,
+      "hi_valid": 100,
+      "both_valid": 100,
+      "missing": 4
+    },
+    "daily": {
+      "total": 1,
+      "en_valid": 1,
+      "hi_valid": 1,
+      "both_valid": 1,
+      "missing": 0
+    },
+    "daily-life": {
+      "total": 494,
+      "en_valid": 475,
+      "hi_valid": 475,
+      "both_valid": 475,
+      "missing": 19
+    },
+    "free-trial": {
+      "total": 25,
+      "en_valid": 25,
+      "hi_valid": 25,
+      "both_valid": 25,
+      "missing": 0
+    },
+    "free-trial-free": {
+      "total": 1,
+      "en_valid": 1,
+      "hi_valid": 1,
+      "both_valid": 1,
+      "missing": 0
+    },
+    "intermediate": {
+      "total": 365,
+      "en_valid": 363,
+      "hi_valid": 363,
+      "both_valid": 363,
+      "missing": 2
+    },
+    "interview": {
+      "total": 104,
+      "en_valid": 100,
+      "hi_valid": 100,
+      "both_valid": 100,
+      "missing": 4
+    },
+    "kids": {
+      "total": 104,
+      "en_valid": 100,
+      "hi_valid": 100,
+      "both_valid": 100,
+      "missing": 4
+    },
+    "repeat": {
+      "total": 1,
+      "en_valid": 1,
+      "hi_valid": 0,
+      "both_valid": 0,
+      "missing": 1
+    },
+    "school": {
+      "total": 104,
+      "en_valid": 100,
+      "hi_valid": 100,
+      "both_valid": 100,
+      "missing": 4
+    },
+    "travel": {
+      "total": 104,
+      "en_valid": 100,
+      "hi_valid": 100,
+      "both_valid": 100,
+      "missing": 4
+    }
+  },
+  "missing_sentences": [
+    {
+      "id": "test_quick",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_en1",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_en2",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_hi1",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_hi2",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_hi_dev1",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_hi_dev2",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_instruction",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "test_sarvam_instruction_dev",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-051",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-076",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-126",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-151",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-176",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-201",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-226",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-251",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "advanced-276",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "business-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "business-051",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "business-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "corporate-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "corporate-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "corporate-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "corporate-151",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-01",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-051",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-076",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-126",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-151",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-176",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-201",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-226",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-251",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-276",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-301",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-326",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-351",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-401",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-426",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "daily-life-451",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "intermediate-01",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "intermediate-326",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "interview-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "interview-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "interview-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "interview-201",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "kids-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "kids-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "kids-076",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "kids-201",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "repeat-instruction",
+      "en": "✅",
+      "hi": "❌"
+    },
+    {
+      "id": "school-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "school-026",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "school-051",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "school-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "travel-001",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "travel-076",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "travel-101",
+      "en": "❌",
+      "hi": "❌"
+    },
+    {
+      "id": "travel-176",
+      "en": "❌",
+      "hi": "❌"
+    }
+  ]
+}

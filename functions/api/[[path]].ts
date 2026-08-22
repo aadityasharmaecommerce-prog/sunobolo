@@ -10,9 +10,12 @@
  *   GET  /api/sentences/:id                    - one sentence
  *   POST /api/progress                         - mark sentence complete
  *
- *   POST /api/auth/google                      - Google OAuth login
+ *   POST /api/auth/signup                      - Phone + email + password signup
+ *   POST /api/auth/login                       - Phone + password login
  *   GET  /api/auth/me                          - current user info
  *   POST /api/auth/logout                      - destroy session
+ *   POST /api/auth/forgot-password              - send reset link to recovery email
+ *   POST /api/auth/reset-password              - reset password with token
  *
  *   POST /api/payment/create-order             - create Razorpay order
  *   POST /api/payment/verify                   - verify Razorpay payment
@@ -22,19 +25,21 @@
  *   GET  /api/access                           - check if user has full access
  *
  * Secrets required (set via wrangler secret put):
- *   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET,
+ *   SESSION_SECRET,
  *   RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
+ *   RESEND_API_KEY, EMAIL_FROM, APP_BASE_URL
  */
 
 interface Env {
   DB: D1Database;
   ENVIRONMENT?: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
   SESSION_SECRET?: string;
   RAZORPAY_KEY_ID?: string;
   RAZORPAY_KEY_SECRET?: string;
   RAZORPAY_WEBHOOK_SECRET?: string;
+  RESEND_API_KEY?: string;
+  EMAIL_FROM?: string;
+  APP_BASE_URL?: string;
 }
 
 // ── Plan Configuration (server-side source of truth) ──
@@ -68,6 +73,19 @@ const json = (data: unknown, init: ResponseInit = {}) =>
 
 const err = (msg: string, status = 400) => json({ error: msg }, { status });
 
+/** Normalize phone number to consistent format: +91XXXXXXXXXX */
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  // Indian 10-digit number
+  if (digits.length === 10) return '+91' + digits;
+  // Already has country code 91
+  if (digits.length === 12 && digits.startsWith('91')) return '+' + digits;
+  // Already starts with +
+  if (phone.startsWith('+')) return phone;
+  // Fallback
+  return '+' + digits;
+}
+
 async function hashToken(token: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(token + secret);
@@ -75,8 +93,6 @@ async function hashToken(token: string, secret: string): Promise<string> {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
-
-
 
 function extractSessionToken(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null;
@@ -87,7 +103,7 @@ function extractSessionToken(cookieHeader: string | null): string | null {
 async function authenticateUser(
   request: Request,
   env: Env,
-): Promise<{ id: string; name: string; email: string; avatar_url: string | null } | null> {
+): Promise<{ id: string; name: string; email: string; phone: string | null; avatar_url: string | null } | null> {
   const token = extractSessionToken(request.headers.get('cookie'));
   if (!token || !env.SESSION_SECRET) return null;
 
@@ -100,13 +116,45 @@ async function authenticateUser(
   if (new Date(session.expires_at) < new Date()) return null;
 
   const user = await env.DB.prepare(
-    `SELECT id, name, email, avatar_url FROM users WHERE id = ?`
-  ).bind(session.user_id).first<{ id: string; name: string; email: string; avatar_url: string | null }>();
+    `SELECT id, name, email, phone, avatar_url FROM users WHERE id = ?`
+  ).bind(session.user_id).first<{ id: string; name: string; email: string; phone: string | null; avatar_url: string | null }>();
 
   return user ?? null;
 }
 
-async function hasActiveAccess(userId: string, db: D1Database): Promise<boolean> {
+/** Invalidate all existing sessions for a user (one-device enforcement) */
+async function invalidateUserSessions(userId: string, db: D1Database): Promise<void> {
+  await db.prepare('DELETE FROM sessions WHERE user_id = ?').bind(userId).run();
+}
+
+/** Check login rate limit: max 5 failed attempts per phone per 15 minutes */
+async function checkLoginRateLimit(phone: string, db: D1Database): Promise<boolean> {
+  const fifteenMinAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  const result = await db.prepare(
+    `SELECT COUNT(*) as cnt FROM login_attempts WHERE phone = ? AND attempted_at > ? AND success = 0`
+  ).bind(phone, fifteenMinAgo).first<{ cnt: number }>();
+  return (result?.cnt || 0) >= 5;
+}
+
+/** Record a login attempt */
+async function recordLoginAttempt(phone: string, success: boolean, db: D1Database): Promise<void> {
+  await db.prepare(
+    `INSERT INTO login_attempts (phone, success) VALUES (?, ?)`
+  ).bind(phone, success ? 1 : 0).run();
+}
+
+/**
+ * Auto-expire subscriptions whose expires_at has passed, then check if active.
+ * This ensures expired subscriptions are always correctly marked.
+ */
+async function autoExpireAndCheckAccess(userId: string, db: D1Database): Promise<boolean> {
+  // Step 1: Mark any expired subscriptions as 'expired'
+  await db.prepare(
+    `UPDATE subscriptions SET status = 'expired'
+     WHERE user_id = ? AND status = 'active' AND expires_at <= datetime('now')`
+  ).bind(userId).run();
+
+  // Step 2: Check if there's an active subscription
   const sub = await db.prepare(
     `SELECT expires_at FROM subscriptions
      WHERE user_id = ? AND status = 'active'
@@ -116,128 +164,361 @@ async function hasActiveAccess(userId: string, db: D1Database): Promise<boolean>
   return new Date(sub.expires_at) > new Date();
 }
 
-// ── Auth handlers ──
+/**
+ * Get full subscription details (for /auth/me response).
+ * Returns latest subscription info regardless of status, so client can display
+ * expiry info even after subscription expires.
+ */
+async function getSubscriptionDetails(userId: string, db: D1Database): Promise<{
+  active: boolean;
+  plan_id?: string;
+  started_at?: string;
+  expires_at?: string;
+} | null> {
+  // Auto-expire first
+  const isActive = await autoExpireAndCheckAccess(userId, db);
 
-async function handleAuthGoogle(request: Request, env: Env): Promise<Response> {
-  const body = await request.json<{ credential?: string; code?: string }>();
+  // Get the most recent subscription (whether active or expired)
+  const sub = await db.prepare(
+    `SELECT package_id, started_at, expires_at, status FROM subscriptions
+     WHERE user_id = ? ORDER BY created_at DESC LIMIT 1`
+  ).bind(userId).first<{ package_id: string; started_at: string; expires_at: string; status: string }>();
 
-  if (body.credential) {
-    const parts = body.credential.split('.');
-    if (parts.length !== 3) return err('Invalid credential');
-    try {
-      const payload = JSON.parse(atob(parts[1]));
-      const googleId = payload.sub;
-      const email = payload.email;
-      const name = payload.name || 'User';
-      const avatarUrl = payload.picture || null;
-      if (!googleId || !email) return err('Invalid Google token');
+  if (!sub) return null;
 
-      await env.DB.prepare(
-        `INSERT INTO users (id, google_id, email, name, avatar_url, last_login_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-         ON CONFLICT(google_id) DO UPDATE SET
-           email = excluded.email, name = excluded.name, avatar_url = excluded.avatar_url,
-           last_login_at = datetime('now'), updated_at = datetime('now')`
-      ).bind('google_' + googleId, googleId, email, name, avatarUrl).run();
-
-      const user = await env.DB.prepare(
-        `SELECT id, name, email, avatar_url FROM users WHERE google_id = ?`
-      ).bind(googleId).first<{ id: string; name: string; email: string; avatar_url: string | null }>();
-      if (!user) return err('User creation failed', 500);
-
-      const sessionToken = crypto.randomUUID();
-      const tokenHash = await hashToken(sessionToken, env.SESSION_SECRET || '');
-      const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-      await env.DB.prepare(
-        `INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)`
-      ).bind(crypto.randomUUID(), user.id, tokenHash, expiresAt).run();
-
-      const subscribed = await hasActiveAccess(user.id, env.DB);
-      let subscriptionDetails = null;
-      if (subscribed) {
-        subscriptionDetails = await env.DB.prepare(
-          `SELECT started_at, expires_at, plan_id FROM subscriptions
-           WHERE user_id = ? AND status = 'active' ORDER BY expires_at DESC LIMIT 1`
-        ).bind(user.id).first<{ started_at: string; expires_at: string; plan_id: string }>();
-      }
-
-      return new Response(
-        JSON.stringify({
-          user: { id: user.id, name: user.name, email: user.email, avatar_url: user.avatar_url },
-          subscription: { active: subscribed, ...(subscriptionDetails || {}) },
-        }),
-        {
-          status: 200,
-          headers: {
-            'content-type': 'application/json; charset=utf-8',
-            'access-control-allow-origin': '*',
-            'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}`,
-          },
-        }
-      );
-    } catch {
-      return err('Invalid Google token', 401);
-    }
-  }
-
-  if (body.code && env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
-    try {
-      const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          code: body.code, client_id: env.GOOGLE_CLIENT_ID,
-          client_secret: env.GOOGLE_CLIENT_SECRET, grant_type: 'authorization_code',
-        }).toString(),
-      });
-      const tokenData = await tokenRes.json<{ id_token?: string }>();
-      if (!tokenData.id_token) return err('Google token exchange failed');
-      const payload = JSON.parse(atob(tokenData.id_token.split('.')[1]));
-      const googleId = payload.sub; const email = payload.email;
-      const name = payload.name || 'User'; const avatarUrl = payload.picture || null;
-
-      await env.DB.prepare(
-        `INSERT INTO users (id, google_id, email, name, avatar_url, last_login_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-         ON CONFLICT(google_id) DO UPDATE SET
-           email = excluded.email, name = excluded.name, avatar_url = excluded.avatar_url,
-           last_login_at = datetime('now'), updated_at = datetime('now')`
-      ).bind('google_' + googleId, googleId, email, name, avatarUrl).run();
-
-      const user = await env.DB.prepare(
-        `SELECT id, name, email, avatar_url FROM users WHERE google_id = ?`
-      ).bind(googleId).first<{ id: string; name: string; email: string; avatar_url: string | null }>();
-      if (!user) return err('User creation failed', 500);
-
-      const sessionToken = crypto.randomUUID();
-      const tokenHash = await hashToken(sessionToken, env.SESSION_SECRET || '');
-      const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-      await env.DB.prepare(
-        `INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)`
-      ).bind(crypto.randomUUID(), user.id, tokenHash, expiresAt).run();
-
-      const subscribed = await hasActiveAccess(user.id, env.DB);
-      return new Response(
-        JSON.stringify({ user: { id: user.id, name: user.name, email: user.email, avatar_url: user.avatar_url }, subscription: { active: subscribed } }),
-        { status: 200, headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}` } }
-      );
-    } catch { return err('Google auth failed', 500); }
-  }
-  return err('Missing credential or code');
+  return {
+    active: isActive && sub.status === 'active',
+    plan_id: sub.package_id,
+    started_at: sub.started_at,
+    expires_at: sub.expires_at,
+  };
 }
+
+// ── Email helper ──
+
+/**
+ * Send a password-reset email via Resend API.
+ * Replace this helper to switch email providers.
+ */
+async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  env: Env,
+): Promise<boolean> {
+  if (!env.RESEND_API_KEY || !env.EMAIL_FROM) {
+    // Development fallback — log instead of sending
+    console.log(`[PASSWORD RESET] To: ${to}, URL: ${resetUrl}`);
+    return true;
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to: [to],
+        subject: 'Reset your SunoBolo password',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #1a1a2e; margin-bottom: 16px;">Password Reset Request</h2>
+            <p style="color: #4a4a6a; font-size: 15px; line-height: 1.6;">
+              We received a request to reset your SunoBolo account password.
+            </p>
+            <p style="color: #4a4a6a; font-size: 15px; line-height: 1.6;">
+              Click the button below to set a new password. This link expires in 15 minutes.
+            </p>
+            <div style="text-align: center; margin: 28px 0;">
+              <a href="${resetUrl}" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 15px; display: inline-block;">
+                Reset Password
+              </a>
+            </div>
+            <p style="color: #9a9ab0; font-size: 13px; line-height: 1.5;">
+              If you didn't request this, you can safely ignore this email. Your password will not change.
+            </p>
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+            <p style="color: #b0b0c0; font-size: 12px;">
+              SunoBolo — Learn English the smart way<br>
+              This is a transactional email for your account security.
+            </p>
+          </div>
+        `,
+      }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error(`[EMAIL] Resend API error ${res.status}: ${errBody}`);
+      return false;
+    }
+
+    return true;
+  } catch (e: any) {
+    console.error(`[EMAIL] Failed to send reset email: ${e.message}`);
+    return false;
+  }
+}
+
+// ── Auth handlers ──
 
 async function handleAuthMe(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
   if (!user) return json({ user: null, subscription: { active: false } });
-  const subscribed = await hasActiveAccess(user.id, env.DB);
-  let details = null;
-  if (subscribed) {
-    details = await env.DB.prepare(
-      `SELECT started_at, expires_at, plan_id FROM subscriptions
-       WHERE user_id = ? AND status = 'active' ORDER BY expires_at DESC LIMIT 1`
-    ).bind(user.id).first<{ started_at: string; expires_at: string; plan_id: string }>();
+
+  const sub = await getSubscriptionDetails(user.id, env.DB);
+
+  return json({ user, subscription: sub || { active: false } });
+}
+
+const PASSWORD_PEPPER = 'sunobolo-2024-pepper';
+
+async function hashPasswordPw(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + PASSWORD_PEPPER);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ name?: string; phone?: string; email?: string; password?: string }>();
+  if (!body?.name || !body?.phone || !body?.email || !body?.password) {
+    return err('Name, mobile number, email and password are required');
   }
-  return json({ user, subscription: { active: subscribed, ...(details || {}) } });
+  if (body.password.length < 6) return err('Password must be at least 6 characters');
+
+  const normalizedPhone = normalizePhone(body.phone);
+  const lowerEmail = body.email.toLowerCase().trim();
+
+  // Validate phone format (must be +91 followed by 10 digits)
+  if (!/^\+91\d{10}$/.test(normalizedPhone)) {
+    return err('Please enter a valid 10-digit mobile number');
+  }
+
+  // Validate email format
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lowerEmail)) {
+    return err('Please enter a valid email address');
+  }
+
+  // Check if phone already exists
+  const existingPhone = await env.DB.prepare('SELECT id, name FROM users WHERE phone = ?').bind(normalizedPhone).first<{ id: string; name: string }>();
+  if (existingPhone) {
+    return err('An account with this mobile number already exists. Please login.');
+  }
+
+  // Check if email already exists
+  const existingEmail = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(lowerEmail).first();
+  if (existingEmail) {
+    return err('An account with this email already exists. Please login.');
+  }
+
+  const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const passwordHash = await hashPasswordPw(body.password);
+  const colors = ['sky', 'purple', 'green', 'orange', 'pink'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+
+  await env.DB.prepare(
+    `INSERT INTO users (id, name, email, phone, recovery_email, avatar_color, password_hash, last_login_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+  ).bind(id, body.name.trim(), lowerEmail, normalizedPhone, lowerEmail, color, passwordHash).run();
+
+  // One-device: invalidate any existing sessions for this user (shouldn't be any for new signup, but safe)
+  await invalidateUserSessions(id, env.DB);
+
+  const sessionToken = crypto.randomUUID();
+  const tokenHash = await hashToken(sessionToken, env.SESSION_SECRET || 'default-secret');
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+  await env.DB.prepare(
+    `INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)`
+  ).bind(crypto.randomUUID(), id, tokenHash, expiresAt).run();
+
+  return new Response(
+    JSON.stringify({ user: { id, name: body.name.trim(), email: lowerEmail, phone: normalizedPhone } }),
+    {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'access-control-allow-origin': '*',
+        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}`,
+      },
+    }
+  );
+}
+
+async function handleAuthLogin(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ phone?: string; password?: string }>();
+  if (!body?.phone || !body?.password) return err('Mobile number and password are required');
+
+  const normalizedPhone = normalizePhone(body.phone);
+
+  // Validate phone format
+  if (!/^\+91\d{10}$/.test(normalizedPhone)) {
+    return err('Please enter a valid 10-digit mobile number');
+  }
+
+  // Rate limit check
+  if (await checkLoginRateLimit(normalizedPhone, env.DB)) {
+    return err('Too many failed attempts. Please try again after 15 minutes.', 429);
+  }
+
+  const user = await env.DB.prepare(
+    'SELECT id, name, phone, avatar_color, password_hash FROM users WHERE phone = ?'
+  ).bind(normalizedPhone).first<{ id: string; name: string; phone: string; avatar_color: string; password_hash: string | null }>();
+
+  if (!user) {
+    await recordLoginAttempt(normalizedPhone, false, env.DB);
+    return err('Incorrect mobile number or PIN.', 401);
+  }
+
+  if (!user.password_hash) {
+    await recordLoginAttempt(normalizedPhone, false, env.DB);
+    return err('Incorrect mobile number or PIN.', 401);
+  }
+
+  const inputHash = await hashPasswordPw(body.password);
+  if (inputHash !== user.password_hash) {
+    await recordLoginAttempt(normalizedPhone, false, env.DB);
+    return err('Incorrect mobile number or PIN.', 401);
+  }
+
+  // Record successful attempt
+  await recordLoginAttempt(normalizedPhone, true, env.DB);
+
+  // ONE-DEVICE: Invalidate all previous sessions before creating new one
+  await invalidateUserSessions(user.id, env.DB);
+
+  const sessionToken = crypto.randomUUID();
+  const tokenHash = await hashToken(sessionToken, env.SESSION_SECRET || 'default-secret');
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+  await env.DB.prepare(
+    `INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)`
+  ).bind(crypto.randomUUID(), user.id, tokenHash, expiresAt).run();
+
+  await env.DB.prepare(`UPDATE users SET last_login_at = datetime('now') WHERE id = ?`).bind(user.id).run();
+
+  // Get subscription details
+  const sub = await getSubscriptionDetails(user.id, env.DB);
+
+  return new Response(
+    JSON.stringify({ user: { id: user.id, name: user.name, phone: user.phone, avatar_color: user.avatar_color }, subscription: sub || { active: false } }),
+    {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'access-control-allow-origin': '*',
+        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}`,
+      },
+    }
+  );
+}
+
+// ── Password Reset (server-side, secure) ──
+
+/** Rate limit: max 3 forgot-password requests per user per hour */
+async function checkForgotPasswordRateLimit(userId: string, db: D1Database): Promise<boolean> {
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const result = await db.prepare(
+    `SELECT COUNT(*) as cnt FROM reset_tokens WHERE user_id = ? AND created_at > ?`
+  ).bind(userId, oneHourAgo).first<{ cnt: number }>();
+  return (result?.cnt || 0) >= 3;
+}
+
+async function handleForgotPassword(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ email?: string }>();
+  if (!body?.email) return err('Email required');
+
+  const lowerEmail = body.email.toLowerCase().trim();
+
+  // Look up user by recovery_email or email
+  const user = await env.DB.prepare(
+    `SELECT id, email, recovery_email FROM users WHERE email = ? OR recovery_email = ?`
+  ).bind(lowerEmail, lowerEmail).first<{ id: string; email: string; recovery_email: string | null }>();
+
+  // ALWAYS return success — never reveal whether email exists (prevent enumeration)
+  const genericResponse = json({ success: true, message: 'If an account exists for this email, a password reset link has been sent.' });
+
+  if (!user) return genericResponse;
+
+  // Rate limit check
+  if (await checkForgotPasswordRateLimit(user.id, env.DB)) {
+    return genericResponse; // Still return success to prevent enumeration
+  }
+
+  // Generate cryptographically secure reset token (32 bytes = 256 bits)
+  const rawToken = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+
+  // Hash the token before storing (never store raw token)
+  const tokenHash = await hashToken(rawToken, env.SESSION_SECRET || 'reset-secret');
+
+  // Invalidate any existing unused tokens for this user
+  await env.DB.prepare(
+    `UPDATE reset_tokens SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL`
+  ).bind(user.id).run();
+
+  // Store hashed token in D1 with 15-minute expiry
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+  await env.DB.prepare(
+    `INSERT INTO reset_tokens (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)`
+  ).bind(crypto.randomUUID(), user.id, tokenHash, expiresAt).run();
+
+  // Build reset link using APP_BASE_URL from env (never hardcoded)
+  const baseUrl = env.APP_BASE_URL || 'https://sunobolo.in';
+  const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
+
+  // Send reset email (generic response returned regardless of send result)
+  await sendPasswordResetEmail(lowerEmail, resetUrl, env);
+
+  return genericResponse;
+}
+
+async function handleResetPassword(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ token?: string; newPassword?: string }>();
+  if (!body?.token || !body?.newPassword) return err('Token and new password required');
+  if (body.newPassword.length < 6) return err('Password must be at least 6 characters');
+
+  // Hash the supplied token to match stored hash
+  const tokenHash = await hashToken(body.token, env.SESSION_SECRET || 'reset-secret');
+
+  // Find the reset token record
+  const resetRecord = await env.DB.prepare(
+    `SELECT id, user_id, expires_at, used_at FROM reset_tokens WHERE token_hash = ?`
+  ).bind(tokenHash).first<{ id: string; user_id: string; expires_at: string; used_at: string | null }>();
+
+  if (!resetRecord) return err('Invalid or expired reset token', 400);
+
+  // Check if already used
+  if (resetRecord.used_at) return err('Reset token has already been used', 400);
+
+  // Check if expired
+  if (new Date(resetRecord.expires_at) < new Date()) return err('Reset token has expired', 400);
+
+  // Get the user
+  const user = await env.DB.prepare(
+    `SELECT id FROM users WHERE id = ?`
+  ).bind(resetRecord.user_id).first<{ id: string }>();
+
+  if (!user) return err('User account not found', 400);
+
+  // Hash new password with pepper
+  const newPasswordHash = await hashPasswordPw(body.newPassword);
+
+  // Update password in D1
+  await env.DB.prepare(
+    `UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?`
+  ).bind(newPasswordHash, user.id).run();
+
+  // Invalidate the token (one-time use)
+  await env.DB.prepare(
+    `UPDATE reset_tokens SET used_at = datetime('now') WHERE id = ?`
+  ).bind(resetRecord.id).run();
+
+  // Invalidate all sessions for this user (force re-login)
+  await invalidateUserSessions(user.id, env.DB);
+
+  return json({ success: true, message: 'Password reset successful. You can now login with your new password.' });
 }
 
 async function handleAuthLogout(request: Request, env: Env): Promise<Response> {
@@ -255,21 +536,15 @@ async function handleAuthLogout(request: Request, env: Env): Promise<Response> {
 async function handleSubscription(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
   if (!user) return json({ active: false });
-  const subscribed = await hasActiveAccess(user.id, env.DB);
-  let details = null;
-  if (subscribed) {
-    details = await env.DB.prepare(
-      `SELECT started_at, expires_at, plan_id FROM subscriptions
-       WHERE user_id = ? AND status = 'active' ORDER BY expires_at DESC LIMIT 1`
-    ).bind(user.id).first<{ started_at: string; expires_at: string; plan_id: string }>();
-  }
-  return json({ active: subscribed, ...(details || {}) });
+
+  const sub = await getSubscriptionDetails(user.id, env.DB);
+  return json(sub || { active: false });
 }
 
 async function handleAccess(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
   if (!user) return json({ hasAccess: false, reason: 'not_logged_in' });
-  const subscribed = await hasActiveAccess(user.id, env.DB);
+  const subscribed = await autoExpireAndCheckAccess(user.id, env.DB);
   return json({ hasAccess: subscribed, reason: subscribed ? 'active' : 'expired' });
 }
 
@@ -369,9 +644,9 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
   }
 }
 
-/** Activate or extend subscription after verified payment. */
+/** Activate or extend subscription after verified payment. Idempotent. */
 async function activateSubscription(userId: string, orderId: string, paymentId: string, planId: string, db: D1Database): Promise<void> {
-  // Idempotency check
+  // Idempotency check — same payment cannot create multiple entitlements
   const existing = await db.prepare(`SELECT id FROM payments WHERE razorpay_payment_id = ? AND status = 'paid'`).bind(paymentId).first();
   if (existing) return;
 
@@ -452,7 +727,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
     if (route === '/courses' && method === 'GET') {
       const { results } = await env.DB.prepare('SELECT * FROM courses ORDER BY sort_order ASC').all();
       const user = await authenticateUser(request, env);
-      const subscribed = user ? await hasActiveAccess(user.id, env.DB) : false;
+      const subscribed = user ? await autoExpireAndCheckAccess(user.id, env.DB) : false;
       return json((results || []).map((c: any) => ({ ...c, locked: !c.is_free && !subscribed })));
     }
 
@@ -497,9 +772,12 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
       return json({ id, name: 'Guest', avatar_color: color });
     }
 
-    if (route === '/auth/google' && method === 'POST') return handleAuthGoogle(request, env);
+    if (route === '/auth/signup' && method === 'POST') return handleAuthSignup(request, env);
+    if (route === '/auth/login' && method === 'POST') return handleAuthLogin(request, env);
     if (route === '/auth/me' && method === 'GET') return handleAuthMe(request, env);
     if (route === '/auth/logout' && method === 'POST') return handleAuthLogout(request, env);
+    if (route === '/auth/forgot-password' && method === 'POST') return handleForgotPassword(request, env);
+    if (route === '/auth/reset-password' && method === 'POST') return handleResetPassword(request, env);
     if (route === '/subscription' && method === 'GET') return handleSubscription(request, env);
     if (route === '/access' && method === 'GET') return handleAccess(request, env);
     if (route === '/payment/create-order' && method === 'POST') return handlePaymentCreateOrder(request, env);

@@ -1,0 +1,291 @@
+import type { LessonData } from './types';
+export const freeTrialLesson: LessonData = {
+  "id": "free-trial-free-trial",
+  "courseId": "free-trial",
+  "moduleId": "free-trial-free-trial",
+  "order": 1,
+  "title": "Free Trial — 25 Practical Sentences",
+  "description": "Try SunoBolo with 25 real-life sentences. No login required.",
+  "difficulty": "Beginner",
+  "topic": "Mixed",
+  "sentenceCount": 25,
+  "estimatedMinutes": 8,
+  "sentences": [
+    {
+      "id": "free-trial-001",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 1,
+      "english": "I can understand English, but I can't speak it confidently.",
+      "hindi": "मुझे अंग्रेज़ी समझ आती है, पर मैं आत्मविश्वास से बोल नहीं पाता।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-002",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 2,
+      "english": "My name is Priya. What is your name?",
+      "hindi": "मेरा नाम प्रिया है। आपका नाम क्या है?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-003",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 3,
+      "english": "I am from India. Where are you from?",
+      "hindi": "मैं भारत से हूँ। आप कहाँ से हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-004",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 4,
+      "english": "I wake up at 6 o'clock every day.",
+      "hindi": "मैं हर दिन 6 बजे उठता हूँ।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-005",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 5,
+      "english": "Can you please call me later?",
+      "hindi": "क्या आप मुझे बाद में कॉल कर सकते हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-006",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 6,
+      "english": "How much does this cost?",
+      "hindi": "इसकी कीमत कितनी है?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-007",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 7,
+      "english": "I'm sorry, I'm running late.",
+      "hindi": "माफ़ कीजिए, मुझे देर हो रही है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-008",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 8,
+      "english": "Could you please help me with this?",
+      "hindi": "क्या आप इसमें मेरी मदद कर सकते हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-009",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 9,
+      "english": "I don't understand. Can you repeat?",
+      "hindi": "मुझे समझ नहीं आया। क्या आप दोहरा सकते हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-010",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 10,
+      "english": "What are your plans for the weekend?",
+      "hindi": "आपके वीकेंड के क्या प्लान हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-011",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 11,
+      "english": "I work in an office. What do you do?",
+      "hindi": "मैं ऑफिस में काम करता हूँ। आप क्या करते हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-012",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 12,
+      "english": "Where is the nearest bus stop?",
+      "hindi": "सबसे नज़दीकी बस स्टॉप कहाँ है?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-013",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 13,
+      "english": "My internet connection is not working.",
+      "hindi": "मेरा इंटरनेट काम नहीं कर रहा है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-014",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 14,
+      "english": "Thank you so much for your help!",
+      "hindi": "आपकी मदद के लिए बहुत धन्यवाद!",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-015",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 15,
+      "english": "Excuse me, can you tell me the time?",
+      "hindi": "क्षमा करें, क्या आप मुझे समय बता सकते हैं?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-016",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 16,
+      "english": "I am learning English. It is very useful.",
+      "hindi": "मैं अंग्रेज़ी सीख रहा हूँ। यह बहुत उपयोगी है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-017",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 17,
+      "english": "Let's meet at the coffee shop at 4.",
+      "hindi": "चलिए 4 बजे कॉफ़ी शॉप पर मिलते हैं।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-018",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 18,
+      "english": "The traffic is very heavy today.",
+      "hindi": "आज ट्रैफ़िक बहुत ज़्यादा है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-019",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 19,
+      "english": "Have a great day!",
+      "hindi": "आपका दिन शुभ हो!",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-020",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 20,
+      "english": "Do you have this in a smaller size?",
+      "hindi": "क्या यह छोटे साइज़ में है?",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-021",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 21,
+      "english": "I need to book a hotel room for two nights.",
+      "hindi": "मुझे दो रात के लिए होटल का कमरा बुक करना है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-022",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 22,
+      "english": "I ordered a product but it hasn't arrived yet.",
+      "hindi": "मैंने प्रोडक्ट ऑर्डर किया था लेकिन अभी तक नहीं आया।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-023",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 23,
+      "english": "I'll call you back in five minutes.",
+      "hindi": "मैं पाँच मिनट में वापस कॉल करूँगा।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-024",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 24,
+      "english": "I have a meeting at 10 AM tomorrow.",
+      "hindi": "मेरी कल सुबह 10 बजे मीटिंग है।",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    },
+    {
+      "id": "free-trial-025",
+      "courseId": "free-trial",
+      "lessonId": "free-trial-01",
+      "order": 25,
+      "english": "Nice to meet you!",
+      "hindi": "आपसे मिलकर खुशी हुई!",
+      "topic": "Mixed",
+      "difficulty": "Beginner",
+      "isFree": true
+    }
+  ]
+};
+

@@ -48,7 +48,16 @@ type AudioStatus = 'idle' | 'loading' | 'playing' | 'error';
 /** Safety timeout — if audio somehow never ends, we don't hang forever. */
 const PLAYBACK_TIMEOUT_MS = 30_000;
 
-const fileExistsCache = new Map<string, boolean>();
+let fileExistsCache = new Map<string, boolean>();
+
+// Clear file existence cache on app load to ensure fresh checks
+try {
+  const storedVersion = localStorage.getItem('sb_audio_version');    const currentVersion = '22';
+  if (storedVersion !== currentVersion) {
+    fileExistsCache = new Map<string, boolean>();
+    localStorage.setItem('sb_audio_version', currentVersion);
+  }
+} catch { /* ignore */ }
 
 async function checkFileExists(url: string): Promise<boolean> {
   if (fileExistsCache.has(url)) return fileExistsCache.get(url) === true;

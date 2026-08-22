@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { freeTrialLesson } from '../data/content';
+import { freeTrialLesson, courseMetadata } from '../data/content';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
 import { markSentenceComplete, getProgress } from '../lib/progress';
 import Confetti from '../components/Confetti';
@@ -84,6 +84,64 @@ function Landing({ onStart }: { onStart: () => void }) {
         🎧 Start Free Trial
       </button>
       <p className="text-[11px] text-gray-400 mt-3">No login · No payment · Full experience</p>
+
+      {/* Grammar / Tenses Preview Card */}
+      <div className="mt-8 w-full max-w-sm">
+        <a href="/tenses" className="block border border-gray-100 bg-white rounded-2xl shadow-sm p-4 text-left hover:shadow-md hover:border-indigo-200 transition-all">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
+              <span className="text-white text-base font-extrabold">T</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-extrabold text-gray-900">English Grammar</h3>
+                <span className="text-[9px] font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-full">NEW</span>
+              </div>
+              <p className="text-[11px] text-gray-500 mt-0.5">12 Tenses · Present · Past · Future</p>
+            </div>
+            <span className="text-indigo-400 text-sm">→</span>
+          </div>
+        </a>
+      </div>
+
+      {/* ══════════ UNLOCK FULL ACCESS ══════════ */}
+      <div className="mt-10 w-full max-w-sm">
+        <div className="mb-4">
+          <h2 className="text-lg font-extrabold text-gray-900">Unlock Full Access</h2>
+          <p className="text-gray-500 text-xs mt-1">Get all courses, grammar, listening & speaking practice</p>
+        </div>
+
+        {/* Locked Course Cards */}
+        <div className="space-y-2.5">
+          {courseMetadata.map((course) => (
+            <a
+              key={course.id}
+              href="/pricing"
+              className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3.5 text-left hover:shadow-md hover:border-brand-200 transition-all group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shrink-0 text-lg group-hover:from-brand-100 group-hover:to-brand-200 transition-colors">
+                {course.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-[13px] font-bold text-gray-900 truncate">{course.title}</h3>
+                <p className="text-[11px] text-gray-500 mt-0.5">{course.totalSentences}+ Sentences · {course.totalLessons} Lessons</p>
+              </div>
+              <span className="text-[10px] font-extrabold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">🔒</span>
+            </a>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <a
+          href="/pricing"
+          className="mt-5 w-full btn-premium btn-premium-gradient py-4 text-sm block text-center rounded-2xl font-bold shadow-lg"
+        >
+          View Plans →
+        </a>
+        <p className="text-[11px] text-gray-400 mt-2 text-center">One-time payment · No subscription · Lifetime access</p>
+      </div>
+
+      <div className="h-10" />
     </div>
   );
 }
@@ -96,6 +154,7 @@ function Practice() {
   const [speakCt, setSpeakCt] = useState(0);
   const [finished, setFinished] = useState(false);
   const [badgeQueue, setBadgeQueue] = useState<Badge[]>([]);
+  const [hasStarted, setHasStarted] = useState(false);
   const { status, playOnce, listenThreeTimes, playCount, stop } = useSentenceAudio();
   const autoAdvanceRef = useRef(false);
   const mountedRef = useRef(true);
@@ -121,6 +180,7 @@ function Practice() {
     setPhase('listen');
     setListenCt(0);
     setSpeakCt(0);
+    setHasStarted(false);
     autoAdvanceRef.current = false;
     listenStartedRef.current = false;
   }, [stop]);
@@ -141,7 +201,7 @@ function Practice() {
   const goBack = useCallback(() => { if (idx > 0) goToIndex(idx - 1); }, [idx, goToIndex]);
 
   useEffect(() => {
-    if (phase === 'listen' && cur && listenCt === 0 && !listenStartedRef.current) {
+    if (phase === 'listen' && cur && listenCt === 0 && !listenStartedRef.current && hasStarted) {
       listenStartedRef.current = true;
       const t = setTimeout(() => {
         if (mountedRef.current) {
@@ -151,7 +211,7 @@ function Practice() {
       }, 300);
       return () => clearTimeout(t);
     }
-  }, [phase, idx, cur?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, idx, cur?.id, hasStarted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (phase === 'listen' && listenCt >= 3) setPhase('speak'); }, [listenCt, phase]);
 
@@ -193,6 +253,9 @@ function Practice() {
           </a>
           <a href="/courses" className="block w-full bg-white border-2 border-gray-200 text-gray-800 font-bold py-4 rounded-2xl text-center text-sm hover:border-brand-300 transition-colors">
             📚 All Courses
+          </a>
+          <a href="/tenses" className="block w-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold py-4 rounded-2xl text-center text-sm hover:bg-indigo-100 transition-colors">
+            📘 English Grammar
           </a>
         </div>
       </div>
@@ -259,8 +322,17 @@ function Practice() {
               </div>
             </div>
 
-            {/* LISTEN */}
-            {phase === 'listen' && (
+            {/* LISTEN - Tap to Start */}
+            {phase === 'listen' && !hasStarted && (
+              <div className="mt-5 pt-4 border-t border-gray-100">
+                <button onClick={() => setHasStarted(true)}
+                  className="w-full btn-premium btn-premium-gradient py-4 text-sm rounded-2xl">
+                  🔊 Tap to Start Listening
+                </button>
+              </div>
+            )}
+            {/* LISTEN - Active */}
+            {phase === 'listen' && hasStarted && (
               <div className="mt-5 pt-4 border-t border-gray-100">
                 <div className="text-center mb-3">
                   <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 font-extrabold">🎧 Listen</p>
