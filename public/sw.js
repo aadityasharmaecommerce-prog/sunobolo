@@ -1,10 +1,11 @@
 /**
  * SunoBolo English — Service Worker
  *
- * Caching strategy:
- * - App shell (HTML, CSS, JS, icons): Cache-first after first load
+ * Caching strategy (v3 — fixed stale CSS after deploy):
+ * - HTML navigation: Network-first (never serve stale HTML)
+ * - CSS/JS: Network-first (prevents broken styling after deploy)
  * - Audio files: Cache-first with network fallback (large MP3s)
- * - Navigation: Network-first with cache fallback (stale HTML avoidance)
+ * - Images/icons: Cache-first (stable assets)
  * - API / auth / payment: NEVER cached
  *
  * Security:
@@ -12,19 +13,9 @@
  * - Never caches POST requests or sensitive endpoints
  */
 
-const CACHE_NAME = 'sunobolo-v2';
-const AUDIO_CACHE = 'sunobolo-audio-v2';
-
-// App shell assets to pre-cache on install
-const SHELL_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/favicon.png',
-  '/favicon.svg',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-];
+const CACHE_NAME = 'sunobolo-v3';
+const AUDIO_CACHE = 'sunobolo-audio-v3';
+const IMAGE_CACHE = 'sunobolo-images-v3';
 
 // Paths that should NEVER be cached
 const NEVER_CACHE = [
@@ -37,29 +28,22 @@ const NEVER_CACHE = [
 
 // ─── INSTALL ──────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(SHELL_ASSETS).catch(() => {
-        // Silently ignore individual failures during pre-cache
-        console.log('[SW] Some shell assets failed to pre-cache');
-      });
-    })
-  );
+  // Skip waiting immediately so new SW takes over
   self.skipWaiting();
 });
 
 // ─── ACTIVATE ─────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
+  // Delete ALL old caches on upgrade
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME && key !== AUDIO_CACHE)
+          .filter((key) => key !== CACHE_NAME && key !== AUDIO_CACHE && key !== IMAGE_CACHE)
           .map((key) => caches.delete(key))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 // ─── FETCH ────────────────────────────────────────────────
@@ -90,7 +74,6 @@ self.addEventListener('fetch', (event) => {
             }
             return response;
           }).catch(() => {
-            // Offline and not cached — return empty response
             return new Response('', { status: 503, statusText: 'Offline' });
           });
         });
@@ -104,6 +87,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
+          // Always update cache with fresh HTML
           if (response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
@@ -111,6 +95,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
+          // Offline fallback: serve cached version
           return caches.match(request).then((cached) => {
             return cached || caches.match('/');
           });
@@ -119,21 +104,56 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── Static assets (JS, CSS, images): Stale-while-revalidate ──
-  // Serves cached version fast, but fetches fresh version in background
-  // This prevents white screen after deployment (old JS references new HTML)
-  event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(request).then((cached) => {
-        const fetchPromise = fetch(request).then((response) => {
+  // ── CSS/JS bundles: Network-first ──
+  // Hashed filenames (e.g. index-Cg1fJFFd.css) must always come from network
+  // to prevent stale styling after deployment
+  if (url.pathname.startsWith('/assets/') && (url.pathname.endsWith('.js') || url.pathname.endsWith('.css'))) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
           if (response.ok) {
-            cache.put(request, response.clone());
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
-        }).catch(() => cached);
-        return cached || fetchPromise;
-      });
-    })
+        })
+        .catch(() => {
+          // Offline fallback: serve cached version
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+
+  // ── Images/icons: Cache-first (stable assets) ──
+  if (url.pathname.match(/\.(png|webp|jpg|jpeg|svg|ico|woff2?)$/)) {
+    event.respondWith(
+      caches.open(IMAGE_CACHE).then((cache) => {
+        return cache.match(request).then((cached) => {
+          if (cached) return cached;
+          return fetch(request).then((response) => {
+            if (response.ok) {
+              cache.put(request, response.clone());
+            }
+            return response;
+          }).catch(() => cached);
+        });
+      })
+    );
+    return;
+  }
+
+  // ── Everything else: Network-first ──
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request))
   );
 });
 
