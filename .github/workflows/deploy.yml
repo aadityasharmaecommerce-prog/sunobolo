@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -29,4 +29,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 5ddea07041f057d524c10f54fe158faa
-          command: pages deploy ./dist --project-name=sunobolo-english --branch=master
+          command: pages deploy ./dist --project-name=sunobolo-english --branch=main
