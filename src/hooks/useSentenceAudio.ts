@@ -48,6 +48,10 @@ type AudioStatus = 'idle' | 'loading' | 'playing' | 'error';
 /** Safety timeout — if audio somehow never ends, we don't hang forever. */
 const PLAYBACK_TIMEOUT_MS = 30_000;
 
+/** Detect iOS Safari — cannot reliably create new Audio() elements mid-flow. */
+const IS_IOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 let fileExistsCache = new Map<string, boolean>();
 
 // Clear file existence cache on app load to ensure fresh checks
@@ -104,6 +108,8 @@ export function useSentenceAudio() {
   const genRef = useRef(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timersRef = useRef<number[]>([]);
+  /** iOS: reused Audio element created during user gesture, persists across the entire flow. */
+  const sharedAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const clearTimers = () => {
     timersRef.current.forEach((t) => window.clearTimeout(t));
@@ -134,6 +140,15 @@ export function useSentenceAudio() {
     clearTimers();
     cleanupAudio(audioRef.current);
     audioRef.current = null;
+    // iOS: also stop the shared element but don't null it — it survives across the flow
+    if (sharedAudioRef.current) {
+      try {
+        sharedAudioRef.current.oncanplay = null;
+        sharedAudioRef.current.onended = null;
+        sharedAudioRef.current.onerror = null;
+        sharedAudioRef.current.pause();
+      } catch { /* ignore */ }
+    }
     cancelTTS();
     setStatus('idle');
     setPlayCount(0);
@@ -198,6 +213,11 @@ export function useSentenceAudio() {
   /**
    * Play an MP3 once. Promise settles ONLY on audio.onended / error / timeout.
    * Never settles on canplay — that would be premature.
+   *
+   * iOS Safari fix: Reuses a single Audio element across the entire guided flow.
+   * On iOS, creating new Audio() after the initial user gesture loses the gesture
+   * context and audio.play() silently rejects. By reusing the element created during
+   * the first user gesture, iOS permits subsequent play() calls in the same chain.
    */
   const playFileOnce = useCallback((url: string, myGen: number): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -208,7 +228,24 @@ export function useSentenceAudio() {
       cleanupAudio(audioRef.current);
       audioRef.current = null;
 
-      const audio = new Audio();
+      // iOS: reuse the shared Audio element to preserve user-gesture context.
+      // Desktop/Android: also benefit from element reuse (fewer GC pauses).
+      let audio: HTMLAudioElement;
+      if (IS_IOS && sharedAudioRef.current) {
+        audio = sharedAudioRef.current;
+        // Fully reset the element for a new src
+        try {
+          audio.oncanplay = null;
+          audio.onended = null;
+          audio.onerror = null;
+          audio.pause();
+          audio.removeAttribute('src');
+          audio.load();
+        } catch { /* ignore */ }
+      } else {
+        audio = new Audio();
+        if (IS_IOS) sharedAudioRef.current = audio;
+      }
       audioRef.current = audio;
       setStatus('loading');
       let settled = false;
@@ -217,7 +254,17 @@ export function useSentenceAudio() {
         if (settled) return;
         settled = true;
         if (audioRef.current === audio) audioRef.current = null;
-        cleanupAudio(audio);
+        // iOS shared element: DON'T destroy it — keep alive for next play
+        if (!(IS_IOS && audio === sharedAudioRef.current)) {
+          cleanupAudio(audio);
+        } else {
+          try {
+            audio.oncanplay = null;
+            audio.onended = null;
+            audio.onerror = null;
+            audio.pause();
+          } catch { /* ignore */ }
+        }
         if (isLive(myGen)) setStatus('idle');
         resolve(ok);
       };
@@ -235,19 +282,32 @@ export function useSentenceAudio() {
           finish(false);
           return;
         }
-        audio.play().then(() => {
-          if (settled || !isLive(myGen)) {
-            try {
-              audio.pause();
-            } catch {
-              /* ignore */
+        // On iOS, call play() and handle the Promise — never assume it succeeds.
+        const playPromise = audio.play();
+        if (playPromise) {
+          playPromise.then(() => {
+            if (settled || !isLive(myGen)) {
+              try { audio.pause(); } catch { /* ignore */ }
+              if (!settled) finish(false);
+              return;
             }
-            if (!settled) finish(false);
-            return;
-          }
-          // Still playing — wait for onended. Do NOT mark settled here.
+            setStatus('playing');
+          }).catch(() => {
+            // iOS: play() rejected — retry once after a brief pause.
+            // This handles the case where iOS needs a micro-task to settle.
+            if (settled || !isLive(myGen)) { finish(false); return; }
+            const retryTimer = window.setTimeout(() => {
+              if (settled || !isLive(myGen)) { finish(false); return; }
+              audio.play().then(() => {
+                if (!settled && isLive(myGen)) setStatus('playing');
+              }).catch(() => finish(false));
+            }, 150);
+            timersRef.current.push(retryTimer);
+          });
+        } else {
+          // Fallback for browsers that don't return a Promise from play()
           setStatus('playing');
-        }).catch(() => finish(false));
+        }
       };
 
       audio.src = url;
@@ -437,6 +497,18 @@ export function useSentenceAudio() {
       clearTimers();
       cleanupAudio(audioRef.current);
       audioRef.current = null;
+      // iOS: also clean up the shared element on unmount
+      if (sharedAudioRef.current) {
+        try {
+          sharedAudioRef.current.oncanplay = null;
+          sharedAudioRef.current.onended = null;
+          sharedAudioRef.current.onerror = null;
+          sharedAudioRef.current.pause();
+          sharedAudioRef.current.removeAttribute('src');
+          sharedAudioRef.current.load();
+        } catch { /* ignore */ }
+        sharedAudioRef.current = null;
+      }
       cancelTTS();
       try {
         if (typeof window !== 'undefined' && window.speechSynthesis) {
