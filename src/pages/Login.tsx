@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
-import { ArrowLeft, Headphones, Mail, Lock, User, Check } from 'lucide-react';
+import { ArrowLeft, Headphones, Mail, Lock, User } from 'lucide-react';
 
-type FlowStep = 'mobile' | 'pin' | 'create-pin' | 'forgot' | 'reset-email' | 'reset-new' | 'name-onboard';
+type FlowStep = 'mobile' | 'pin' | 'create-pin' | 'forgot' | 'reset-email' | 'reset-new';
 
 export default function Login() {
   const { user, loading, checkMobile, login, signup, forgotPassword, resetPassword } = useAuth();
@@ -104,8 +104,8 @@ export default function Login() {
     }
 
     setSubmitting(true);
-    // Create account with phone + PIN (name collected later)
-    const result = await signup('', phone, email, password);
+    // Create account with name + phone + PIN + email
+    const result = await signup(name.trim() || 'SunoBolo User', phone, email, password);
     setSubmitting(false);
 
     if (result.error) {
@@ -113,26 +113,11 @@ export default function Login() {
       return;
     }
 
-    // Account created — ask for name
-    setStep('name-onboard');
-  };
-
-  // ── Step 3: Name Onboarding (after account creation) ──
-  const handleNameSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Save name if provided, then go home
-    if (name.trim()) {
-      try {
-        await fetch('/api/auth/update-name', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ name: name.trim() }),
-        });
-      } catch { /* ignore — name can be updated later in profile */ }
-    }
+    // Account created — go directly to home
     navigate('/', { replace: true });
   };
+
+
 
   // ── Forgot Password ──
   const handleForgot = async (e: React.FormEvent) => {
@@ -283,13 +268,21 @@ export default function Login() {
 
           <form onSubmit={handleCreatePin} className="mt-6 w-full max-w-sm space-y-3">
             <input
+              type="text"
+              placeholder="Your name"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoFocus
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
+            />
+            <input
               type="password"
               placeholder="Create PIN / Password (min 6)"
               required
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoFocus
               className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
             <input
@@ -324,36 +317,7 @@ export default function Login() {
         </>
       )}
 
-      {/* ── Step 3: Name Onboarding (after account creation) ── */}
-      {step === 'name-onboard' && (
-        <>
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-glow-success mb-4">
-            <Check size={32} strokeWidth={3} />
-          </div>
-          <h1 className="text-2xl font-extrabold text-white">Account Ban Gaya! 🎉</h1>
-          <p className="text-white/50 text-sm mt-1.5 max-w-xs">
-            Aapka account successfully create ho gaya. Ab aap free trial try kar sakte hain!
-          </p>
 
-          <form onSubmit={handleNameSubmit} className="mt-6 w-full max-w-sm space-y-3">
-            <input
-              type="text"
-              placeholder="Apna naam (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
-            />
-            <button type="submit"
-              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl">
-              Start Learning →
-            </button>
-            <button type="button" onClick={() => navigate('/', { replace: true })}
-              className="w-full text-center text-sm text-white/40 font-medium hover:text-white/60 transition-colors">
-              Skip for now
-            </button>
-          </form>
-        </>
-      )}
 
       {/* ── Forgot Password Form ── */}
       {step === 'forgot' && (
