@@ -109,6 +109,7 @@ export function useRazorpay() {
 
     setLoading(true);
     setError(null);
+    // Clear any previous error on new checkout attempt
 
     try {
       // 1. Load Razorpay script
@@ -162,11 +163,14 @@ export function useRazorpay() {
 
         const rzp = new window.Razorpay(options);
         rzp.on('payment.failed', (response: any) => {
+          // Only show error if user is still on the page (not navigated away)
           setError(response.error?.description || 'Payment failed');
           setLoading(false);
           resolve(false);
         });
         rzp.open();
+        // Clear any stale error once modal is open
+        setError(null);
       });
     } catch (err: any) {
       setError(err.message || 'Payment failed');

@@ -112,8 +112,8 @@ export default function Tenses() {
                         navigate('/pricing');
                       }
                     }}
-                    className={`w-full text-left card-premium card-interactive !rounded-xl p-4 group ${
-                      !hasFullAccess && !isTenseUnlocked(tense.id) ? 'opacity-70' : ''
+                    className={`w-full text-left card-premium card-interactive !rounded-xl p-4 group relative overflow-hidden ${
+                      !hasFullAccess && !isTenseUnlocked(tense.id) ? 'bg-gray-50' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -127,9 +127,14 @@ export default function Tenses() {
                         {isComplete ? <Check size={18} strokeWidth={3} /> : totalForms}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 group-hover:text-brand-700 transition-colors text-sm">
-                          {tense.title}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-gray-900 group-hover:text-brand-700 transition-colors text-sm">
+                            {tense.title}
+                          </h3>
+                          {!hasFullAccess && isTenseUnlocked(tense.id) && (
+                            <span className="text-[9px] font-extrabold text-success-700 bg-success-50 border border-success-200 px-1.5 py-0.5 rounded-full">FREE</span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-500 mt-0.5 truncate">
                           {tense.subtitle}
                         </p>
@@ -145,7 +150,12 @@ export default function Tenses() {
                         </div>
                       </div>
                       {!hasFullAccess && !isTenseUnlocked(tense.id) ? (
-                        <Lock size={14} className="text-gray-400 shrink-0" />
+                        <div className="flex flex-col items-center gap-1 shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                            <Lock size={14} className="text-indigo-500" />
+                          </div>
+                          <span className="text-[9px] font-bold text-indigo-500">PREMIUM</span>
+                        </div>
                       ) : (
                         <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-500 transition-colors shrink-0" />
                       )}
