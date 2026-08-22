@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import Logo from '../components/Logo';
+
 import { ArrowLeft, Headphones, Mail, Lock, User, Check } from 'lucide-react';
 
 type FlowStep = 'mobile' | 'pin' | 'create-pin' | 'forgot' | 'reset-email' | 'reset-new' | 'name-onboard';
@@ -187,9 +187,9 @@ export default function Login() {
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
-      {/* Logo */}
+      {/* Original SunoBolo English logo */}
       <div className="mb-4">
-        <Logo size={90} showText={false} />
+        <img src="/images/logo.png" alt="SunoBolo English" style={{ height: '50px', width: 'auto', objectFit: 'contain' }} />
       </div>
 
       {/* ── Step 1: Mobile Number ── */}

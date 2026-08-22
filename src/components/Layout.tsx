@@ -23,8 +23,8 @@ export default function Layout() {
           <a href="/" className="flex items-center gap-2.5 active:scale-[0.97] transition-transform shrink-0">
             <img
               src="/images/logo.png"
-              alt="SunoBolo"
-              className="h-10 w-auto object-contain brightness-0 invert"
+              alt="SunoBolo English"
+              className="h-10 w-auto object-contain"
               style={{ maxHeight: '40px' }}
             />
           </a>

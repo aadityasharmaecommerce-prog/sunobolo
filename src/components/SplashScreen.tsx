@@ -22,17 +22,14 @@ export default function SplashScreen() {
     <div className="splash-screen" role="status" aria-label="Loading">
       <div className="splash-logo relative flex flex-col items-center">
         <div className="splash-glow absolute" />
-        {/* Actual SunoBolo logo */}
+        {/* Original SunoBolo English logo — preserved at correct aspect ratio */}
         <img
           src="/images/logo.png"
-          alt="SunoBolo"
-          className="w-20 h-20 object-contain relative z-10"
-          style={{ filter: 'drop-shadow(0 4px 12px rgba(99,102,241,0.3))' }}
+          alt="SunoBolo English"
+          className="relative z-10"
+          style={{ height: '60px', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(99,102,241,0.3))' }}
         />
-        <span className="relative z-10 mt-3 text-xl font-extrabold text-white tracking-tight">
-          Suno<span className="text-brand-200">Bolo</span>
-        </span>
-        <p className="relative z-10 text-white/50 text-xs mt-1 font-medium">Listen · Speak · Improve</p>
+        <p className="relative z-10 text-white/50 text-xs mt-3 font-medium">Listen · Speak · Improve</p>
         <div className="splash-wave mt-6">
           {[1,2,3,4,5,6,7].map(i => <div key={i} className="splash-wave-bar" />)}
         </div>
