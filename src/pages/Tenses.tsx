@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, BookOpen, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Check, BookOpen, ChevronRight, Lock } from 'lucide-react';
 import { getProgress } from '../lib/progress';
+import { useAuth } from '../lib/auth';
+import { PREVIEW_TENSE_COUNT, isTenseUnlocked } from '../data/tenses';
 
 // Lazy-load tenses data
 const tensesPromise = import('../data/tenses').then((m) => m.allTenses);
@@ -14,6 +16,7 @@ const GROUP_INFO = {
 
 export default function Tenses() {
   const navigate = useNavigate();
+  const { subscription } = useAuth();
   const [tenses, setTenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,6 +29,7 @@ export default function Tenses() {
 
   const progress = getProgress();
   const groups = ['present', 'past', 'future'] as const;
+  const hasFullAccess = subscription.active;
 
   if (loading) {
     return (
@@ -65,6 +69,17 @@ export default function Tenses() {
         </div>
       </div>
 
+      {/* Free preview banner */}
+      {!hasFullAccess && (
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 flex items-center gap-3">
+          <span className="text-lg">📘</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-indigo-800">Free Preview: First {PREVIEW_TENSE_COUNT} Tenses</p>
+            <p className="text-[11px] text-indigo-600">Present Simple & Present Continuous — try them free!</p>
+          </div>
+        </div>
+      )}
+
       {/* Tense Groups */}
       {groups.map((group) => {
         const groupTenses = tenses.filter((t) => t.group === group);
@@ -90,8 +105,16 @@ export default function Tenses() {
                 return (
                   <button
                     key={tense.id}
-                    onClick={() => navigate(`/tenses/${tense.id}`)}
-                    className="w-full text-left card-premium card-interactive !rounded-xl p-4 group"
+                    onClick={() => {
+                      if (hasFullAccess || isTenseUnlocked(tense.id)) {
+                        navigate(`/tenses/${tense.id}`);
+                      } else {
+                        navigate('/pricing');
+                      }
+                    }}
+                    className={`w-full text-left card-premium card-interactive !rounded-xl p-4 group ${
+                      !hasFullAccess && !isTenseUnlocked(tense.id) ? 'opacity-70' : ''
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -121,7 +144,11 @@ export default function Tenses() {
                           )}
                         </div>
                       </div>
-                      <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-500 transition-colors shrink-0" />
+                      {!hasFullAccess && !isTenseUnlocked(tense.id) ? (
+                        <Lock size={14} className="text-gray-400 shrink-0" />
+                      ) : (
+                        <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-500 transition-colors shrink-0" />
+                      )}
                     </div>
                   </button>
                 );
@@ -130,6 +157,20 @@ export default function Tenses() {
           </div>
         );
       })}
+
+      {/* CTA for free users */}
+      {!hasFullAccess && (
+        <div className="mt-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-center">
+          <h3 className="text-white font-extrabold text-base">Unlock All 12 Tenses</h3>
+          <p className="text-white/70 text-xs mt-1">Past, Future, Perfect tenses + 192 practice forms</p>
+          <button
+            onClick={() => navigate('/pricing')}
+            className="mt-3 bg-white text-indigo-700 font-bold text-sm px-8 py-3 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all"
+          >
+            Get Full Access →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

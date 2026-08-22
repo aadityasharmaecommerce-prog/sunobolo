@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
 import { getProgress, markSentenceComplete } from '../lib/progress';
-import { ArrowLeft, Play, Square, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Play, Square, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { useAuth } from '../lib/auth';
+import { isTenseUnlocked } from '../data/tenses';
 
 // Lazy-load tenses data
 const tensesPromise = import('../data/tenses').then((m) => m.allTenses);
@@ -114,6 +116,9 @@ function ExampleGroup({
 export default function TenseLesson() {
   const { tenseId } = useParams<{ tenseId: string }>();
   const navigate = useNavigate();
+  const { subscription } = useAuth();
+  const hasFullAccess = subscription.active;
+  const isFreeAccess = !hasFullAccess && !isTenseUnlocked(tenseId || '');
 
   const [tenses, setTenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -276,17 +281,64 @@ export default function TenseLesson() {
           )}
         </div>
 
-        {/* Example groups */}
-        {examples.map((example: any, index: number) => (
-          <ExampleGroup
-            key={example.id}
-            example={example}
-            index={index}
-            completedForms={completedForms}
-            playingFormId={playingFormId}
-            onListenForm={handleListenForm}
-          />
-        ))}
+        {/* Example groups — locked overlay for free users on non-preview tenses */}
+        {isFreeAccess ? (
+          <div className="relative">
+            {/* Show first example as preview, blur the rest */}
+            {examples.length > 0 && (
+              <ExampleGroup
+                key={examples[0].id}
+                example={examples[0]}
+                index={0}
+                completedForms={completedForms}
+                playingFormId={playingFormId}
+                onListenForm={handleListenForm}
+              />
+            )}
+            {/* Locked overlay */}
+            <div className="relative mt-4">
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-sm rounded-2xl z-10 flex items-center justify-center">
+                <div className="text-center px-6">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 flex items-center justify-center mb-3">
+                    <Lock size={24} className="text-indigo-600" />
+                  </div>
+                  <h3 className="text-base font-extrabold text-gray-900">Full access required</h3>
+                  <p className="text-xs text-gray-500 mt-1">Subscribe to unlock all 12 tenses</p>
+                  <button
+                    onClick={() => navigate('/pricing')}
+                    className="mt-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all"
+                  >
+                    Get Full Access →
+                  </button>
+                </div>
+              </div>
+              {/* Show remaining examples visually blurred behind overlay */}
+              <div className="opacity-30 pointer-events-none">
+                {examples.slice(1).map((example: any, index: number) => (
+                  <ExampleGroup
+                    key={example.id}
+                    example={example}
+                    index={index + 1}
+                    completedForms={new Set()}
+                    playingFormId={null}
+                    onListenForm={() => {}}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          examples.map((example: any, index: number) => (
+            <ExampleGroup
+              key={example.id}
+              example={example}
+              index={index}
+              completedForms={completedForms}
+              playingFormId={playingFormId}
+              onListenForm={handleListenForm}
+            />
+          ))
+        )}
       </div>
     </div>
   );

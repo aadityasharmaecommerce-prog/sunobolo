@@ -588,3 +588,12 @@ export const tensesMeta = {
   totalExamples: 48,
   totalForms: 192,
 };
+
+// ── Free preview limit (first N tenses are free, rest require subscription) ──
+export const PREVIEW_TENSE_COUNT = 2;
+
+/** Check if a tense is available for free preview */
+export function isTenseUnlocked(tenseId: string): boolean {
+  const idx = allTenses.findIndex((t) => t.id === tenseId);
+  return idx >= 0 && idx < PREVIEW_TENSE_COUNT;
+}
