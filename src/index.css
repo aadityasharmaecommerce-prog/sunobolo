@@ -647,6 +647,111 @@ input, select, textarea { font-size: 16px; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ══════════════════════════════════════════════════
+   DARK THEME — INNER PAGES
+   ══════════════════════════════════════════════════ */
+
+/* Dark page — full dark canvas for all pages */
+.dark-page {
+  background:
+    radial-gradient(1200px 600px at 50% -200px, rgb(99 102 241 / 0.12), transparent 70%),
+    radial-gradient(900px 500px at 100% 0%, rgb(168 85 247 / 0.08), transparent 60%),
+    #0c0a1f;
+  min-height: 100vh;
+  color: white;
+}
+
+/* Dark card with glass for inner pages */
+.dark-card-page {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.dark-card-page:hover {
+  border-color: rgba(129, 140, 248, 0.2);
+}
+
+/* Dark card without glass — solid dark */
+.dark-card-flat {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+}
+
+/* Dark progress bar */
+.dark-progress {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.dark-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dark input field */
+.dark-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+.dark-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+.dark-input:focus {
+  outline: none;
+  border-color: rgba(129, 140, 248, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Dark badge/chip */
+.dark-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark skeleton loading */
+.dark-skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+/* Dark bottom nav */
+.dark-bottom-nav {
+  background: rgba(12, 10, 31, 0.9);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.dark-bottom-nav .nav-active {
+  color: #a78bfa;
+}
+
+/* Dark divider */
+.dark-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+
+/* ══════════════════════════════════════════════════
    REDUCED MOTION SUPPORT
    ══════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
