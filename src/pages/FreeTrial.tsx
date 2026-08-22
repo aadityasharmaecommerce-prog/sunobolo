@@ -56,8 +56,9 @@ export default function FreeTrial() {
 
 function Landing({ onStart }: { onStart: () => void }) {
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center">
-      <div className="w-24 h-24 rounded-3xl overflow-hidden mb-6 shadow-xl ring-4 ring-brand-500/30 bg-gradient-to-br from-brand-500/30 to-accent-500/20">
+    <div className="min-h-[80vh] flex flex-col items-center px-6 text-center pt-10 pb-10">
+      {/* Hero */}
+      <div className="w-20 h-20 rounded-3xl overflow-hidden mb-5 shadow-xl ring-4 ring-brand-500/30 bg-gradient-to-br from-brand-500/30 to-accent-500/20">
         <img
           src="/images/hero.webp"
           alt=""
@@ -65,24 +66,47 @@ function Landing({ onStart }: { onStart: () => void }) {
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
       </div>
+
+      {/* Badge */}
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-300 bg-emerald-500/12 border border-emerald-500/20 px-3 py-1 rounded-full mb-4">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        100% FREE TRIAL
+      </span>
+
       <h1 className="text-3xl font-extrabold text-white">Free Trial</h1>
-      <p className="text-white/50 mt-2 text-sm max-w-xs">
-        25 real-life sentences with Hindi meaning and natural audio
+      <p className="text-white/50 mt-2 text-sm max-w-xs leading-relaxed">
+        Try 25 real-life English sentences + 2 tenses.
+        No login. No payment required.
       </p>
-      <div className="mt-6 flex items-center gap-3 text-[11px] text-white/40 font-medium">
-        <span>🎧 Listen 3×</span>
-        <span>·</span>
-        <span>🎤 Speak 3×</span>
-        <span>·</span>
-        <span>✓ Next</span>
+
+      {/* What's included */}
+      <div className="mt-6 w-full max-w-xs">
+        <div className="dark-card-page p-4">
+          <p className="text-[11px] font-extrabold text-white/40 uppercase tracking-wider mb-3">What's included</p>
+          <div className="grid grid-cols-2 gap-2.5 text-left">
+            {[
+              { icon: '📝', text: '25 English sentences' },
+              { icon: '📘', text: '2 Tenses preview' },
+              { icon: '🎧', text: 'Listen 3× each' },
+              { icon: '🎤', text: 'Speak 3× each' },
+            ].map((item) => (
+              <div key={item.text} className="flex items-center gap-2">
+                <span className="text-sm">{item.icon}</span>
+                <span className="text-[12px] text-white/60 font-medium">{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Start CTA */}
       <button
         onClick={onStart}
-        className="mt-8 btn-premium btn-premium-gradient px-10 py-4 rounded-2xl text-base shadow-xl"
+        className="mt-6 btn-premium btn-premium-gradient px-10 py-4 rounded-2xl text-base shadow-xl"
       >
         🎧 Start Free Trial
       </button>
-      <p className="text-[11px] text-white/35 mt-3">No login · No payment · Full experience</p>
+      <p className="text-[11px] text-white/35 mt-3">No login · No payment · Full practice experience</p>
 
       {/* Grammar Preview Card */}
       <div className="mt-8 w-full max-w-sm">
@@ -94,47 +118,70 @@ function Landing({ onStart }: { onStart: () => void }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <h3 className="text-sm font-extrabold text-white">English Grammar</h3>
-                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-1.5 py-0.5 rounded-full">NEW</span>
+                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-1.5 py-0.5 rounded-full">FREE PREVIEW</span>
               </div>
-              <p className="text-[11px] text-white/40 mt-0.5">12 Tenses · Present · Past · Future</p>
+              <p className="text-[11px] text-white/40 mt-0.5">2 free tenses · 12 total tenses</p>
             </div>
             <span className="text-white/30 text-sm">→</span>
           </div>
         </a>
       </div>
 
-      {/* Unlock Full Access */}
-      <div className="mt-10 w-full max-w-sm">
+      {/* Beginner English — PAID */}
+      <div className="mt-8 w-full max-w-sm">
         <div className="mb-4">
-          <h2 className="text-lg font-extrabold text-white">Unlock Full Access</h2>
-          <p className="text-white/40 text-xs mt-1">Get all courses, grammar, listening & speaking practice</p>
-        </div>
-        <div className="space-y-2.5">
-          {courseMetadata.map((course) => (
-            <a
-              key={course.id}
-              href="/pricing"
-              className="dark-card-page flex items-center gap-3 p-3.5 text-left hover:border-brand-500/30 transition-all group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 text-lg group-hover:bg-brand-500/10 transition-colors">
-                {course.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-[13px] font-bold text-white truncate">{course.title}</h3>
-                <p className="text-[11px] text-white/35 mt-0.5">{course.totalSentences}+ Sentences · {course.totalLessons} Lessons</p>
-              </div>
-              <span className="text-[10px] font-extrabold text-white/25 bg-white/5 px-2 py-0.5 rounded-full shrink-0">🔒</span>
-            </a>
-          ))}
+          <h2 className="text-lg font-extrabold text-white">Ready to learn more?</h2>
+          <p className="text-white/40 text-xs mt-1">Unlock the complete Beginner English course</p>
         </div>
         <a
           href="/pricing"
-          className="mt-5 w-full btn-premium btn-premium-gradient py-4 text-sm block text-center rounded-xl font-bold shadow-lg"
+          className="dark-card-page flex items-center gap-4 p-5 text-left hover:border-brand-500/30 transition-all group"
         >
-          View Plans →
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/8 flex items-center justify-center shrink-0 text-2xl group-hover:scale-105 transition-transform">
+            🌱
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="font-extrabold text-white text-base">Beginner English</h3>
+              <span className="text-[9px] font-extrabold text-brand-300 bg-brand-500/12 px-2 py-0.5 rounded-full">PRO</span>
+            </div>
+            <p className="text-[12px] text-white/40 mt-1">29 Lessons · 725+ Sentences · Full course</p>
+          </div>
+          <span className="text-xs font-bold text-brand-300 bg-brand-500/12 px-4 py-2 rounded-full group-hover:bg-brand-500/20 transition-colors shrink-0">
+            Unlock Course →
+          </span>
         </a>
-        <p className="text-[11px] text-white/30 mt-2 text-center">One-time payment · No subscription · Lifetime access</p>
       </div>
+
+      {/* All other courses */}
+      <div className="mt-6 w-full max-w-sm">
+        <p className="text-[11px] font-extrabold text-white/30 uppercase tracking-wider mb-3 text-left">All courses require a plan</p>
+        <div className="space-y-2">
+          {courseMetadata.filter(c => c.id !== 'beginner').slice(0, 5).map((course) => (
+            <a
+              key={course.id}
+              href="/pricing"
+              className="dark-card-page flex items-center gap-3 p-3 text-left hover:border-brand-500/20 transition-all group"
+            >
+              <span className="text-lg shrink-0">{course.icon}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-[12px] font-bold text-white/70 truncate">{course.title}</h3>
+                <p className="text-[10px] text-white/30 mt-0.5">{course.totalSentences}+ sentences · {course.totalLessons} lessons</p>
+              </div>
+              <span className="text-[9px] font-extrabold text-white/20 bg-white/5 px-1.5 py-0.5 rounded-full shrink-0">PRO</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Final CTA */}
+      <a
+        href="/pricing"
+        className="mt-8 w-full max-w-sm btn-premium btn-premium-gradient py-4 text-sm block text-center rounded-xl font-bold shadow-lg"
+      >
+        View Plans →
+      </a>
+      <p className="text-[11px] text-white/30 mt-2 text-center">One-time payment · No auto-renewal · Instant access</p>
 
       <div className="h-10" />
     </div>
@@ -242,15 +289,16 @@ function Practice() {
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Trial Complete!</h1>
         <p className="text-white/50 mt-2 text-sm">{total} sentences practiced! 👏</p>
+        <p className="text-white/35 text-xs mt-1">Want to learn more? Unlock the full course.</p>
         <div className="mt-8 w-full max-w-xs space-y-3">
-          <a href="/course/beginner" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-xl">
-            🚀 Start Beginner Course
+          <a href="/pricing" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-xl">
+            🚀 Unlock Beginner English <span className="text-[10px] font-extrabold text-white/60 ml-1">PRO</span>
           </a>
           <a href="/courses" className="block w-full bg-white/5 border border-white/10 text-white/70 font-bold py-4 rounded-xl text-center text-sm hover:bg-white/10 transition-colors">
-            📚 All Courses
+            📚 View All Courses
           </a>
           <a href="/tenses" className="block w-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold py-4 rounded-xl text-center text-sm hover:bg-indigo-500/20 transition-colors">
-            📘 English Grammar
+            📘 Grammar Free Preview
           </a>
         </div>
       </div>
