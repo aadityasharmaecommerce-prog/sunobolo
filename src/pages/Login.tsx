@@ -117,11 +117,20 @@ export default function Login() {
     setStep('name-onboard');
   };
 
-  // ── Step 3: Name Onboarding (optional, after account creation) ──
+  // ── Step 3: Name Onboarding (after account creation) ──
   const handleNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Name is optional — skip if empty
-    // For now, just go to home. Name can be updated later in profile.
+    // Save name if provided, then go home
+    if (name.trim()) {
+      try {
+        await fetch('/api/auth/update-name', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name: name.trim() }),
+        });
+      } catch { /* ignore — name can be updated later in profile */ }
+    }
     navigate('/', { replace: true });
   };
 
@@ -202,8 +211,12 @@ export default function Login() {
                 placeholder="Mobile Number"
                 required
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                maxLength={10}
+                onChange={(e) => {
+                  // Strip everything except digits, max 10
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setPhone(digits);
+                }}
+                maxLength={12}
                 className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
               />
             </div>

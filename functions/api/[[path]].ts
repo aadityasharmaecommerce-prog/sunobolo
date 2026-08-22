@@ -299,6 +299,24 @@ async function handleCheckMobile(request: Request, env: Env): Promise<Response> 
   return json({ exists: !!user, name: user?.name || null });
 }
 
+/** Update user name (after account creation) */
+async function handleUpdateName(request: Request, env: Env): Promise<Response> {
+  const user = await authenticateUser(request, env);
+  if (!user) return err('Login required', 401);
+
+  const body = await request.json<{ name?: string }>();
+  if (!body?.name || !body.name.trim()) return err('Name required');
+
+  const trimmedName = body.name.trim();
+  if (trimmedName.length > 100) return err('Name too long');
+
+  await env.DB.prepare(
+    `UPDATE users SET name = ?, updated_at = datetime('now') WHERE id = ?`
+  ).bind(trimmedName, user.id).run();
+
+  return json({ success: true, name: trimmedName });
+}
+
 async function handleAuthMe(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
   if (!user) return json({ user: null, subscription: { active: false } });
@@ -942,6 +960,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
     }
 
     if (route === '/auth/check-mobile' && method === 'POST') return handleCheckMobile(request, env);
+    if (route === '/auth/update-name' && method === 'POST') return handleUpdateName(request, env);
     if (route === '/auth/signup' && method === 'POST') return handleAuthSignup(request, env);
     if (route === '/auth/login' && method === 'POST') return handleAuthLogin(request, env);
     if (route === '/auth/me' && method === 'GET') return handleAuthMe(request, env);

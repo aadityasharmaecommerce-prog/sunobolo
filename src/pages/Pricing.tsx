@@ -22,6 +22,13 @@ export default function Pricing() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
+      >
+        ← Back
+      </button>
+
       <div className="text-center pt-2">
         <p className="kicker">Simple & honest pricing</p>
         <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Ek Baar Pay Karo. English Improve Karte Raho.</h1>
