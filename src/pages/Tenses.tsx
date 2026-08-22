@@ -58,7 +58,7 @@ export default function Tenses() {
             <span className="text-white/70 text-xs font-bold uppercase tracking-wider">Grammar</span>
           </div>
           <h1 className="text-2xl font-extrabold">English Tenses</h1>
-          <p className="text-white/70 text-sm mt-1">Master all 12 tenses with structured examples</p>
+          <p className="text-white/70 text-sm mt-1">Grammar ko rules ki tarah ratne ke bajay, real sentences ke through samjho aur bolo.</p>
           <div className="flex items-center gap-4 mt-3">
             <span className="text-xs text-white/60">12 tenses</span>
             <span className="text-white/30">·</span>

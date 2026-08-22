@@ -4,7 +4,7 @@ import { loadCourse } from '../data/content';
 import type { CourseData } from '../data/content';
 import { getProgress } from '../lib/progress';
 import CourseIcon from '../components/CourseIcon';
-import { Check, ChevronRight, Clock } from 'lucide-react';
+import { Check, ChevronRight, Clock, ArrowLeft, Lock } from 'lucide-react';
 
 /* ── Loading skeleton ── */
 function CourseDetailSkeleton() {
@@ -92,6 +92,15 @@ export default function CourseDetail() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      {/* Back button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
+      >
+        <ArrowLeft size={16} strokeWidth={2.5} />
+        Back
+      </button>
+
       {/* ── Premium Course Hero ── */}
       <div className={`relative overflow-hidden rounded-3xl text-white p-5 sm:p-6 shadow-premium-lg bg-gradient-to-br ${heroGradient}`}>
         {/* Decorative elements */}

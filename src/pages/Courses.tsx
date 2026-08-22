@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { courseMetadata } from '../data/content';
 import { useAuth } from '../lib/auth';
 import CourseIcon from '../components/CourseIcon';
-import { Lock, Clock, ArrowRight } from 'lucide-react';
+import { Lock, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Courses() {
   const navigate = useNavigate();
@@ -10,6 +10,14 @@ export default function Courses() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
+      >
+        <ArrowLeft size={16} strokeWidth={2.5} />
+        Back
+      </button>
+
       <div className="text-center pt-2">
         <p className="kicker">Choose a course</p>
         <h1 className="text-2xl font-extrabold text-gray-900 mt-1">All Courses</h1>

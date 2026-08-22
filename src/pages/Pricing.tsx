@@ -24,8 +24,8 @@ export default function Pricing() {
     <div className="space-y-5 animate-fade-in">
       <div className="text-center pt-2">
         <p className="kicker">Simple & honest pricing</p>
-        <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Choose Your Learning Plan</h1>
-        <p className="text-gray-500 text-sm mt-1.5">One-time payment. No monthly subscription. No auto-debit. Pay once, learn forever.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 mt-1">Ek Baar Pay Karo. English Improve Karte Raho.</h1>
+        <p className="text-gray-500 text-sm mt-1.5">One-time payment · No auto-renewal · Full app access</p>
         <div className="inline-flex items-center gap-1.5 mt-2.5 text-[11px] font-bold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
           <span className="stars">★★★★★</span> 4.9 · 10,000+ learners trust SunoBolo
         </div>

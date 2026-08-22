@@ -5,7 +5,6 @@ import { Home, BookOpen, Download, Mic, TrendingUp, User } from 'lucide-react';
 const tabs = [
   { id: 'home', label: 'Home', icon: Home, path: '/' },
   { id: 'learn', label: 'Learn', icon: BookOpen, path: '/courses' },
-  { id: 'install', label: 'Install', icon: Download, path: '__install__' },
   { id: 'practice', label: 'Practice', icon: Mic, path: '/free-trial' },
   { id: 'progress', label: 'Progress', icon: TrendingUp, path: '/progress' },
   { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
