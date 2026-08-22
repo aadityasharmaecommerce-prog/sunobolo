@@ -36,17 +36,17 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
           <div
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all duration-300 ${
               s.n === step && !s.done
-                ? 'bg-brand-100 text-brand-700 step-active'
+                ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30'
                 : s.done
-                ? 'bg-success-100 text-success-700'
-                : 'bg-surface-100 text-surface-400'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                : 'bg-white/5 text-white/30 border border-white/10'
             }`}
           >
             {s.done ? <Check size={12} strokeWidth={3} /> : <s.Icon size={12} strokeWidth={2.5} />}
             {s.label}
           </div>
           {i < steps.length - 1 && (
-            <ArrowRight size={10} className={`${s.done ? 'text-success-400' : 'text-surface-300'}`} strokeWidth={2.5} />
+            <ArrowRight size={10} className={`${s.done ? 'text-emerald-400' : 'text-white/20'}`} strokeWidth={2.5} />
           )}
         </div>
       ))}
@@ -89,15 +89,15 @@ export default function Lesson() {
   if (!isFree && !subscription.active && !user) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
-          <Lock size={28} className="text-brand-400" strokeWidth={1.5} />
+        <div className="w-16 h-16 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center mb-4">
+          <Lock size={28} className="text-brand-300" strokeWidth={1.5} />
         </div>
-        <h2 className="text-xl font-extrabold text-gray-900">Premium Course</h2>
-        <p className="text-gray-500 text-sm mt-2 max-w-xs">Sign in and purchase a plan to access this course.</p>
-        <button onClick={() => navigate('/login')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
+        <h2 className="text-xl font-extrabold text-white">Premium Course</h2>
+        <p className="text-white/50 text-sm mt-2 max-w-xs">Sign in and purchase a plan to access this course.</p>
+        <button onClick={() => navigate('/login')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-xl text-sm">
           Sign In & Unlock
         </button>
-        <button onClick={() => navigate('/pricing')} className="mt-3 text-sm text-brand-600 font-semibold">
+        <button onClick={() => navigate('/pricing')} className="mt-3 text-sm text-brand-300 font-semibold">
           See Pricing
         </button>
       </div>
@@ -106,12 +106,12 @@ export default function Lesson() {
   if (!isFree && subscription && !subscription.active && user) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
-          <Lock size={28} className="text-brand-400" strokeWidth={1.5} />
+        <div className="w-16 h-16 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center mb-4">
+          <Lock size={28} className="text-brand-300" strokeWidth={1.5} />
         </div>
-        <h2 className="text-xl font-extrabold text-gray-900">Access Required</h2>
-        <p className="text-gray-500 text-sm mt-2 max-w-xs">Purchase a plan to unlock all courses.</p>
-        <button onClick={() => navigate('/pricing')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-2xl text-sm">
+        <h2 className="text-xl font-extrabold text-white">Access Required</h2>
+        <p className="text-white/50 text-sm mt-2 max-w-xs">Purchase a plan to unlock all courses.</p>
+        <button onClick={() => navigate('/pricing')} className="mt-6 btn-premium btn-premium-gradient px-8 py-3 rounded-xl text-sm">
           Get Full Access
         </button>
       </div>
@@ -213,10 +213,10 @@ export default function Lesson() {
   }, [stop]);
 
   if (!course || !lesson) {
-    return <div className="min-h-[60vh] flex items-center justify-center text-gray-400 text-sm">Lesson not found</div>;
+    return <div className="min-h-[60vh] flex items-center justify-center text-white/40 text-sm">Lesson not found</div>;
   }
   if (!cur) {
-    return <div className="min-h-[60vh] flex items-center justify-center text-gray-400 text-sm">No sentences in this lesson</div>;
+    return <div className="min-h-[60vh] flex items-center justify-center text-white/40 text-sm">No sentences in this lesson</div>;
   }
 
   const pct = (done.size / Math.max(total, 1)) * 100;
@@ -228,17 +228,17 @@ export default function Lesson() {
   /* ── Lesson Complete ── */
   if (lessonFinished) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center page-canvas lesson-complete-pop">
+      <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center lesson-complete-pop">
         <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center shadow-glow-success animate-float mb-6">
           <Check size={40} strokeWidth={3} />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">Lesson Complete!</h1>
-        <p className="text-gray-500 mt-2 text-sm">{total} / {total} sentences completed</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Lesson Complete!</h1>
+        <p className="text-white/50 mt-2 text-sm">{total} / {total} sentences completed</p>
         <div className="mt-8 w-full max-w-xs space-y-3">
-          <button onClick={() => navigate(`/course/${courseId}`)} className="w-full btn-premium btn-premium-gradient py-4 text-sm font-bold rounded-2xl">
+          <button onClick={() => navigate(`/course/${courseId}`)} className="w-full btn-premium btn-premium-gradient py-4 text-sm font-bold rounded-xl">
             Continue Learning <ArrowRight size={14} strokeWidth={2.5} />
           </button>
-          <button onClick={() => navigate('/progress')} className="w-full bg-white border-2 border-gray-200 text-gray-700 font-bold py-4 rounded-2xl text-sm hover:border-brand-300 transition-colors">
+          <button onClick={() => navigate('/progress')} className="w-full bg-white/5 border border-white/10 text-white/70 font-bold py-4 rounded-xl text-sm hover:bg-white/10 transition-colors">
             View Progress
           </button>
         </div>
@@ -247,7 +247,7 @@ export default function Lesson() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col page-canvas overflow-x-hidden">
+    <div className="min-h-dvh flex flex-col overflow-x-hidden">
       {badgeQueue.length > 0 && (
         <div className="fixed top-4 right-4 z-50">
           <BadgeToast key={badgeQueue[0].id} badge={badgeQueue[0]} onDismiss={dismissBadge} />
@@ -258,19 +258,19 @@ export default function Lesson() {
       <div className="px-5 pt-4 pb-2">
         <div className="flex items-center justify-between mb-3">
           <button onClick={() => { stop(); navigate(-1); }} aria-label="Back"
-            className="w-10 h-10 rounded-full bg-white border border-surface-200 shadow-sm flex items-center justify-center text-surface-500 hover:text-gray-800 hover:border-surface-300 active:scale-95 transition-all">
+            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 active:scale-95 transition-all">
             <ArrowLeft size={18} strokeWidth={2.5} />
           </button>
           <div className="text-center flex-1 min-w-0 mx-3">
-            <p className="text-[11px] font-extrabold text-brand-600 uppercase tracking-widest">{lesson.title}</p>
-            <p className="text-sm font-bold text-gray-900 mt-0.5">
-              {idx + 1} <span className="text-gray-300 font-normal">of</span> {total}
+            <p className="text-[11px] font-extrabold text-brand-300 uppercase tracking-widest">{lesson.title}</p>
+            <p className="text-sm font-bold text-white mt-0.5">
+              {idx + 1} <span className="text-white/30 font-normal">of</span> {total}
             </p>
           </div>
           <div className="w-10 h-10" />
         </div>
-        <div className="h-1.5 bg-surface-200/70 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"
+        <div className="dark-progress h-1.5">
+          <div className="dark-progress-fill"
             style={{ width: `${Math.max(pct, 2)}%` }} />
         </div>
       </div>
@@ -283,39 +283,39 @@ export default function Lesson() {
       {/* ── MAIN SENTENCE CARD ── */}
       <div className="flex-1 px-5 flex flex-col min-h-0">
         <div key={`${courseId}-${idx}`} className="sentence-slide-in flex-1 flex flex-col">
-          <div className="flex-1 bg-white rounded-3xl shadow-[0_2px_4px_rgb(15_23_42/_0.04),0_12px_32px_-8px_rgb(15_23_42/_0.1)] border border-surface-100 px-6 py-6 sm:py-8 flex flex-col">
+          <div className="flex-1 dark-card-page px-6 py-6 sm:py-8 flex flex-col">
             {/* English sentence */}
             <div className="flex-1 flex flex-col items-center justify-center text-center">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-brand-400 font-extrabold mb-3">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-brand-300 font-extrabold mb-3">
                 English Sentence
               </p>
-              <p className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold leading-snug text-gray-900 max-w-lg">
+              <p className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold leading-snug text-white max-w-lg">
                 &ldquo;{cur.english}&rdquo;
               </p>
 
               {/* Hindi meaning */}
-              <div className="mt-5 pt-5 border-t border-surface-100 w-full max-w-md">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-surface-400 font-extrabold mb-2">
+              <div className="mt-5 pt-5 border-t border-white/8 w-full max-w-md">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/35 font-extrabold mb-2">
                   Hindi Meaning
                 </p>
-                <p className="text-[17px] sm:text-lg text-gray-600 leading-relaxed">{cur.hindi}</p>
+                <p className="text-[17px] sm:text-lg text-white/60 leading-relaxed">{cur.hindi}</p>
               </div>
             </div>
 
             {/* ── LISTEN SECTION ── */}
             {phase === 'listen' && !hasStarted && (
-              <div className="mt-5 pt-4 border-t border-surface-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <button onClick={() => setHasStarted(true)}
-                  className="w-full btn-premium btn-premium-gradient py-4 text-sm rounded-2xl inline-flex items-center justify-center gap-2">
+                  className="w-full btn-premium btn-premium-gradient py-4 text-sm rounded-xl inline-flex items-center justify-center gap-2">
                   <Play size={18} fill="white" strokeWidth={0} />
                   Tap to Start Listening
                 </button>
               </div>
             )}
             {phase === 'listen' && hasStarted && (
-              <div className="mt-5 pt-4 border-t border-surface-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <div className="text-center mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-surface-400 font-extrabold inline-flex items-center gap-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 font-extrabold inline-flex items-center gap-1">
                     <Volume2 size={12} strokeWidth={2.5} />
                     Listen
                   </p>
@@ -327,7 +327,7 @@ export default function Lesson() {
                         ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
                         : isPlaying && playCount === n - 1
                         ? 'bg-gradient-to-br from-brand-500 to-accent-500 text-white shadow-glow-brand'
-                        : 'bg-surface-100 text-surface-400 border border-surface-200'
+                        : 'bg-white/5 text-white/30 border border-white/10'
                     }`}>
                       {listenCt >= n ? <Check size={14} strokeWidth={3} /> : n}
                     </div>
@@ -338,7 +338,7 @@ export default function Lesson() {
                 </div>
                 {isAudioActive ? (
                   <button onClick={handleSkipListen}
-                    className="w-full bg-white border-2 border-brand-200 text-brand-700 font-bold py-3.5 rounded-2xl text-sm active:scale-[.98] transition-all hover:bg-brand-50 inline-flex items-center justify-center gap-2">
+                    className="w-full bg-white/5 border border-white/15 text-white/70 font-bold py-3.5 rounded-xl text-sm active:scale-[.98] transition-all hover:bg-white/10 inline-flex items-center justify-center gap-2">
                     <Square size={14} strokeWidth={2.5} />
                     Stop Audio
                   </button>
@@ -348,7 +348,7 @@ export default function Lesson() {
                     listenThreeTimes(cur.id, cur.courseId, cur.english, setListenCt, cur.hindi, () => {
                       if (mountedRef.current) setPhase('speak');
                     });
-                  }} className="w-full btn-premium btn-premium-gradient py-3.5 text-sm rounded-2xl">
+                  }} className="w-full btn-premium btn-premium-gradient py-3.5 text-sm rounded-xl">
                     {listenCt >= 3 ? <><Volume2 size={16} strokeWidth={2.5} /> Listen Again</> : <><Play size={16} fill="white" strokeWidth={0} /> Listen to Sentence</>}
                   </button>
                 )}
@@ -357,20 +357,20 @@ export default function Lesson() {
 
             {/* ── SPEAK SECTION ── */}
             {phase === 'speak' && (
-              <div className="mt-5 pt-4 border-t border-surface-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <div className="text-center mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-surface-400 font-extrabold inline-flex items-center gap-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 font-extrabold inline-flex items-center gap-1">
                     <Mic size={12} strokeWidth={2.5} />
                     Your Turn
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">Say the complete sentence</p>
+                  <p className="text-xs text-white/45 mt-1">Say the complete sentence</p>
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   {[1, 2, 3].map((n) => (
                     <div key={n} className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300 ${
                       speakCt >= n
                         ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
-                        : 'bg-surface-100 text-surface-400 border border-surface-200'
+                        : 'bg-white/5 text-white/30 border border-white/10'
                     }`}>
                       {speakCt >= n ? <Check size={14} strokeWidth={3} /> : n}
                     </div>
@@ -379,7 +379,7 @@ export default function Lesson() {
 
                 {isAudioActive ? (
                   <button onClick={handleSkipSpeak}
-                    className="w-full bg-white border-2 border-brand-200 text-brand-700 font-bold py-3.5 rounded-2xl text-sm active:scale-[.98] transition-all hover:bg-brand-50 inline-flex items-center justify-center gap-2">
+                    className="w-full bg-white/5 border border-white/15 text-white/70 font-bold py-3.5 rounded-xl text-sm active:scale-[.98] transition-all hover:bg-white/10 inline-flex items-center justify-center gap-2">
                     <Square size={14} strokeWidth={2.5} />
                     Stop
                   </button>
@@ -388,8 +388,8 @@ export default function Lesson() {
                     <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center shadow-glow-success check-pop mb-3">
                       <Check size={28} strokeWidth={3} />
                     </div>
-                    <p className="text-sm font-bold text-success-700">Great job!</p>
-                    <p className="text-xs text-gray-400 mt-1">Moving to next sentence...</p>
+                    <p className="text-sm font-bold text-emerald-300">Great job!</p>
+                    <p className="text-xs text-white/40 mt-1">Moving to next sentence...</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
@@ -398,7 +398,7 @@ export default function Lesson() {
                       aria-label="Tap to speak">
                       <Mic size={28} strokeWidth={2} />
                     </button>
-                    <p className="text-xs text-gray-500 mt-2 font-medium">Tap to speak ({speakCt}/3)</p>
+                    <p className="text-xs text-white/45 mt-2 font-medium">Tap to speak ({speakCt}/3)</p>
                   </div>
                 )}
 
@@ -408,11 +408,11 @@ export default function Lesson() {
                       if (!cur) return;
                       stop();
                       setTimeout(() => { if (mountedRef.current && cur) playOnce(cur.id, cur.courseId, cur.english); }, 80);
-                    }} className="flex-1 bg-white border-2 border-surface-200 text-surface-600 font-semibold py-3 rounded-xl text-xs hover:bg-surface-50 active:scale-[.97] transition-all inline-flex items-center justify-center gap-1">
+                    }} className="flex-1 bg-white/5 border border-white/10 text-white/60 font-semibold py-3 rounded-xl text-xs hover:bg-white/10 active:scale-[.97] transition-all inline-flex items-center justify-center gap-1">
                       <Volume2 size={13} strokeWidth={2} /> Listen Again
                     </button>
                     <button onClick={handleSkipSpeak}
-                      className="flex-1 bg-white border-2 border-surface-200 text-surface-600 font-semibold py-3 rounded-xl text-xs hover:bg-surface-50 active:scale-[.97] transition-all inline-flex items-center justify-center gap-1">
+                      className="flex-1 bg-white/5 border border-white/10 text-white/60 font-semibold py-3 rounded-xl text-xs hover:bg-white/10 active:scale-[.97] transition-all inline-flex items-center justify-center gap-1">
                       <SkipForward size={13} strokeWidth={2} /> Skip
                     </button>
                   </div>
@@ -427,10 +427,10 @@ export default function Lesson() {
       <div className="px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-3">
         <div className="flex items-center justify-between">
           <button onClick={goBack} disabled={idx === 0}
-            className="h-12 px-5 rounded-full bg-white border-2 border-surface-200 text-surface-600 font-bold text-sm flex items-center gap-1.5 hover:bg-surface-50 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none">
+            className="h-12 px-5 rounded-full bg-white/5 border border-white/10 text-white/60 font-bold text-sm flex items-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none">
             <ArrowLeft size={14} strokeWidth={2.5} /> Back
           </button>
-          <span className="text-sm font-bold text-surface-400 tabular-nums">{idx + 1}/{total}</span>
+          <span className="text-sm font-bold text-white/30 tabular-nums">{idx + 1}/{total}</span>
           <button onClick={adv}
             className="h-12 px-5 rounded-full bg-brand-600 text-white font-bold text-sm flex items-center gap-1.5 shadow-lg shadow-brand-500/25 hover:bg-brand-700 active:scale-95 transition-all">
             {idx === total - 1 ? <><Check size={14} strokeWidth={2.5} /> Complete</> : <>Next <ArrowRight size={14} strokeWidth={2.5} /></>}
