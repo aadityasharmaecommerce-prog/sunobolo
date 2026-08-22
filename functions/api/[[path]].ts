@@ -364,8 +364,8 @@ async function handleAuthLogin(request: Request, env: Env): Promise<Response> {
   }
 
   const user = await env.DB.prepare(
-    'SELECT id, name, phone, avatar_color, password_hash FROM users WHERE phone = ?'
-  ).bind(normalizedPhone).first<{ id: string; name: string; phone: string; avatar_color: string; password_hash: string | null }>();
+    'SELECT id, name, email, phone, avatar_color, password_hash FROM users WHERE phone = ?'
+  ).bind(normalizedPhone).first<{ id: string; name: string; email: string; phone: string; avatar_color: string; password_hash: string | null }>();
 
   if (!user) {
     await recordLoginAttempt(normalizedPhone, false, env.DB);
@@ -402,7 +402,7 @@ async function handleAuthLogin(request: Request, env: Env): Promise<Response> {
   const sub = await getSubscriptionDetails(user.id, env.DB);
 
   return new Response(
-    JSON.stringify({ user: { id: user.id, name: user.name, phone: user.phone, avatar_color: user.avatar_color }, subscription: sub || { active: false } }),
+    JSON.stringify({ user: { id: user.id, name: user.name, email: user.email, phone: user.phone, avatar_color: user.avatar_color }, subscription: sub || { active: false } }),
     {
       status: 200,
       headers: {

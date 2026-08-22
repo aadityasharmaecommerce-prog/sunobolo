@@ -163,6 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser({
           id: data.user.id,
           name: data.user.name,
+          email: data.user.email,
           phone: data.user.phone,
         });
         setSubscription(data.subscription || { active: false });
