@@ -112,7 +112,12 @@ export default function Login() {
     } else {
       setSuccess('Password reset successful! Redirecting to login...');
       setTimeout(() => {
-        navigate('/login', { replace: true });
+        setMode('login');
+        setError('');
+        setSuccess('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setEmail('');
       }, 2000);
     }
   };
@@ -216,7 +221,7 @@ export default function Login() {
             className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
           <input type="tel" placeholder="Mobile Number" required value={phone} onChange={(e) => setPhone(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="email" placeholder="Email Address (for recovery)" required value={email} onChange={(e) => setEmail(e.target.value)}
+          <input type="email" placeholder="Email Address (optional, for recovery)" value={email} onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
           <input type="password" placeholder="Create PIN / Password (min 6)" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
@@ -254,7 +259,7 @@ export default function Login() {
           </button>
         )}
         {mode === 'reset-new' && (
-          <button onClick={() => { navigate('/login', { replace: true }); }}
+          <button onClick={() => { setMode('login'); setError(''); setSuccess(''); setNewPassword(''); setConfirmPassword(''); }}
             className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center justify-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Back to Sign In
           </button>

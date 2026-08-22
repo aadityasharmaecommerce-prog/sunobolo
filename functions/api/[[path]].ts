@@ -262,6 +262,24 @@ async function sendPasswordResetEmail(
   }
 }
 
+// ── Audit logging ──
+
+async function logAuditEvent(
+  userId: string | null,
+  eventType: string,
+  metadata: Record<string, unknown>,
+  db: D1Database,
+): Promise<void> {
+  try {
+    await db.prepare(
+      `INSERT INTO audit_events (user_id, event_type, metadata, created_at) VALUES (?, ?, ?, datetime('now'))`
+    ).bind(userId, eventType, JSON.stringify(metadata)).run();
+  } catch (e) {
+    // Audit logging should never crash the main flow
+    console.error('[AUDIT] Failed to log event:', e);
+  }
+}
+
 // ── Auth handlers ──
 
 async function handleAuthMe(request: Request, env: Env): Promise<Response> {
@@ -284,21 +302,21 @@ async function hashPasswordPw(password: string): Promise<string> {
 
 async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   const body = await request.json<{ name?: string; phone?: string; email?: string; password?: string }>();
-  if (!body?.name || !body?.phone || !body?.email || !body?.password) {
-    return err('Name, mobile number, email and password are required');
+  if (!body?.name || !body?.phone || !body?.password) {
+    return err('Name, mobile number and password are required');
   }
   if (body.password.length < 6) return err('Password must be at least 6 characters');
 
   const normalizedPhone = normalizePhone(body.phone);
-  const lowerEmail = body.email.toLowerCase().trim();
+  const lowerEmail = body.email ? body.email.toLowerCase().trim() : '';
 
   // Validate phone format (must be +91 followed by 10 digits)
   if (!/^\+91\d{10}$/.test(normalizedPhone)) {
     return err('Please enter a valid 10-digit mobile number');
   }
 
-  // Validate email format
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lowerEmail)) {
+  // Validate email format only if provided
+  if (lowerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lowerEmail)) {
     return err('Please enter a valid email address');
   }
 
@@ -308,10 +326,12 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
     return err('An account with this mobile number already exists. Please login.');
   }
 
-  // Check if email already exists
-  const existingEmail = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(lowerEmail).first();
-  if (existingEmail) {
-    return err('An account with this email already exists. Please login.');
+  // Check if email already exists (only if email was provided)
+  if (lowerEmail) {
+    const existingEmail = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(lowerEmail).first();
+    if (existingEmail) {
+      return err('An account with this email already exists. Please login.');
+    }
   }
 
   const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -322,7 +342,10 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   await env.DB.prepare(
     `INSERT INTO users (id, name, email, phone, recovery_email, avatar_color, password_hash, last_login_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-  ).bind(id, body.name.trim(), lowerEmail, normalizedPhone, lowerEmail, color, passwordHash).run();
+  ).bind(id, body.name.trim(), lowerEmail || null, normalizedPhone, lowerEmail || null, color, passwordHash).run();
+
+  // Audit: account created
+  await logAuditEvent(id, 'ACCOUNT_CREATED', { name: body.name.trim(), phone: normalizedPhone, email: lowerEmail || null }, env.DB);
 
   // One-device: invalidate any existing sessions for this user (shouldn't be any for new signup, but safe)
   await invalidateUserSessions(id, env.DB);
@@ -335,7 +358,7 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   ).bind(crypto.randomUUID(), id, tokenHash, expiresAt).run();
 
   return new Response(
-    JSON.stringify({ user: { id, name: body.name.trim(), email: lowerEmail, phone: normalizedPhone } }),
+    JSON.stringify({ user: { id, name: body.name.trim(), email: lowerEmail || '', phone: normalizedPhone } }),
     {
       status: 200,
       headers: {
@@ -369,22 +392,26 @@ async function handleAuthLogin(request: Request, env: Env): Promise<Response> {
 
   if (!user) {
     await recordLoginAttempt(normalizedPhone, false, env.DB);
+    await logAuditEvent(null, 'LOGIN_FAILED', { phone: normalizedPhone, reason: 'user_not_found' }, env.DB);
     return err('Incorrect mobile number or PIN.', 401);
   }
 
   if (!user.password_hash) {
     await recordLoginAttempt(normalizedPhone, false, env.DB);
+    await logAuditEvent(user.id, 'LOGIN_FAILED', { phone: normalizedPhone, reason: 'no_password_hash' }, env.DB);
     return err('Incorrect mobile number or PIN.', 401);
   }
 
   const inputHash = await hashPasswordPw(body.password);
   if (inputHash !== user.password_hash) {
     await recordLoginAttempt(normalizedPhone, false, env.DB);
+    await logAuditEvent(user.id, 'LOGIN_FAILED', { phone: normalizedPhone, reason: 'wrong_password' }, env.DB);
     return err('Incorrect mobile number or PIN.', 401);
   }
 
   // Record successful attempt
   await recordLoginAttempt(normalizedPhone, true, env.DB);
+  await logAuditEvent(user.id, 'LOGIN_SUCCESS', { phone: normalizedPhone }, env.DB);
 
   // ONE-DEVICE: Invalidate all previous sessions before creating new one
   await invalidateUserSessions(user.id, env.DB);
@@ -471,6 +498,8 @@ async function handleForgotPassword(request: Request, env: Env): Promise<Respons
   // Send reset email (generic response returned regardless of send result)
   await sendPasswordResetEmail(lowerEmail, resetUrl, env);
 
+  await logAuditEvent(user.id, 'PASSWORD_RESET_REQUESTED', { email: lowerEmail }, env.DB);
+
   return genericResponse;
 }
 
@@ -518,6 +547,8 @@ async function handleResetPassword(request: Request, env: Env): Promise<Response
   // Invalidate all sessions for this user (force re-login)
   await invalidateUserSessions(user.id, env.DB);
 
+  await logAuditEvent(user.id, 'PASSWORD_RESET_COMPLETED', {}, env.DB);
+
   return json({ success: true, message: 'Password reset successful. You can now login with your new password.' });
 }
 
@@ -527,6 +558,8 @@ async function handleAuthLogout(request: Request, env: Env): Promise<Response> {
     const tokenHash = await hashToken(token, env.SESSION_SECRET);
     await env.DB.prepare(`DELETE FROM sessions WHERE token_hash = ?`).bind(tokenHash).run();
   }
+  await logAuditEvent(null, 'LOGOUT', {}, env.DB);
+
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { 'content-type': 'application/json; charset=utf-8', 'access-control-allow-origin': '*', 'set-cookie': 'sb_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0' },
@@ -583,6 +616,7 @@ async function handlePaymentCreateOrder(request: Request, env: Env): Promise<Res
       `INSERT INTO payments (id, user_id, razorpay_order_id, amount, currency, status)
        VALUES (?, ?, ?, ?, ?, 'created')`
     ).bind(crypto.randomUUID(), user.id, order.id, order.amount, order.currency).run();
+    await logAuditEvent(user.id, 'PAYMENT_CREATED', { orderId: order.id, amount: order.amount, planId: plan.id }, env.DB);
     return json({ orderId: order.id, amount: order.amount, currency: order.currency, keyId: env.RAZORPAY_KEY_ID, planId: plan.id });
   } catch (e: any) {
     return err('Failed to create order: ' + e.message, 500);
@@ -659,10 +693,12 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
     if (expectedSig !== body.razorpay_signature) {
       console.error(`[VERIFY] Signature mismatch for order ${body.razorpay_order_id}`);
       await env.DB.prepare(`UPDATE payments SET status = 'failed' WHERE razorpay_order_id = ?`).bind(body.razorpay_order_id).run();
+    await logAuditEvent(user.id, 'PAYMENT_FAILED', { orderId: body.razorpay_order_id, reason: 'signature_mismatch' }, env.DB);
       return err('Payment verification failed', 400);
     }
     await activateSubscription(user.id, body.razorpay_order_id, body.razorpay_payment_id, planId, env.DB);
     console.log(`[VERIFY] Payment ${body.razorpay_order_id} → PAID, subscription activated for user ${user.id}`);
+    await logAuditEvent(user.id, 'PAYMENT_SUCCESS', { orderId: body.razorpay_order_id, paymentId: body.razorpay_payment_id, planId }, env.DB);
     return json({ verified: true });
   } catch (e: any) {
     console.error(`[VERIFY] Error for order ${body.razorpay_order_id}:`, e.message);
@@ -806,6 +842,7 @@ async function handlePaymentWebhook(request: Request, env: Env): Promise<Respons
 
     // Activate subscription
     await activateSubscription(payment.user_id, orderId, paymentId, planId, env.DB);
+    await logAuditEvent(payment.user_id, 'PAYMENT_SUCCESS', { orderId, paymentId, planId, source: 'webhook' }, env.DB);
     console.log(`[WEBHOOK] Payment ${orderId} → PAID, subscription activated for user ${payment.user_id}`);
   }
 
