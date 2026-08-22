@@ -195,11 +195,11 @@ export default function Login() {
       {/* ── Step 1: Mobile Number ── */}
       {step === 'mobile' && (
         <>
-          <h1 className="text-2xl font-extrabold text-gray-900">Enter Your Mobile Number</h1>
+          <h1 className="text-2xl font-extrabold text-white">Enter Your Mobile Number</h1>
 
           <form onSubmit={handleMobileSubmit} className="mt-6 w-full max-w-sm space-y-3">
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">+91</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700">+91</span>
               <input
                 type="tel"
                 placeholder="Mobile Number"
@@ -211,7 +211,7 @@ export default function Login() {
                   setPhone(digits);
                 }}
                 maxLength={12}
-                className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
               />
             </div>
 
@@ -231,9 +231,9 @@ export default function Login() {
           <div className="w-14 h-14 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center mb-4">
             <Lock size={24} className="text-green-600" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Welcome Back{existingUserName ? `, ${existingUserName}` : ''}!</h1>
-          <p className="text-gray-500 text-sm mt-1.5">
-            Mobile: <span className="font-semibold text-gray-700">+91 {phone}</span>
+          <h1 className="text-2xl font-extrabold text-white">Welcome Back{existingUserName ? `, ${existingUserName}` : ''}!</h1>
+          <p className="text-white/50 text-sm mt-1.5">
+            Mobile: <span className="font-semibold text-white/80">+91 {phone}</span>
           </p>
 
           <form onSubmit={handlePinLogin} className="mt-6 w-full max-w-sm space-y-3">
@@ -245,7 +245,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
 
             {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
@@ -258,11 +258,11 @@ export default function Login() {
 
           <div className="mt-4 space-y-2 w-full max-w-sm">
             <button onClick={() => { setStep('forgot'); setError(''); setSuccess(''); setPassword(''); }}
-              className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors">
+              className="w-full text-center text-sm text-brand-300 font-semibold hover:text-brand-200 transition-colors">
               Forgot PIN / Password?
             </button>
             <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setPhone(''); }}
-              className="w-full text-center text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors inline-flex items-center justify-center gap-1">
+              className="w-full text-center text-sm text-white/40 font-medium hover:text-white/60 transition-colors inline-flex items-center justify-center gap-1">
               <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
             </button>
           </div>
@@ -275,11 +275,11 @@ export default function Login() {
           <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
             <User size={24} className="text-brand-600" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Create Your Account</h1>
-          <p className="text-gray-500 text-sm mt-1.5">
-            Mobile: <span className="font-semibold text-gray-700">+91 {phone}</span>
+          <h1 className="text-2xl font-extrabold text-white">Create Your Account</h1>
+          <p className="text-white/50 text-sm mt-1.5">
+            Mobile: <span className="font-semibold text-white/80">+91 {phone}</span>
           </p>
-          <p className="text-gray-400 text-xs mt-1">Naya account ban raha hai — PIN create karein</p>
+          <p className="text-white/35 text-xs mt-1">Naya account ban raha hai — PIN create karein</p>
 
           <form onSubmit={handleCreatePin} className="mt-6 w-full max-w-sm space-y-3">
             <input
@@ -290,7 +290,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoFocus
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
             <input
               type="password"
@@ -299,14 +299,14 @@ export default function Login() {
               minLength={6}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
             <input
               type="email"
               placeholder="Email (optional, for recovery)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
 
             {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
@@ -318,7 +318,7 @@ export default function Login() {
           </form>
 
           <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setConfirmPassword(''); setEmail(''); }}
-            className="mt-4 text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors inline-flex items-center gap-1">
+            className="mt-4 text-sm text-white/40 font-medium hover:text-white/60 transition-colors inline-flex items-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
           </button>
         </>
@@ -330,8 +330,8 @@ export default function Login() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-glow-success mb-4">
             <Check size={32} strokeWidth={3} />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Account Ban Gaya! 🎉</h1>
-          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
+          <h1 className="text-2xl font-extrabold text-white">Account Ban Gaya! 🎉</h1>
+          <p className="text-white/50 text-sm mt-1.5 max-w-xs">
             Aapka account successfully create ho gaya. Ab aap free trial try kar sakte hain!
           </p>
 
@@ -341,14 +341,14 @@ export default function Login() {
               placeholder="Apna naam (optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
             <button type="submit"
               className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl">
               Start Learning →
             </button>
             <button type="button" onClick={() => navigate('/', { replace: true })}
-              className="w-full text-center text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors">
+              className="w-full text-center text-sm text-white/40 font-medium hover:text-white/60 transition-colors">
               Skip for now
             </button>
           </form>
@@ -358,13 +358,13 @@ export default function Login() {
       {/* ── Forgot Password Form ── */}
       {step === 'forgot' && (
         <>
-          <h1 className="text-2xl font-extrabold text-gray-900">Reset Password</h1>
-          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
+          <h1 className="text-2xl font-extrabold text-white">Reset Password</h1>
+          <p className="text-white/50 text-sm mt-1.5 max-w-xs">
             Enter your recovery email and we'll send a reset link.
           </p>
           <form onSubmit={handleForgot} className="mt-6 w-full max-w-sm space-y-3">
             <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors" />
             {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
             {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
             <button type="submit" disabled={submitting}
@@ -373,7 +373,7 @@ export default function Login() {
             </button>
           </form>
           <button onClick={() => { setStep('pin'); setError(''); setSuccess(''); setEmail(''); }}
-            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            className="mt-4 text-sm text-brand-300 font-semibold hover:text-brand-200 transition-colors inline-flex items-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
         </>
@@ -385,10 +385,10 @@ export default function Login() {
           <div className="w-16 h-16 rounded-full bg-success-50 border border-success-200 flex items-center justify-center mx-auto mb-4">
             <Mail size={28} className="text-success-600" />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Check Your Email</h1>
-          {success && <p className="text-success-600 text-sm text-center mt-2">{success}</p>}
+          <h1 className="text-2xl font-extrabold text-white">Check Your Email</h1>
+          {success && <p className="text-emerald-400 text-sm text-center mt-2">{success}</p>}
           <button onClick={() => { setStep('forgot'); setError(''); setSuccess(''); }}
-            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            className="mt-4 text-sm text-brand-300 font-semibold hover:text-brand-200 transition-colors inline-flex items-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
         </>
@@ -397,13 +397,13 @@ export default function Login() {
       {/* ── Reset New Password Form ── */}
       {step === 'reset-new' && (
         <>
-          <h1 className="text-2xl font-extrabold text-gray-900">Set New Password</h1>
-          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">Enter your new password below.</p>
+          <h1 className="text-2xl font-extrabold text-white">Set New Password</h1>
+          <p className="text-white/50 text-sm mt-1.5 max-w-xs">Enter your new password below.</p>
           <form onSubmit={handleResetNewPassword} className="mt-6 w-full max-w-sm space-y-3">
             <input type="password" placeholder="New password (min 6 characters)" required minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors" />
             <input type="password" placeholder="Confirm new password" required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors" />
             {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
             {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
             <button type="submit" disabled={submitting}
@@ -412,7 +412,7 @@ export default function Login() {
             </button>
           </form>
           <button onClick={() => { setStep('mobile'); setError(''); setSuccess(''); setNewPassword(''); setConfirmPassword(''); }}
-            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            className="mt-4 text-sm text-brand-300 font-semibold hover:text-brand-200 transition-colors inline-flex items-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
         </>
@@ -421,10 +421,10 @@ export default function Login() {
       {/* ── Footer Links ── */}
       {step === 'mobile' && (
         <div className="mt-5 space-y-2 w-full max-w-sm">
-          <a href="/free-trial" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center justify-center gap-1">
+          <a href="/free-trial" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors inline-flex items-center justify-center gap-1">
             <Headphones size={12} strokeWidth={2} /> Try Free Trial first
           </a>
-          <a href="/" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors">
+          <a href="/" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors">
             Back to Home
           </a>
         </div>
