@@ -100,8 +100,8 @@ function FloatingElements() {
       {/* Sentence card */}
       <div className="absolute bottom-12 left-2 float-medium hidden sm:block" style={{ animationDelay: '1s' }}>
         <div className="dark-card-solid !rounded-lg px-3 py-2 max-w-[160px]">
-          <p className="text-[9px] text-white/80 font-semibold leading-tight">\u201cI am learning English.\u201d</p>
-          <p className="text-[8px] text-white/40 mt-0.5">मैं अंग्रेज़ी सीख रहा हूँ।</p>
+          <p className="text-[9px] text-white/80 font-semibold leading-tight">I am learning English.</p>
+          <p className="text-[8px] text-white/40 mt-0.5">Mai English seekh raha hoon.</p>
         </div>
       </div>
 

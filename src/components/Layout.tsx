@@ -19,7 +19,7 @@ export default function Layout() {
       {/* ── Desktop Header ── */}
       <header className="sticky top-0 z-40 dark-glass-nav">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo — single mark, no text duplicate */}
           <a href="/" className="flex items-center active:scale-[0.97] transition-transform">
             <img
               src="/images/logo.png"
@@ -27,9 +27,6 @@ export default function Layout() {
               className="h-8 w-auto object-contain brightness-0 invert"
               style={{ maxHeight: '32px' }}
             />
-            <span className="ml-2 text-sm font-extrabold text-white tracking-tight hidden sm:inline">
-              Suno<span className="text-brand-300">Bolo</span>
-            </span>
           </a>
 
           {/* Desktop Navigation */}
@@ -52,21 +49,14 @@ export default function Layout() {
             })}
           </nav>
 
-          {/* Actions */}
+          {/* Actions — one CTA + profile */}
           <div className="flex items-center gap-2">
             <a
               href="/free-trial"
               className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-full transition-colors text-brand-700 bg-white hover:bg-gray-50 shadow-lg"
             >
               <Headphones size={14} strokeWidth={2.5} />
-              Try Free
-            </a>
-            <a
-              href="/free-trial"
-              className="sm:hidden btn-premium px-3 py-1.5 text-xs rounded-full bg-white text-brand-700 shadow-lg"
-            >
-              <Headphones size={13} strokeWidth={2.5} />
-              Free
+              Try 25 Free Sentences
             </a>
             <a
               href="/profile"

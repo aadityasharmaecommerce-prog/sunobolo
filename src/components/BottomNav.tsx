@@ -68,8 +68,8 @@ export default function BottomNav() {
         </div>
       )}
 
-      {/* ── Dark Premium Floating Bottom Nav ── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 pb-[max(env(safe-area-inset-bottom),8px)] pointer-events-none">
+      {/* ── Dark Premium Floating Bottom Nav — mobile only ── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 pb-[max(env(safe-area-inset-bottom),8px)] pointer-events-none sm:hidden">
         <div className="max-w-xl mx-auto px-3 pointer-events-auto">
           <div className="dark-bottom-nav rounded-2xl shadow-[0_-2px_16px_rgba(0,0,0,0.3),0_8px_32px_-6px_rgba(0,0,0,0.4)] flex items-center justify-around px-1 py-1.5">
             {tabs.map((tab) => {
