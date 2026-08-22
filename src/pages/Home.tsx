@@ -45,9 +45,21 @@ export default function Home() {
         <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
         <div className="relative p-6 sm:p-10 lg:p-14">
-          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-14">
-            {/* Left: Content */}
-            <div className="flex-1 text-center lg:text-left">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-14">
+            {/* Hero illustration — shows FIRST on mobile */}
+            <div className="flex-1 w-full max-w-md lg:max-w-xl relative order-1 lg:order-2">
+              <img
+                src="/images/hero.webp"
+                alt="SunoBolo — Indian students learning English with headphones and smartphone"
+                className="w-full h-auto object-contain max-h-[260px] sm:max-h-[320px] lg:max-h-[480px] drop-shadow-[0_0_60px_rgba(108,77,255,0.25)]"
+                loading="eager"
+                width="600"
+                height="500"
+              />
+            </div>
+
+            {/* Text + CTAs — shows SECOND on mobile */}
+            <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
               {/* Pill badge */}
               <div className="inline-flex items-center gap-2 mb-6 bg-white/[0.06] backdrop-blur-sm rounded-full px-4 py-2 border border-white/[0.08]">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -113,17 +125,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Hero illustration */}
-            <div className="flex-1 w-full max-w-md lg:max-w-xl relative">
-              <img
-                src="/images/hero.webp"
-                alt="SunoBolo — Indian students learning English with headphones and smartphone"
-                className="w-full h-auto object-contain max-h-[380px] sm:max-h-[440px] lg:max-h-[480px] drop-shadow-[0_0_60px_rgba(108,77,255,0.25)]"
-                loading="eager"
-                width="600"
-                height="500"
-              />
-            </div>
+
           </div>
 
           {/* Social proof bar */}
