@@ -4,7 +4,7 @@ import { loadCourse } from '../data/content';
 import type { CourseData } from '../data/content';
 import { getProgress } from '../lib/progress';
 import CourseIcon from '../components/CourseIcon';
-import { Check, ChevronRight, Clock, ArrowLeft, Lock } from 'lucide-react';
+import { Check, ChevronRight, Clock, ArrowLeft } from 'lucide-react';
 
 /* ── Loading skeleton ── */
 function CourseDetailSkeleton() {

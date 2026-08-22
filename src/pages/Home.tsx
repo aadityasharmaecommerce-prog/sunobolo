@@ -1,13 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import { courseMetadata } from '../data/content';
 import { PLAN_LIST, type Plan } from '../config/plans';
 import CourseIcon from '../components/CourseIcon';
 import {
   Headphones, ArrowRight, Shield, Zap, CreditCard, Star,
-  Volume2, Mic, CheckCircle2, ChevronRight, Globe, Users,
-  Lock, Play, BookOpen, Sparkles, MessageCircle, Briefcase,
-  Building2, Plane, ShoppingCart, GraduationCap, Baby,
+  Volume2, Mic, CheckCircle2, ChevronRight, Globe,
+  BookOpen, Sparkles, MessageCircle, Briefcase,
+  Building2, Plane, ShoppingCart, GraduationCap,
   TrendingUp, Award
 } from 'lucide-react';
 
@@ -280,7 +279,6 @@ export default function Home() {
         </div>
         <div className="space-y-2.5">
           {COURSE_LEVELS.map((level) => {
-            const meta = courseMetadata.find(c => c.id === level.id);
             return (
               <button
                 key={level.id}

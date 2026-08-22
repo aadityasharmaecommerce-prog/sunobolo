@@ -10,11 +10,6 @@ const tabs = [
   { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
 ] as const;
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
 function isStandalone(): boolean {
   if (typeof window === 'undefined') return false;
   return (
@@ -32,50 +27,12 @@ function isIOS(): boolean {
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
-  const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    if (isStandalone()) { setInstalled(true); return; }
-
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-
+    if (isStandalone()) return;
     if (isIOS() && !isStandalone()) setShowIOSGuide(true);
-
-    const installedHandler = () => { setInstalled(true); setDeferredPrompt(null); };
-    window.addEventListener('appinstalled', installedHandler);
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-      window.removeEventListener('appinstalled', installedHandler);
-    };
   }, []);
-
-  const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') setInstalled(true);
-      setDeferredPrompt(null);
-    }
-  };
-
-  const handleTabClick = (tab: typeof tabs[number]) => {
-    if (tab.id === 'install') {
-      if (showIOSGuide) setShowIOSGuide(true);
-      else handleInstall();
-      return;
-    }
-    navigate(tab.path);
-  };
-
-  const visibleTabs = installed
-    ? tabs.filter(t => t.id !== 'install')
-    : tabs;
 
   return (
     <>
@@ -115,21 +72,18 @@ export default function BottomNav() {
       <nav className="fixed bottom-0 left-0 right-0 z-40 pb-[max(env(safe-area-inset-bottom),8px)] pointer-events-none">
         <div className="max-w-xl mx-auto px-3 pointer-events-auto">
           <div className="glass rounded-2xl border border-surface-200/80 shadow-[0_-2px_16px_rgba(15,23,42,0.06),0_8px_32px_-6px_rgba(15,23,42,0.12)] flex items-center justify-around px-1 py-1.5">
-            {visibleTabs.map((tab) => {
-              const isActive = tab.id !== 'install' && location.pathname === tab.path;
-              const isInstall = tab.id === 'install';
+            {tabs.map((tab) => {
+              const isActive = location.pathname === tab.path;
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
-                  onClick={() => handleTabClick(tab)}
+                  onClick={() => navigate(tab.path)}
                   aria-label={tab.label}
                   className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-2.5 sm:px-3 rounded-xl transition-all duration-200 ${
-                    isInstall
-                      ? 'text-brand-600'
-                      : isActive
-                        ? 'nav-pill-active'
-                        : 'text-surface-400 hover:text-surface-600'
+                    isActive
+                      ? 'nav-pill-active'
+                      : 'text-surface-400 hover:text-surface-600'
                   }`}
                 >
                   <Icon
@@ -139,7 +93,7 @@ export default function BottomNav() {
                     fill={isActive ? 'currentColor' : 'none'}
                   />
                   <span className={`text-[10px] sm:text-[11px] font-semibold leading-none mt-0.5 ${
-                    isInstall ? 'text-brand-600 font-bold' : isActive ? 'text-brand-700' : ''
+                    isActive ? 'text-brand-700' : ''
                   }`}>
                     {tab.label}
                   </span>
