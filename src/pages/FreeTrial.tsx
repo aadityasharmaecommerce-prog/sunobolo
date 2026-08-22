@@ -6,10 +6,10 @@ import Confetti from '../components/Confetti';
 import BadgeToast from '../components/BadgeToast';
 import { checkAndPersistBadges } from '../lib/badges';
 import type { Badge } from '../config/badges';
+import { Check } from 'lucide-react';
 
 type Phase = 'listen' | 'speak';
 
-/* ── Waveform ── */
 function Waveform({ active }: { active: boolean }) {
   if (!active) return null;
   return (
@@ -21,7 +21,6 @@ function Waveform({ active }: { active: boolean }) {
   );
 }
 
-/* ── Step Indicator ── */
 function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
   const steps = [
     { n: 1, label: 'Listen', done: step > 1 },
@@ -33,15 +32,15 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
       {steps.map((s, i) => (
         <div key={s.n} className="flex items-center gap-1.5 sm:gap-2">
           <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all duration-300 ${
-            s.n === step && !s.done ? 'bg-brand-100 text-brand-700 step-active'
-            : s.done ? 'bg-success-100 text-success-700'
-            : 'bg-gray-100 text-gray-400'
+            s.n === step && !s.done ? 'bg-brand-500/20 text-brand-300 border border-brand-500/30'
+            : s.done ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+            : 'bg-white/5 text-white/30 border border-white/10'
           }`}>
-            {s.done ? <span className="text-[10px]">✓</span> : <span className="text-[10px]">{s.n}</span>}
+            {s.done ? <Check size={12} strokeWidth={3} /> : <span className="text-[10px]">{s.n}</span>}
             {s.label}
           </div>
           {i < steps.length - 1 && (
-            <span className={`text-[10px] ${s.done ? 'text-success-400' : 'text-gray-300'}`}>→</span>
+            <span className={`text-[10px] ${s.done ? 'text-emerald-400' : 'text-white/20'}`}>→</span>
           )}
         </div>
       ))}
@@ -58,7 +57,7 @@ export default function FreeTrial() {
 function Landing({ onStart }: { onStart: () => void }) {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 text-center">
-      <div className="w-24 h-24 rounded-3xl overflow-hidden mb-6 shadow-xl ring-4 ring-brand-100 bg-gradient-to-br from-brand-200 to-accent-200">
+      <div className="w-24 h-24 rounded-3xl overflow-hidden mb-6 shadow-xl ring-4 ring-brand-500/30 bg-gradient-to-br from-brand-500/30 to-accent-500/20">
         <img
           src="/images/hero.webp"
           alt=""
@@ -66,11 +65,11 @@ function Landing({ onStart }: { onStart: () => void }) {
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
       </div>
-      <h1 className="text-3xl font-extrabold text-gray-900">Free Trial</h1>
-      <p className="text-gray-500 mt-2 text-sm max-w-xs">
+      <h1 className="text-3xl font-extrabold text-white">Free Trial</h1>
+      <p className="text-white/50 mt-2 text-sm max-w-xs">
         25 real-life sentences with Hindi meaning and natural audio
       </p>
-      <div className="mt-6 flex items-center gap-3 text-[11px] text-gray-400 font-medium">
+      <div className="mt-6 flex items-center gap-3 text-[11px] text-white/40 font-medium">
         <span>🎧 Listen 3×</span>
         <span>·</span>
         <span>🎤 Speak 3×</span>
@@ -83,62 +82,58 @@ function Landing({ onStart }: { onStart: () => void }) {
       >
         🎧 Start Free Trial
       </button>
-      <p className="text-[11px] text-gray-400 mt-3">No login · No payment · Full experience</p>
+      <p className="text-[11px] text-white/35 mt-3">No login · No payment · Full experience</p>
 
-      {/* Grammar / Tenses Preview Card */}
+      {/* Grammar Preview Card */}
       <div className="mt-8 w-full max-w-sm">
-        <a href="/tenses" className="block border border-gray-100 bg-white rounded-2xl shadow-sm p-4 text-left hover:shadow-md hover:border-indigo-200 transition-all">
+        <a href="/tenses" className="block dark-card-page p-4 text-left hover:border-indigo-500/30 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
               <span className="text-white text-base font-extrabold">T</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-extrabold text-gray-900">English Grammar</h3>
-                <span className="text-[9px] font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-full">NEW</span>
+                <h3 className="text-sm font-extrabold text-white">English Grammar</h3>
+                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-1.5 py-0.5 rounded-full">NEW</span>
               </div>
-              <p className="text-[11px] text-gray-500 mt-0.5">12 Tenses · Present · Past · Future</p>
+              <p className="text-[11px] text-white/40 mt-0.5">12 Tenses · Present · Past · Future</p>
             </div>
-            <span className="text-indigo-400 text-sm">→</span>
+            <span className="text-white/30 text-sm">→</span>
           </div>
         </a>
       </div>
 
-      {/* ══════════ UNLOCK FULL ACCESS ══════════ */}
+      {/* Unlock Full Access */}
       <div className="mt-10 w-full max-w-sm">
         <div className="mb-4">
-          <h2 className="text-lg font-extrabold text-gray-900">Unlock Full Access</h2>
-          <p className="text-gray-500 text-xs mt-1">Get all courses, grammar, listening & speaking practice</p>
+          <h2 className="text-lg font-extrabold text-white">Unlock Full Access</h2>
+          <p className="text-white/40 text-xs mt-1">Get all courses, grammar, listening & speaking practice</p>
         </div>
-
-        {/* Locked Course Cards */}
         <div className="space-y-2.5">
           {courseMetadata.map((course) => (
             <a
               key={course.id}
               href="/pricing"
-              className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3.5 text-left hover:shadow-md hover:border-brand-200 transition-all group"
+              className="dark-card-page flex items-center gap-3 p-3.5 text-left hover:border-brand-500/30 transition-all group"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shrink-0 text-lg group-hover:from-brand-100 group-hover:to-brand-200 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 text-lg group-hover:bg-brand-500/10 transition-colors">
                 {course.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[13px] font-bold text-gray-900 truncate">{course.title}</h3>
-                <p className="text-[11px] text-gray-500 mt-0.5">{course.totalSentences}+ Sentences · {course.totalLessons} Lessons</p>
+                <h3 className="text-[13px] font-bold text-white truncate">{course.title}</h3>
+                <p className="text-[11px] text-white/35 mt-0.5">{course.totalSentences}+ Sentences · {course.totalLessons} Lessons</p>
               </div>
-              <span className="text-[10px] font-extrabold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">🔒</span>
+              <span className="text-[10px] font-extrabold text-white/25 bg-white/5 px-2 py-0.5 rounded-full shrink-0">🔒</span>
             </a>
           ))}
         </div>
-
-        {/* CTA */}
         <a
           href="/pricing"
-          className="mt-5 w-full btn-premium btn-premium-gradient py-4 text-sm block text-center rounded-2xl font-bold shadow-lg"
+          className="mt-5 w-full btn-premium btn-premium-gradient py-4 text-sm block text-center rounded-xl font-bold shadow-lg"
         >
           View Plans →
         </a>
-        <p className="text-[11px] text-gray-400 mt-2 text-center">One-time payment · No subscription · Lifetime access</p>
+        <p className="text-[11px] text-white/30 mt-2 text-center">One-time payment · No subscription · Lifetime access</p>
       </div>
 
       <div className="h-10" />
@@ -211,7 +206,7 @@ function Practice() {
       }, 300);
       return () => clearTimeout(t);
     }
-  }, [phase, idx, cur?.id, hasStarted]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, idx, cur?.id, hasStarted]);
 
   useEffect(() => { if (phase === 'listen' && listenCt >= 3) setPhase('speak'); }, [listenCt, phase]);
 
@@ -240,21 +235,21 @@ function Practice() {
 
   if (finished) {
     return (
-      <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center page-canvas lesson-complete-pop">
+      <div className="min-h-dvh flex flex-col items-center justify-center px-6 text-center lesson-complete-pop">
         <Confetti />
         <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-5xl shadow-glow-success animate-float mb-6">
           🎉
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">Trial Complete!</h1>
-        <p className="text-gray-500 mt-2 text-sm">{total} sentences practiced! 👏</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Trial Complete!</h1>
+        <p className="text-white/50 mt-2 text-sm">{total} sentences practiced! 👏</p>
         <div className="mt-8 w-full max-w-xs space-y-3">
-          <a href="/course/beginner" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-2xl">
+          <a href="/course/beginner" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-xl">
             🚀 Start Beginner Course
           </a>
-          <a href="/courses" className="block w-full bg-white border-2 border-gray-200 text-gray-800 font-bold py-4 rounded-2xl text-center text-sm hover:border-brand-300 transition-colors">
+          <a href="/courses" className="block w-full bg-white/5 border border-white/10 text-white/70 font-bold py-4 rounded-xl text-center text-sm hover:bg-white/10 transition-colors">
             📚 All Courses
           </a>
-          <a href="/tenses" className="block w-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold py-4 rounded-2xl text-center text-sm hover:bg-indigo-100 transition-colors">
+          <a href="/tenses" className="block w-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold py-4 rounded-xl text-center text-sm hover:bg-indigo-500/20 transition-colors">
             📘 English Grammar
           </a>
         </div>
@@ -271,121 +266,117 @@ function Practice() {
   const currentStep: 1 | 2 | 3 = phase === 'listen' ? 1 : speakCt >= 3 ? 3 : 2;
 
   return (
-    <div className="min-h-dvh flex flex-col page-canvas overflow-x-hidden">
-      {/* Badge toast — one at a time, top-right */}
+    <div className="min-h-dvh flex flex-col overflow-x-hidden">
       {badgeQueue.length > 0 && (
         <div className="fixed top-4 right-4 z-50">
           <BadgeToast key={badgeQueue[0].id} badge={badgeQueue[0]} onDismiss={dismissBadge} />
         </div>
       )}
 
-      {/* ══════════ TOP HEADER ══════════ */}
+      {/* TOP HEADER */}
       <div className="px-5 pt-4 pb-2">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => { stop(); setFinished(true); }}
             aria-label="Close"
-            className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-500 hover:text-gray-800 hover:border-gray-300 active:scale-95 transition-all"
+            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/15 active:scale-95 transition-all"
           >
             ✕
           </button>
           <div className="text-center flex-1 min-w-0 mx-3">
-            <p className="text-[11px] font-extrabold text-brand-600 uppercase tracking-widest">🎧 Free Trial</p>
-            <p className="text-sm font-bold text-gray-900 mt-0.5">
-              {idx + 1} <span className="text-gray-300 font-normal">of</span> {total}
+            <p className="text-[11px] font-extrabold text-brand-300 uppercase tracking-widest">🎧 Free Trial</p>
+            <p className="text-sm font-bold text-white mt-0.5">
+              {idx + 1} <span className="text-white/30 font-normal">of</span> {total}
             </p>
           </div>
           <div className="w-10 h-10" />
         </div>
-        <div className="h-1.5 bg-gray-200/70 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500" style={{ width: `${Math.max(pct, 2)}%` }} />
+        <div className="dark-progress h-1.5">
+          <div className="dark-progress-fill" style={{ width: `${Math.max(pct, 2)}%` }} />
         </div>
       </div>
 
-      {/* ══════════ STEP INDICATOR ══════════ */}
+      {/* STEP INDICATOR */}
       <div className="px-5 py-2">
         <StepIndicator step={currentStep} />
       </div>
 
-      {/* ══════════ MAIN SENTENCE CARD ══════════ */}
+      {/* MAIN SENTENCE CARD */}
       <div className="flex-1 px-5 flex flex-col min-h-0">
         <div key={idx} className="sentence-slide-in flex-1 flex flex-col">
-          <div className="flex-1 bg-white rounded-3xl shadow-[0_2px_4px_rgb(15_23_42/_0.04),0_12px_32px_-8px_rgb(15_23_42/_0.1)] border border-gray-100 px-6 py-6 sm:py-8 flex flex-col">
+          <div className="flex-1 dark-card-page px-6 py-6 sm:py-8 flex flex-col">
             <div className="flex-1 flex flex-col items-center justify-center text-center">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-brand-400 font-extrabold mb-3">English Sentence</p>
-              <p className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold leading-snug text-gray-900 max-w-lg">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-brand-300 font-extrabold mb-3">English Sentence</p>
+              <p className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold leading-snug text-white max-w-lg">
                 &ldquo;{cur.english}&rdquo;
               </p>
-              <div className="mt-5 pt-5 border-t border-gray-100 w-full max-w-md">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400 font-extrabold mb-2">🇮🇳 हिंदी में अर्थ</p>
-                <p className="text-[17px] sm:text-lg text-gray-600 leading-relaxed">{cur.hindi}</p>
+              <div className="mt-5 pt-5 border-t border-white/8 w-full max-w-md">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/35 font-extrabold mb-2">🇮🇳 हिंदी में अर्थ</p>
+                <p className="text-[17px] sm:text-lg text-white/60 leading-relaxed">{cur.hindi}</p>
               </div>
             </div>
 
-            {/* LISTEN - Tap to Start */}
             {phase === 'listen' && !hasStarted && (
-              <div className="mt-5 pt-4 border-t border-gray-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <button onClick={() => setHasStarted(true)}
-                  className="w-full btn-premium btn-premium-gradient py-4 text-sm rounded-2xl">
+                  className="w-full btn-premium btn-premium-gradient py-4 text-sm rounded-xl">
                   🔊 Tap to Start Listening
                 </button>
               </div>
             )}
-            {/* LISTEN - Active */}
             {phase === 'listen' && hasStarted && (
-              <div className="mt-5 pt-4 border-t border-gray-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <div className="text-center mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 font-extrabold">🎧 Listen</p>
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 font-extrabold">🎧 Listen</p>
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   {[1, 2, 3].map((n) => (
                     <div key={n} className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300 ${
                       listenCt >= n ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
                       : isPlaying && playCount === n - 1 ? 'bg-gradient-to-br from-brand-500 to-accent-500 text-white shadow-glow-brand'
-                      : 'bg-gray-100 text-gray-400 border border-gray-200'
-                    }`}>{listenCt >= n ? '✓' : n}</div>
+                      : 'bg-white/5 text-white/30 border border-white/10'
+                    }`}>{listenCt >= n ? <Check size={14} strokeWidth={3} /> : n}</div>
                   ))}
                 </div>
                 <div className="flex justify-center mb-3"><Waveform active={isAudioActive} /></div>
                 {isAudioActive ? (
-                  <button onClick={handleSkipListen} className="w-full bg-white border-2 border-brand-200 text-brand-700 font-bold py-3.5 rounded-2xl text-sm active:scale-[.98] transition-all hover:bg-brand-50">
+                  <button onClick={handleSkipListen} className="w-full bg-white/5 border border-white/15 text-white/70 font-bold py-3.5 rounded-xl text-sm active:scale-[.98] transition-all hover:bg-white/10">
                     ⏹ Stop Audio
                   </button>
                 ) : (
                   <button onClick={() => {
                     if (listenCt >= 3) { handleManualPlay(); return; }
                     listenThreeTimes(cur.id, cur.courseId, cur.english, setListenCt, cur.hindi, () => { if (mountedRef.current) setPhase('speak'); });
-                  }} className="w-full btn-premium btn-premium-gradient py-3.5 text-sm rounded-2xl">
+                  }} className="w-full btn-premium btn-premium-gradient py-3.5 text-sm rounded-xl">
                     {listenCt >= 3 ? '🔊 Listen Again' : '▶ Listen to Sentence'}
                   </button>
                 )}
               </div>
             )}
 
-            {/* SPEAK */}
             {phase === 'speak' && (
-              <div className="mt-5 pt-4 border-t border-gray-100">
+              <div className="mt-5 pt-4 border-t border-white/8">
                 <div className="text-center mb-3">
-                  <p className="text-[11px] uppercase tracking-[0.15em] text-gray-400 font-extrabold">🎤 Your Turn</p>
-                  <p className="text-xs text-gray-500 mt-1">Say the complete sentence</p>
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-white/35 font-extrabold">🎤 Your Turn</p>
+                  <p className="text-xs text-white/45 mt-1">Say the complete sentence</p>
                 </div>
                 <div className="flex items-center justify-center gap-2 mb-4">
                   {[1, 2, 3].map((n) => (
                     <div key={n} className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-extrabold transition-all duration-300 ${
                       speakCt >= n ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white shadow-glow-success'
-                      : 'bg-gray-100 text-gray-400 border border-gray-200'
-                    }`}>{speakCt >= n ? '✓' : n}</div>
+                      : 'bg-white/5 text-white/30 border border-white/10'
+                    }`}>{speakCt >= n ? <Check size={14} strokeWidth={3} /> : n}</div>
                   ))}
                 </div>
                 {isAudioActive ? (
-                  <button onClick={handleSkipSpeak} className="w-full bg-white border-2 border-brand-200 text-brand-700 font-bold py-3.5 rounded-2xl text-sm active:scale-[.98] transition-all hover:bg-brand-50">
+                  <button onClick={handleSkipSpeak} className="w-full bg-white/5 border border-white/15 text-white/70 font-bold py-3.5 rounded-xl text-sm active:scale-[.98] transition-all hover:bg-white/10">
                     ⏹ Stop
                   </button>
                 ) : speakCt >= 3 ? (
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-glow-success check-pop mb-3">✓</div>
-                    <p className="text-sm font-bold text-success-700">Great job!</p>
-                    <p className="text-xs text-gray-400 mt-1">Moving to next sentence...</p>
+                    <p className="text-sm font-bold text-emerald-300">Great job!</p>
+                    <p className="text-xs text-white/40 mt-1">Moving to next sentence...</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
@@ -394,17 +385,17 @@ function Practice() {
                       aria-label="Tap to speak">
                       🎤
                     </button>
-                    <p className="text-xs text-gray-500 mt-2 font-medium">Tap to speak ({speakCt}/3)</p>
+                    <p className="text-xs text-white/45 mt-2 font-medium">Tap to speak ({speakCt}/3)</p>
                   </div>
                 )}
                 {!isAudioActive && speakCt < 3 && (
                   <div className="flex gap-2 mt-4">
                     <button onClick={() => { if (!cur) return; stop(); setTimeout(() => { if (mountedRef.current && cur) playOnce(cur.id, cur.courseId, cur.english); }, 80); }}
-                      className="flex-1 bg-white border-2 border-gray-200 text-gray-600 font-semibold py-3 rounded-xl text-xs hover:bg-gray-50 active:scale-[.97] transition-all">
+                      className="flex-1 bg-white/5 border border-white/10 text-white/60 font-semibold py-3 rounded-xl text-xs hover:bg-white/10 active:scale-[.97] transition-all">
                       🔊 Listen Again
                     </button>
                     <button onClick={handleSkipSpeak}
-                      className="flex-1 bg-white border-2 border-gray-200 text-gray-600 font-semibold py-3 rounded-xl text-xs hover:bg-gray-50 active:scale-[.97] transition-all">
+                      className="flex-1 bg-white/5 border border-white/10 text-white/60 font-semibold py-3 rounded-xl text-xs hover:bg-white/10 active:scale-[.97] transition-all">
                       ⏭ Skip
                     </button>
                   </div>
@@ -415,14 +406,14 @@ function Practice() {
         </div>
       </div>
 
-      {/* ══════════ BOTTOM NAV ══════════ */}
+      {/* BOTTOM NAV */}
       <div className="px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-3">
         <div className="flex items-center justify-between">
           <button onClick={goBack} disabled={idx === 0}
-            className="h-12 px-5 rounded-full bg-white border-2 border-gray-200 text-gray-600 font-bold text-sm flex items-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none">
+            className="h-12 px-5 rounded-full bg-white/5 border border-white/10 text-white/60 font-bold text-sm flex items-center gap-1.5 hover:bg-white/10 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none">
             ← Back
           </button>
-          <span className="text-sm font-bold text-gray-400 tabular-nums">{idx + 1}/{total}</span>
+          <span className="text-sm font-bold text-white/30 tabular-nums">{idx + 1}/{total}</span>
           <button onClick={adv}
             className="h-12 px-5 rounded-full bg-brand-600 text-white font-bold text-sm flex items-center gap-1.5 shadow-lg shadow-brand-500/25 hover:bg-brand-700 active:scale-95 transition-all">
             {idx === total - 1 ? '✓ Complete' : 'Next →'}
