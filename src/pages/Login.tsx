@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import Logo from '../components/Logo';
-import { ArrowLeft, Headphones, Mail, Phone, Lock, User, Check } from 'lucide-react';
+import { ArrowLeft, Headphones, Mail, Lock, User, Check } from 'lucide-react';
 
 type FlowStep = 'mobile' | 'pin' | 'create-pin' | 'forgot' | 'reset-email' | 'reset-new' | 'name-onboard';
 
@@ -188,20 +188,14 @@ export default function Login() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
       {/* Logo */}
-      <div className="mb-5">
-        <Logo size={40} showText={false} />
+      <div className="mb-4">
+        <Logo size={90} showText={false} />
       </div>
 
       {/* ── Step 1: Mobile Number ── */}
       {step === 'mobile' && (
         <>
-          <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
-            <Phone size={24} className="text-brand-600" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Apna Mobile Number Enter Karein</h1>
-          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
-            System automatically detect karega — existing account ya naya account.
-          </p>
+          <h1 className="text-2xl font-extrabold text-gray-900">Enter Your Mobile Number</h1>
 
           <form onSubmit={handleMobileSubmit} className="mt-6 w-full max-w-sm space-y-3">
             <div className="relative">
