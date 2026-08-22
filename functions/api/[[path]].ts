@@ -282,6 +282,23 @@ async function logAuditEvent(
 
 // ── Auth handlers ──
 
+/** Check if mobile number exists — returns exists: true/false */
+async function handleCheckMobile(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ phone?: string }>();
+  if (!body?.phone) return err('Mobile number required');
+
+  const normalizedPhone = normalizePhone(body.phone);
+  if (!/^\+91\d{10}$/.test(normalizedPhone)) {
+    return err('Please enter a valid 10-digit mobile number');
+  }
+
+  const user = await env.DB.prepare(
+    'SELECT id, name FROM users WHERE phone = ?'
+  ).bind(normalizedPhone).first<{ id: string; name: string }>();
+
+  return json({ exists: !!user, name: user?.name || null });
+}
+
 async function handleAuthMe(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
   if (!user) return json({ user: null, subscription: { active: false } });
@@ -302,8 +319,8 @@ async function hashPasswordPw(password: string): Promise<string> {
 
 async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   const body = await request.json<{ name?: string; phone?: string; email?: string; password?: string }>();
-  if (!body?.name || !body?.phone || !body?.password) {
-    return err('Name, mobile number and password are required');
+  if (!body?.phone || !body?.password) {
+    return err('Mobile number and password are required');
   }
   if (body.password.length < 6) return err('Password must be at least 6 characters');
 
@@ -334,6 +351,7 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
     }
   }
 
+  const userName = body.name ? body.name.trim() : 'SunoBolo User';
   const id = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const passwordHash = await hashPasswordPw(body.password);
   const colors = ['sky', 'purple', 'green', 'orange', 'pink'];
@@ -342,10 +360,10 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   await env.DB.prepare(
     `INSERT INTO users (id, name, email, phone, recovery_email, avatar_color, password_hash, last_login_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-  ).bind(id, body.name.trim(), lowerEmail || null, normalizedPhone, lowerEmail || null, color, passwordHash).run();
+  ).bind(id, userName, lowerEmail || null, normalizedPhone, lowerEmail || null, color, passwordHash).run();
 
   // Audit: account created
-  await logAuditEvent(id, 'ACCOUNT_CREATED', { name: body.name.trim(), phone: normalizedPhone, email: lowerEmail || null }, env.DB);
+  await logAuditEvent(id, 'ACCOUNT_CREATED', { name: userName, phone: normalizedPhone, email: lowerEmail || null }, env.DB);
 
   // One-device: invalidate any existing sessions for this user (shouldn't be any for new signup, but safe)
   await invalidateUserSessions(id, env.DB);
@@ -358,7 +376,7 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
   ).bind(crypto.randomUUID(), id, tokenHash, expiresAt).run();
 
   return new Response(
-    JSON.stringify({ user: { id, name: body.name.trim(), email: lowerEmail || '', phone: normalizedPhone } }),
+    JSON.stringify({ user: { id, name: userName, email: lowerEmail || '', phone: normalizedPhone } }),
     {
       status: 200,
       headers: {
@@ -923,6 +941,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
       return json({ id, name: 'Guest', avatar_color: color });
     }
 
+    if (route === '/auth/check-mobile' && method === 'POST') return handleCheckMobile(request, env);
     if (route === '/auth/signup' && method === 'POST') return handleAuthSignup(request, env);
     if (route === '/auth/login' && method === 'POST') return handleAuthLogin(request, env);
     if (route === '/auth/me' && method === 'GET') return handleAuthMe(request, env);

@@ -33,6 +33,7 @@ interface AuthState {
   user: User | null;
   subscription: Subscription;
   loading: boolean;
+  checkMobile: (phone: string) => Promise<{ exists: boolean; name?: string; error?: string }>;
   signup: (name: string, phone: string, email: string, password: string) => Promise<{ error?: string }>;
   login: (phone: string, password: string) => Promise<{ error?: string }>;
   forgotPassword: (email: string) => Promise<{ error?: string; success?: boolean }>;
@@ -46,6 +47,7 @@ const AuthContext = createContext<AuthState>({
   user: null,
   subscription: { active: false },
   loading: true,
+  checkMobile: async () => ({ exists: false }),
   signup: async () => ({}),
   login: async () => ({}),
   forgotPassword: async () => ({}),
@@ -107,6 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     refreshAuth().finally(() => setLoading(false));
   }, [refreshAuth]);
+
+  // ── Check if mobile number exists ──
+  const checkMobile = useCallback(async (phone: string) => {
+    try {
+      const res = await fetch('/api/auth/check-mobile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return { exists: data.exists, name: data.name || undefined };
+      }
+      return { exists: false, error: data.error || 'Failed to check mobile number' };
+    } catch {
+      return { exists: false, error: 'Network error. Please try again.' };
+    }
+  }, []);
 
   // ── Phone + Password Signup ──
   const signup = useCallback(async (name: string, phone: string, email: string, password: string) => {
@@ -256,7 +276,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user, subscription, loading,
-      signup, login,
+      checkMobile, signup, login,
       forgotPassword, resetPassword,
       logout, refreshAuth, activateSubscription,
     }}>

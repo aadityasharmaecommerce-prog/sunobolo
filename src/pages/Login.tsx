@@ -2,40 +2,39 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import Logo from '../components/Logo';
-import { ArrowLeft, Headphones, Mail } from 'lucide-react';
+import { ArrowLeft, Headphones, Mail, Phone, Lock, User, Check } from 'lucide-react';
+
+type FlowStep = 'mobile' | 'pin' | 'create-pin' | 'forgot' | 'reset-email' | 'reset-new' | 'name-onboard';
 
 export default function Login() {
-  const { user, loading, login, signup, forgotPassword, resetPassword } = useAuth();
+  const { user, loading, checkMobile, login, signup, forgotPassword, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Check if we have a reset token in URL
   const urlToken = searchParams.get('token');
 
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'reset-email' | 'reset-new'>(
-    urlToken ? 'reset-new' : 'login'
-  );
-  const [name, setName] = useState('');
+  const [step, setStep] = useState<FlowStep>(urlToken ? 'reset-new' : 'mobile');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [existingUserName, setExistingUserName] = useState('');
 
+  // Redirect if already logged in
   useEffect(() => {
     if (!loading && user) navigate('/', { replace: true });
   }, [user, loading, navigate]);
 
   // Handle reset token from URL
   useEffect(() => {
-    if (urlToken && !loading) {
-      setMode('reset-new');
-    }
+    if (urlToken && !loading) setStep('reset-new');
   }, [urlToken, loading]);
 
-  // Reset new password (from email link with token)
+  // Reset new password state
   const [newPassword, setNewPassword] = useState('');
 
   if (loading) {
@@ -49,29 +48,84 @@ export default function Login() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // ── Step 1: Mobile Number ──
+  const handleMobileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
     setSubmitting(true);
 
-    if (mode === 'signup') {
-      if (password !== confirmPassword) {
-        setError('PIN / Password do not match.');
-        setSubmitting(false);
-        return;
-      }
-      const result = await signup(name, phone, email, password);
-      if (result.error) { setError(result.error); setSubmitting(false); return; }
-    } else if (mode === 'login') {
-      const result = await login(phone, password);
-      if (result.error) { setError(result.error); setSubmitting(false); return; }
-    }
+    const result = await checkMobile(phone);
     setSubmitting(false);
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (result.exists) {
+      // Existing user → go to PIN entry
+      setExistingUserName(result.name || '');
+      setStep('pin');
+    } else {
+      // New user → go to create PIN
+      setStep('create-pin');
+    }
+  };
+
+  // ── Step 2a: PIN Login (existing user) ──
+  const handlePinLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+
+    const result = await login(phone, password);
+    setSubmitting(false);
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
     navigate('/', { replace: true });
   };
 
-  // Step 1: User enters email → sends reset link
+  // ── Step 2b: Create PIN (new user) ──
+  const handleCreatePin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('PIN / Password do not match.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('PIN must be at least 6 characters.');
+      return;
+    }
+
+    setSubmitting(true);
+    // Create account with phone + PIN (name collected later)
+    const result = await signup('', phone, email, password);
+    setSubmitting(false);
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    // Account created — ask for name
+    setStep('name-onboard');
+  };
+
+  // ── Step 3: Name Onboarding (optional, after account creation) ──
+  const handleNameSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Name is optional — skip if empty
+    // For now, just go to home. Name can be updated later in profile.
+    navigate('/', { replace: true });
+  };
+
+  // ── Forgot Password ──
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -82,12 +136,12 @@ export default function Login() {
     if (result.error) {
       setError(result.error);
     } else {
-      setMode('reset-email');
+      setStep('reset-email');
       setSuccess('If an account exists for this email, a password reset link has been sent. Check your inbox.');
     }
   };
 
-  // Step 2: User enters new password (from reset link with token)
+  // ── Reset New Password ──
   const handleResetNewPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -112,7 +166,7 @@ export default function Login() {
     } else {
       setSuccess('Password reset successful! Redirecting to login...');
       setTimeout(() => {
-        setMode('login');
+        setStep('mobile');
         setError('');
         setSuccess('');
         setNewPassword('');
@@ -129,154 +183,245 @@ export default function Login() {
         <Logo size={40} showText={false} />
       </div>
 
-      <h1 className="text-2xl font-extrabold text-gray-900">
-        {mode === 'forgot' ? 'Reset Password'
-          : mode === 'reset-email' ? 'Check Your Email'
-          : mode === 'reset-new' ? 'Set New Password'
-          : mode === 'signup' ? 'Create Account'
-          : 'Welcome to SunoBolo'}
-      </h1>
-      <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
-        {mode === 'forgot'
-          ? "Enter your email and we'll send a reset link."
-          : mode === 'reset-email'
-          ? "We've sent a password reset link to your email."
-          : mode === 'reset-new'
-          ? "Enter your new password below."
-          : mode === 'signup'
-          ? 'Create your account to save progress and unlock all courses.'
-          : 'Sign in to continue learning.'}
-      </p>
+      {/* ── Step 1: Mobile Number ── */}
+      {step === 'mobile' && (
+        <>
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
+            <Phone size={24} className="text-brand-600" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Apna Mobile Number Enter Karein</h1>
+          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
+            System automatically detect karega — existing account ya naya account.
+          </p>
+
+          <form onSubmit={handleMobileSubmit} className="mt-6 w-full max-w-sm space-y-3">
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">+91</span>
+              <input
+                type="tel"
+                placeholder="Mobile Number"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                maxLength={10}
+                className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+              />
+            </div>
+
+            {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
+
+            <button type="submit" disabled={submitting || phone.length < 10}
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
+              {submitting ? 'Checking...' : 'Continue →'}
+            </button>
+          </form>
+        </>
+      )}
+
+      {/* ── Step 2a: PIN Login (existing user) ── */}
+      {step === 'pin' && (
+        <>
+          <div className="w-14 h-14 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center mb-4">
+            <Lock size={24} className="text-green-600" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Welcome Back{existingUserName ? `, ${existingUserName}` : ''}!</h1>
+          <p className="text-gray-500 text-sm mt-1.5">
+            Mobile: <span className="font-semibold text-gray-700">+91 {phone}</span>
+          </p>
+
+          <form onSubmit={handlePinLogin} className="mt-6 w-full max-w-sm space-y-3">
+            <input
+              type="password"
+              placeholder="Enter PIN / Password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoFocus
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+            />
+
+            {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
+
+            <button type="submit" disabled={submitting}
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
+              {submitting ? 'Please wait...' : 'Login'}
+            </button>
+          </form>
+
+          <div className="mt-4 space-y-2 w-full max-w-sm">
+            <button onClick={() => { setStep('forgot'); setError(''); setSuccess(''); setPassword(''); }}
+              className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors">
+              Forgot PIN / Password?
+            </button>
+            <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setPhone(''); }}
+              className="w-full text-center text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors inline-flex items-center justify-center gap-1">
+              <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* ── Step 2b: Create PIN (new user) ── */}
+      {step === 'create-pin' && (
+        <>
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
+            <User size={24} className="text-brand-600" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Create Your Account</h1>
+          <p className="text-gray-500 text-sm mt-1.5">
+            Mobile: <span className="font-semibold text-gray-700">+91 {phone}</span>
+          </p>
+          <p className="text-gray-400 text-xs mt-1">Naya account ban raha hai — PIN create karein</p>
+
+          <form onSubmit={handleCreatePin} className="mt-6 w-full max-w-sm space-y-3">
+            <input
+              type="password"
+              placeholder="Create PIN / Password (min 6)"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoFocus
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+            />
+            <input
+              type="password"
+              placeholder="Confirm PIN / Password"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+            />
+            <input
+              type="email"
+              placeholder="Email (optional, for recovery)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+            />
+
+            {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
+
+            <button type="submit" disabled={submitting}
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
+              {submitting ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setConfirmPassword(''); setEmail(''); }}
+            className="mt-4 text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors inline-flex items-center gap-1">
+            <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
+          </button>
+        </>
+      )}
+
+      {/* ── Step 3: Name Onboarding (after account creation) ── */}
+      {step === 'name-onboard' && (
+        <>
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-glow-success mb-4">
+            <Check size={32} strokeWidth={3} />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Account Ban Gaya! 🎉</h1>
+          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
+            Aapka account successfully create ho gaya. Ab aap free trial try kar sakte hain!
+          </p>
+
+          <form onSubmit={handleNameSubmit} className="mt-6 w-full max-w-sm space-y-3">
+            <input
+              type="text"
+              placeholder="Apna naam (optional)"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors"
+            />
+            <button type="submit"
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl">
+              Start Learning →
+            </button>
+            <button type="button" onClick={() => navigate('/', { replace: true })}
+              className="w-full text-center text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors">
+              Skip for now
+            </button>
+          </form>
+        </>
+      )}
 
       {/* ── Forgot Password Form ── */}
-      {mode === 'forgot' && (
-        <form onSubmit={handleForgot} className="mt-6 w-full max-w-sm space-y-3">
-          <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-
-          {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
-          {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
-
-          <button type="submit" disabled={submitting}
-            className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
-            {submitting ? 'Sending...' : 'Send Reset Link'}
+      {step === 'forgot' && (
+        <>
+          <h1 className="text-2xl font-extrabold text-gray-900">Reset Password</h1>
+          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">
+            Enter your recovery email and we'll send a reset link.
+          </p>
+          <form onSubmit={handleForgot} className="mt-6 w-full max-w-sm space-y-3">
+            <input type="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+            {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
+            {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
+            <button type="submit" disabled={submitting}
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
+              {submitting ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </form>
+          <button onClick={() => { setStep('pin'); setError(''); setSuccess(''); setEmail(''); }}
+            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
-        </form>
+        </>
       )}
 
       {/* ── Reset Email Sent Confirmation ── */}
-      {mode === 'reset-email' && (
-        <div className="mt-6 w-full max-w-sm space-y-4">
-          <div className="w-16 h-16 rounded-full bg-success-50 border border-success-200 flex items-center justify-center mx-auto">
+      {step === 'reset-email' && (
+        <>
+          <div className="w-16 h-16 rounded-full bg-success-50 border border-success-200 flex items-center justify-center mx-auto mb-4">
             <Mail size={28} className="text-success-600" />
           </div>
-          {success && <p className="text-success-600 text-sm text-center">{success}</p>}
-          <button onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }}
-            className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors">
-            Didn't receive? Try again
+          <h1 className="text-2xl font-extrabold text-gray-900">Check Your Email</h1>
+          {success && <p className="text-success-600 text-sm text-center mt-2">{success}</p>}
+          <button onClick={() => { setStep('forgot'); setError(''); setSuccess(''); }}
+            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
-        </div>
+        </>
       )}
 
       {/* ── Reset New Password Form ── */}
-      {mode === 'reset-new' && (
-        <form onSubmit={handleResetNewPassword} className="mt-6 w-full max-w-sm space-y-3">
-          <input type="password" placeholder="New password (min 6 characters)" required minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="password" placeholder="Confirm new password" required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-
-          {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
-          {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
-
-          <button type="submit" disabled={submitting}
-            className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
-            {submitting ? 'Resetting...' : 'Reset Password'}
+      {step === 'reset-new' && (
+        <>
+          <h1 className="text-2xl font-extrabold text-gray-900">Set New Password</h1>
+          <p className="text-gray-500 text-sm mt-1.5 max-w-xs">Enter your new password below.</p>
+          <form onSubmit={handleResetNewPassword} className="mt-6 w-full max-w-sm space-y-3">
+            <input type="password" placeholder="New password (min 6 characters)" required minLength={6} value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+            <input type="password" placeholder="Confirm new password" required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
+            {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
+            {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
+            <button type="submit" disabled={submitting}
+              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
+              {submitting ? 'Resetting...' : 'Reset Password'}
+            </button>
+          </form>
+          <button onClick={() => { setStep('mobile'); setError(''); setSuccess(''); setNewPassword(''); setConfirmPassword(''); }}
+            className="mt-4 text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center gap-1">
+            <ArrowLeft size={14} strokeWidth={2} /> Back to Login
           </button>
-        </form>
+        </>
       )}
 
-      {/* ── Login Form ── */}
-      {mode === 'login' && (
-        <form onSubmit={handleSubmit} className="mt-6 w-full max-w-sm space-y-3">
-          <input type="tel" placeholder="Mobile Number" required value={phone} onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="password" placeholder="PIN / Password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-
-          {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
-          {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
-
-          <button type="submit" disabled={submitting}
-            className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
-            {submitting ? 'Please wait...' : 'Login'}
-          </button>
-        </form>
+      {/* ── Footer Links ── */}
+      {step === 'mobile' && (
+        <div className="mt-5 space-y-2 w-full max-w-sm">
+          <a href="/free-trial" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors inline-flex items-center justify-center gap-1">
+            <Headphones size={12} strokeWidth={2} /> Try Free Trial first
+          </a>
+          <a href="/" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors">
+            Back to Home
+          </a>
+        </div>
       )}
-
-      {/* ── Signup Form ── */}
-      {mode === 'signup' && (
-        <form onSubmit={handleSubmit} className="mt-6 w-full max-w-sm space-y-3">
-          <input type="text" placeholder="Name" required value={name} onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="tel" placeholder="Mobile Number" required value={phone} onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="email" placeholder="Email Address (optional, for recovery)" value={email} onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="password" placeholder="Create PIN / Password (min 6)" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-          <input type="password" placeholder="Confirm PIN / Password" required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-surface-50 focus:bg-white transition-colors" />
-
-          {error && <p className="text-red-500 text-xs text-center bg-red-50 border border-red-100 rounded-lg py-2.5 px-3">{error}</p>}
-          {success && <p className="text-success-600 text-xs text-center bg-success-50 border border-success-200 rounded-lg py-2.5 px-3">{success}</p>}
-
-          <button type="submit" disabled={submitting}
-            className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl disabled:opacity-50">
-            {submitting ? 'Please wait...' : 'Create Account'}
-          </button>
-        </form>
-      )}
-
-      {/* ── Links ── */}
-      <div className="mt-5 space-y-2 w-full max-w-sm">
-        {mode === 'login' && (
-          <button onClick={() => { setMode('forgot'); setError(''); setSuccess(''); }}
-            className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors">
-            Forgot PIN / Password?
-          </button>
-        )}
-        {mode === 'forgot' && (
-          <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-            className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center justify-center gap-1">
-            <ArrowLeft size={14} strokeWidth={2} /> Back to Sign In
-          </button>
-        )}
-        {mode === 'reset-email' && (
-          <button onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-            className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center justify-center gap-1">
-            <ArrowLeft size={14} strokeWidth={2} /> Back to Sign In
-          </button>
-        )}
-        {mode === 'reset-new' && (
-          <button onClick={() => { setMode('login'); setError(''); setSuccess(''); setNewPassword(''); setConfirmPassword(''); }}
-            className="w-full text-center text-sm text-brand-600 font-semibold hover:text-brand-700 transition-colors inline-flex items-center justify-center gap-1">
-            <ArrowLeft size={14} strokeWidth={2} /> Back to Sign In
-          </button>
-        )}
-        {(mode === 'login' || mode === 'signup') && (
-          <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); setName(''); setPhone(''); setEmail(''); setPassword(''); setConfirmPassword(''); }}
-            className="w-full text-center text-sm text-gray-500 font-medium hover:text-gray-700 transition-colors">
-            {mode === 'login' ? "New to SunoBolo? Create Account" : 'Already have an account? Sign In'}
-          </button>
-        )}
-        <a href="/free-trial" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors mt-3 inline-flex items-center justify-center gap-1">
-          <Headphones size={12} strokeWidth={2} /> Try Free Trial first
-        </a>
-        <a href="/" className="block w-full text-center text-xs text-gray-400 hover:text-gray-600 transition-colors">
-          Back to Home
-        </a>
-      </div>
     </div>
   );
 }
