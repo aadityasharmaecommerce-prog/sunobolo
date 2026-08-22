@@ -5,13 +5,12 @@ import { getProgress } from '../lib/progress';
 import { useAuth } from '../lib/auth';
 import { PREVIEW_TENSE_COUNT, isTenseUnlocked } from '../data/tenses';
 
-// Lazy-load tenses data
 const tensesPromise = import('../data/tenses').then((m) => m.allTenses);
 
 const GROUP_INFO = {
-  present: { label: 'Present Tenses', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200', dot: 'bg-emerald-500' },
-  past: { label: 'Past Tenses', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', dot: 'bg-blue-500' },
-  future: { label: 'Future Tenses', color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200', dot: 'bg-purple-500' },
+  present: { label: 'Present Tenses', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/20', dot: 'bg-emerald-400' },
+  past: { label: 'Past Tenses', color: 'text-blue-400', bg: 'bg-blue-500/15 border-blue-500/20', dot: 'bg-blue-400' },
+  future: { label: 'Future Tenses', color: 'text-purple-400', bg: 'bg-purple-500/15 border-purple-500/20', dot: 'bg-purple-400' },
 } as const;
 
 export default function Tenses() {
@@ -35,8 +34,8 @@ export default function Tenses() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mx-auto" />
-          <p className="mt-4 text-sm text-gray-500">Loading Tenses...</p>
+          <div className="w-12 h-12 border-4 border-brand-500/30 border-t-brand-400 rounded-full animate-spin mx-auto" />
+          <p className="mt-4 text-sm text-white/40">Loading Tenses...</p>
         </div>
       </div>
     );
@@ -71,11 +70,11 @@ export default function Tenses() {
 
       {/* Free preview banner */}
       {!hasFullAccess && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 flex items-center gap-3">
+        <div className="bg-indigo-500/15 border border-indigo-500/25 rounded-xl px-4 py-3 flex items-center gap-3">
           <span className="text-lg">📘</span>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-indigo-800">Free Preview: First {PREVIEW_TENSE_COUNT} Tenses</p>
-            <p className="text-[11px] text-indigo-600">Present Simple & Present Continuous — try them free!</p>
+            <p className="text-xs font-bold text-indigo-300">Free Preview: First {PREVIEW_TENSE_COUNT} Tenses</p>
+            <p className="text-[11px] text-indigo-300/60">Present Simple & Present Continuous — try them free!</p>
           </div>
         </div>
       )}
@@ -86,13 +85,11 @@ export default function Tenses() {
         const info = GROUP_INFO[group];
         return (
           <div key={group} className="space-y-3">
-            {/* Group header */}
             <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${info.bg} border`}>
               <div className={`w-2 h-2 rounded-full ${info.dot}`} />
               <h2 className={`text-sm font-extrabold ${info.color}`}>{info.label}</h2>
             </div>
 
-            {/* Tenses in group */}
             <div className="space-y-2 pl-1">
               {groupTenses.map((tense) => {
                 const doneCount = tense.examples?.reduce((sum: number, ex: any) => {
@@ -112,38 +109,36 @@ export default function Tenses() {
                         navigate('/pricing');
                       }
                     }}
-                    className={`w-full text-left card-premium card-interactive !rounded-xl p-4 group relative overflow-hidden ${
-                      !hasFullAccess && !isTenseUnlocked(tense.id) ? 'bg-gray-50' : ''
+                    className={`w-full text-left dark-card p-4 group relative overflow-hidden active:scale-[0.99] ${
+                      !hasFullAccess && !isTenseUnlocked(tense.id) ? 'opacity-60' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center text-sm font-extrabold shrink-0 ${
-                          isComplete
-                            ? 'bg-success-100 text-success-700'
-                            : 'bg-surface-50 text-surface-600 group-hover:bg-brand-50 group-hover:text-brand-700'
-                        } transition-colors`}
-                      >
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-sm font-extrabold shrink-0 ${
+                        isComplete
+                          ? 'bg-gradient-to-br from-success-400 to-emerald-600 text-white'
+                          : 'bg-white/5 text-white/40 border border-white/10'
+                      } transition-colors`}>
                         {isComplete ? <Check size={18} strokeWidth={3} /> : totalForms}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-gray-900 group-hover:text-brand-700 transition-colors text-sm">
+                          <h3 className="font-bold text-white group-hover:text-brand-300 transition-colors text-sm">
                             {tense.title}
                           </h3>
                           {!hasFullAccess && isTenseUnlocked(tense.id) && (
-                            <span className="text-[9px] font-extrabold text-success-700 bg-success-50 border border-success-200 px-1.5 py-0.5 rounded-full">FREE</span>
+                            <span className="text-[9px] font-extrabold text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">FREE</span>
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 truncate">
+                        <p className="text-xs text-white/40 mt-0.5 truncate">
                           {tense.subtitle}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-[10px] font-mono text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                          <span className="text-[10px] font-mono text-white/35 bg-white/5 px-1.5 py-0.5 rounded border border-white/8">
                             {tense.pattern}
                           </span>
                           {doneCount > 0 && (
-                            <span className="text-[10px] text-success-600 font-semibold">
+                            <span className="text-[10px] text-emerald-400 font-semibold">
                               {doneCount}/{totalForms}
                             </span>
                           )}
@@ -151,13 +146,13 @@ export default function Tenses() {
                       </div>
                       {!hasFullAccess && !isTenseUnlocked(tense.id) ? (
                         <div className="flex flex-col items-center gap-1 shrink-0">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
-                            <Lock size={14} className="text-indigo-500" />
+                          <div className="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center">
+                            <Lock size={14} className="text-indigo-400" />
                           </div>
-                          <span className="text-[9px] font-bold text-indigo-500">PREMIUM</span>
+                          <span className="text-[9px] font-bold text-indigo-400">PREMIUM</span>
                         </div>
                       ) : (
-                        <ChevronRight size={16} className="text-gray-300 group-hover:text-brand-500 transition-colors shrink-0" />
+                        <ChevronRight size={16} className="text-white/20 group-hover:text-brand-400 transition-colors shrink-0" />
                       )}
                     </div>
                   </button>

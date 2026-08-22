@@ -60,18 +60,18 @@ export default function Onboarding() {
       {/* Progress dots */}
       <div className="flex justify-center gap-2 py-6">
         {[0, 1].map((s) => (
-          <div key={s} className={`h-2.5 rounded-full transition-all ${s === step ? 'w-8 bg-brand-500' : 'w-2.5 bg-surface-200'}`} />
+          <div key={s} className={`h-2.5 rounded-full transition-all ${s === step ? 'w-8 bg-brand-500' : 'w-2.5 bg-white/15'}`} />
         ))}
       </div>
 
       {/* Step 1: Goal */}
       {step === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
-          <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
-            <Target size={24} className="text-brand-600" strokeWidth={2} />
+          <div className="w-14 h-14 rounded-2xl bg-brand-500/15 border border-brand-500/25 flex items-center justify-center mb-4">
+            <Target size={24} className="text-brand-400" strokeWidth={2} />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 text-center">Why do you want to improve English?</h1>
-          <p className="text-gray-500 text-center mt-2 mb-6 text-sm">Choose your goal so we can recommend the right course</p>
+          <h1 className="text-2xl font-extrabold text-white text-center">Why do you want to improve English?</h1>
+          <p className="text-white/45 text-center mt-2 mb-6 text-sm">Choose your goal so we can recommend the right course</p>
           <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
             {USER_GOALS.map((goal) => {
               const Icon = ICON_MAP[goal.iconId] || Sparkles;
@@ -81,12 +81,12 @@ export default function Onboarding() {
                   onClick={() => setSelectedGoal(goal.id)}
                   className={`p-4 rounded-xl border-2 text-left transition-all ${
                     selectedGoal === goal.id
-                      ? 'border-brand-500 bg-brand-50'
-                      : 'border-surface-100 bg-white hover:border-surface-200'
+                      ? 'border-brand-500 bg-brand-500/15'
+                      : 'border-white/10 bg-white/5 hover:border-white/20'
                   }`}
                 >
-                  <Icon size={22} className={selectedGoal === goal.id ? 'text-brand-600' : 'text-surface-400'} strokeWidth={2} />
-                  <p className="text-xs font-semibold text-gray-700 mt-2">{goal.label}</p>
+                  <Icon size={22} className={selectedGoal === goal.id ? 'text-brand-400' : 'text-white/35'} strokeWidth={2} />
+                  <p className="text-xs font-semibold text-white/70 mt-2">{goal.label}</p>
                 </button>
               );
             })}
@@ -104,17 +104,17 @@ export default function Onboarding() {
       {/* Step 2: Level */}
       {step === 1 && (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
-          <div className="w-14 h-14 rounded-2xl bg-accent-50 border border-accent-200 flex items-center justify-center mb-4">
-            <BarChart size={24} className="text-accent-600" strokeWidth={2} />
+          <div className="w-14 h-14 rounded-2xl bg-accent-500/15 border border-accent-500/25 flex items-center justify-center mb-4">
+            <BarChart size={24} className="text-accent-400" strokeWidth={2} />
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 text-center">What is your current level?</h1>
-          <p className="text-gray-500 text-center mt-2 mb-6 text-sm">This helps us find the right starting point</p>
+          <h1 className="text-2xl font-extrabold text-white text-center">What is your current level?</h1>
+          <p className="text-white/45 text-center mt-2 mb-6 text-sm">This helps us find the right starting point</p>
           {USER_LEVELS.map((level) => (
             <button key={level.id} onClick={() => setSelectedLevel(level.id)}
-              className={`w-full p-4 rounded-xl border-2 text-left mb-3 transition-all ${selectedLevel === level.id ? 'border-brand-500 bg-brand-50' : 'border-surface-100 bg-white hover:border-surface-200'}`}
+              className={`w-full p-4 rounded-xl border-2 text-left mb-3 transition-all ${selectedLevel === level.id ? 'border-brand-500 bg-brand-500/15' : 'border-white/10 bg-white/5 hover:border-white/20'}`}
             >
-              <p className="font-bold text-gray-900">{level.label}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{level.description}</p>
+              <p className="font-bold text-white">{level.label}</p>
+              <p className="text-sm text-white/45 mt-0.5">{level.description}</p>
             </button>
           ))}
           <button onClick={handleFinish} disabled={!selectedLevel}

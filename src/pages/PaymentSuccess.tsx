@@ -10,7 +10,6 @@ export default function PaymentSuccess() {
   const [activated, setActivated] = useState(false);
 
   useEffect(() => {
-    // Activate subscription from URL param
     const planId = searchParams.get('plan');
     if (planId && !activated) {
       activateSubscription(planId);
@@ -33,22 +32,22 @@ export default function PaymentSuccess() {
       <div className="w-20 h-20 rounded-full bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-4xl shadow-glow-success mb-6">
         🎉
       </div>
-      <h1 className="text-2xl font-extrabold text-gray-900">Payment Successful!</h1>
-      <p className="text-gray-500 text-sm mt-2 max-w-xs">
+      <h1 className="text-2xl font-extrabold text-white">Payment Successful!</h1>
+      <p className="text-white/50 text-sm mt-2 max-w-xs">
         Welcome to SunoBolo English. Your full access is now active.
       </p>
 
       {planInfo && (
-        <div className="mt-6 w-full max-w-xs card-premium p-4 space-y-2 text-sm">
-          <div className="flex justify-between"><span className="text-gray-500">Plan</span><span className="font-semibold">{planInfo.name} — ₹{planInfo.amountRupees}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Status</span><span className="font-semibold text-success-600">Active</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Expires</span><span className="font-semibold">{formatDate(subscription.expires_at)}</span></div>
+        <div className="mt-6 w-full max-w-xs dark-card p-4 space-y-2 text-sm">
+          <div className="flex justify-between"><span className="text-white/45">Plan</span><span className="font-semibold text-white">{planInfo.name} — ₹{planInfo.amountRupees}</span></div>
+          <div className="flex justify-between"><span className="text-white/45">Status</span><span className="font-semibold text-emerald-400">Active</span></div>
+          <div className="flex justify-between"><span className="text-white/45">Expires</span><span className="font-semibold text-white">{formatDate(subscription.expires_at)}</span></div>
         </div>
       )}
 
       <button
         onClick={() => navigate('/courses')}
-        className="mt-8 btn-premium btn-premium-gradient px-8 py-4 text-base rounded-2xl"
+        className="mt-8 btn-premium btn-premium-gradient px-8 py-4 text-base rounded-xl"
       >
         Start Learning →
       </button>
