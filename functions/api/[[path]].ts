@@ -591,23 +591,46 @@ async function handlePaymentCreateOrder(request: Request, env: Env): Promise<Res
 
 async function handlePaymentVerify(request: Request, env: Env): Promise<Response> {
   const user = await authenticateUser(request, env);
-  if (!user) return err('Login required', 401);
+  if (!user) {
+    console.error('[VERIFY] Auth failed — session cookie missing or invalid');
+    return err('Login required', 401);
+  }
 
   const body = await request.json<{ razorpay_order_id?: string; razorpay_payment_id?: string; razorpay_signature?: string; planId?: string }>();
-  if (!body.razorpay_order_id || !body.razorpay_payment_id || !body.razorpay_signature) return err('Missing payment details');
+  if (!body.razorpay_order_id || !body.razorpay_payment_id || !body.razorpay_signature) {
+    console.error('[VERIFY] Missing fields:', JSON.stringify({ orderId: !!body.razorpay_order_id, paymentId: !!body.razorpay_payment_id, sig: !!body.razorpay_signature }));
+    return err('Missing payment details');
+  }
 
-  // Get plan from payment record (server-side, never trust frontend)
+  // Get payment record (server-side, never trust frontend)
   const payment = await env.DB.prepare(
-    `SELECT amount FROM payments WHERE razorpay_order_id = ?`
-  ).bind(body.razorpay_order_id).first<{ amount: number }>();
-  if (!payment) return err('Payment not found');
+    `SELECT amount, user_id, status FROM payments WHERE razorpay_order_id = ?`
+  ).bind(body.razorpay_order_id).first<{ amount: number; user_id: string; status: string }>();
+  if (!payment) {
+    console.error(`[VERIFY] No payment record for order ${body.razorpay_order_id}`);
+    return err('Payment not found');
+  }
 
-  // Determine plan from amount
+  // Verify the payment belongs to the authenticated user
+  if (payment.user_id !== user.id) {
+    console.error(`[VERIFY] Payment user mismatch: order belongs to ${payment.user_id}, request from ${user.id}`);
+    return err('Payment not found', 404);
+  }
+
+  // Already processed — return success (idempotent)
+  if (payment.status === 'paid') {
+    return json({ verified: true, already_verified: true });
+  }
+
+  // Determine plan from amount (server-side, never trust frontend planId)
   let planId: string | null = null;
   for (const [id, p] of Object.entries(PLANS)) {
     if (p.amount === payment.amount) { planId = id; break; }
   }
-  if (!planId) return err('Unknown payment amount');
+  if (!planId) {
+    console.error(`[VERIFY] Unknown payment amount ${payment.amount} for order ${body.razorpay_order_id}`);
+    return err('Unknown payment amount');
+  }
 
   if (!env.RAZORPAY_KEY_SECRET) {
     // Demo mode
@@ -634,12 +657,15 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
     if (expectedSig !== body.razorpay_signature) {
+      console.error(`[VERIFY] Signature mismatch for order ${body.razorpay_order_id}`);
       await env.DB.prepare(`UPDATE payments SET status = 'failed' WHERE razorpay_order_id = ?`).bind(body.razorpay_order_id).run();
       return err('Payment verification failed', 400);
     }
     await activateSubscription(user.id, body.razorpay_order_id, body.razorpay_payment_id, planId, env.DB);
+    console.log(`[VERIFY] Payment ${body.razorpay_order_id} → PAID, subscription activated for user ${user.id}`);
     return json({ verified: true });
   } catch (e: any) {
+    console.error(`[VERIFY] Error for order ${body.razorpay_order_id}:`, e.message);
     return err('Verification error: ' + e.message, 500);
   }
 }
@@ -690,11 +716,99 @@ async function activateSubscription(userId: string, orderId: string, paymentId: 
 }
 
 async function handlePaymentWebhook(request: Request, env: Env): Promise<Response> {
-  const body = await request.json<Record<string, unknown>>().catch(() => ({}));
-  const event = body.event as string | undefined;
-  if (event === 'payment.captured' || event === 'payment.authorized') {
-    // Handle payment success — verify webhook signature first in production
+  // Read raw body for signature verification
+  const rawBody = await request.text();
+  let body: Record<string, unknown>;
+  try {
+    body = JSON.parse(rawBody);
+  } catch {
+    return err('Invalid JSON', 400);
   }
+
+  const event = body.event as string | undefined;
+  const payload = body.payload as Record<string, any> | undefined;
+
+  if (!event || !payload) {
+    return json({ ok: true }); // Not a recognised event — ack silently
+  }
+
+  // ── Verify webhook signature (production only) ──
+  if (env.RAZORPAY_WEBHOOK_SECRET) {
+    const signature = request.headers.get('x-razorpay-signature');
+    if (!signature) {
+      console.error('[WEBHOOK] Missing x-razorpay-signature header');
+      return err('Missing signature', 401);
+    }
+    try {
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(env.RAZORPAY_WEBHOOK_SECRET),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign', 'verify']
+      );
+      const sigBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(rawBody));
+      const expectedSig = Array.from(new Uint8Array(sigBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+      if (expectedSig !== signature) {
+        console.error('[WEBHOOK] Signature mismatch');
+        return err('Invalid signature', 401);
+      }
+    } catch (e: any) {
+      console.error('[WEBHOOK] Signature verification error:', e.message);
+      return err('Signature verification failed', 500);
+    }
+  }
+
+  // ── Handle successful payment events ──
+  if (event === 'payment.captured' || event === 'payment.authorized') {
+    const paymentEntity = payload.payment?.entity as {
+      id?: string;
+      order_id?: string;
+      amount?: number;
+      status?: string;
+    } | undefined;
+
+    if (!paymentEntity?.order_id || !paymentEntity?.id) {
+      console.error('[WEBHOOK] Missing payment entity data');
+      return json({ ok: true });
+    }
+
+    const orderId = paymentEntity.order_id;
+    const paymentId = paymentEntity.id;
+
+    // Find the payment record in D1
+    const payment = await env.DB.prepare(
+      `SELECT id, user_id, amount, status FROM payments WHERE razorpay_order_id = ?`
+    ).bind(orderId).first<{ id: string; user_id: string; amount: number; status: string }>();
+
+    if (!payment) {
+      console.error(`[WEBHOOK] No payment record for order ${orderId}`);
+      return json({ ok: true });
+    }
+
+    // Already processed — idempotent
+    if (payment.status === 'paid') {
+      return json({ ok: true, already_processed: true });
+    }
+
+    // Determine plan from amount
+    let planId: string | null = null;
+    for (const [id, p] of Object.entries(PLANS)) {
+      if (p.amount === payment.amount) { planId = id; break; }
+    }
+    if (!planId) {
+      console.error(`[WEBHOOK] Unknown payment amount ${payment.amount} for order ${orderId}`);
+      return json({ ok: true });
+    }
+
+    // Activate subscription
+    await activateSubscription(payment.user_id, orderId, paymentId, planId, env.DB);
+    console.log(`[WEBHOOK] Payment ${orderId} → PAID, subscription activated for user ${payment.user_id}`);
+  }
+
   return json({ ok: true });
 }
 
