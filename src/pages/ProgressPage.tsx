@@ -28,7 +28,7 @@ export default function ProgressPage() {
   const isToday = (i: number) => i === dow;
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in min-h-[50vh]">
       <div className="text-center pt-2">
         <p className="dark-kicker">Your progress</p>
         <h1 className="text-2xl font-extrabold text-white mt-1">Learning Dashboard</h1>

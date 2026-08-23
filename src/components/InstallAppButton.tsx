@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 
 /**
  * PWA Install App Button
@@ -28,7 +29,7 @@ function isIOS(): boolean {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-export default function InstallAppButton({ variant = 'header' }: { variant?: 'header' | 'home' | 'footer' }) {
+export default function InstallAppButton({ variant = 'header' }: { variant?: 'header' | 'home' | 'footer' | 'mobile-menu' }) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
@@ -85,6 +86,22 @@ export default function InstallAppButton({ variant = 'header' }: { variant?: 'he
 
   // Already installed — don't show anything
   if (installed || !showInstall) return null;
+
+  // ── Mobile Menu variant (full-width in hamburger menu) ──
+  if (variant === 'mobile-menu') {
+    return (
+      <button
+        onClick={showIOSGuide ? () => setShowIOSGuide(true) : handleInstall}
+        className="flex items-center gap-3 w-full px-0 py-3 text-sm font-semibold text-white/60 hover:text-white transition-colors cursor-pointer"
+        aria-label="Install SunoBolo App"
+      >
+        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center shrink-0">
+          <Download size={15} strokeWidth={2.5} className="text-white" />
+        </span>
+        Install App
+      </button>
+    );
+  }
 
   // ── Header variant (compact pill — visible on all screens) ──
   if (variant === 'header') {

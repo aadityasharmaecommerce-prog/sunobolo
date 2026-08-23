@@ -12,7 +12,7 @@ export default function Courses() {
   const rest = courseMetadata.filter(c => c.id !== 'beginner');
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in min-h-[50vh]">
       <button onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-sm text-white/40 hover:text-white font-medium transition-colors">
         <ArrowLeft size={16} strokeWidth={2.5} /> Back

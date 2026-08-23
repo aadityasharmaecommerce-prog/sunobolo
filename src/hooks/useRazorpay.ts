@@ -1,12 +1,13 @@
 /**
- * SunoBolo — Razorpay Checkout Hook
+ * SunoBolo — Razorpay Checkout Hook (with Coupon Support)
  * 
  * Handles:
  * 1. Load Razorpay script
- * 2. Create order via backend API
- * 3. Open Razorpay checkout modal
- * 4. Verify payment via backend
- * 5. Activate subscription
+ * 2. Validate coupon (optional)
+ * 3. Create order via backend API (with discounted amount)
+ * 4. Open Razorpay checkout modal
+ * 5. Verify payment via backend
+ * 6. Activate subscription
  */
 import { useState, useCallback } from 'react';
 import { useAuth } from '../lib/auth';
@@ -43,19 +44,41 @@ interface RazorpayResponse {
   razorpay_signature: string;
 }
 
+export interface CouponResult {
+  valid: boolean;
+  couponId?: string;
+  couponCode?: string;
+  discountType?: string;
+  discountValue?: number;
+  applicablePlans?: string;
+  originalAmount?: number;
+  discountAmount?: number;
+  finalAmount?: number;
+  error?: string;
+}
+
+export interface OrderResult {
+  orderId: string;
+  amount: number;
+  originalAmount?: number;
+  discountAmount?: number;
+  couponCode?: string;
+  currency: string;
+  keyId: string;
+  planId: string;
+  demo?: boolean;
+}
+
 export function useRazorpay() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [couponResult, setCouponResult] = useState<CouponResult | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
   const { user, refreshAuth } = useAuth();
 
   const loadRazorpayScript = useCallback((): Promise<boolean> => {
     return new Promise((resolve) => {
-      // Check if already loaded
-      if (window.Razorpay) {
-        resolve(true);
-        return;
-      }
-
+      if (window.Razorpay) { resolve(true); return; }
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => resolve(true);
@@ -64,12 +87,49 @@ export function useRazorpay() {
     });
   }, []);
 
-  const createOrder = useCallback(async (planId: string) => {
+  const validateCoupon = useCallback(async (code: string, planId: string): Promise<CouponResult> => {
+    setValidatingCoupon(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/coupon/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code, planId }),
+      });
+      const data = await res.json();
+      setValidatingCoupon(false);
+      if (data.valid) {
+        const result: CouponResult = { valid: true, ...data };
+        setCouponResult(result);
+        return result;
+      } else {
+        const result: CouponResult = { valid: false, error: data.error || 'Invalid coupon' };
+        setCouponResult(null);
+        return result;
+      }
+    } catch {
+      setValidatingCoupon(false);
+      const result: CouponResult = { valid: false, error: 'Network error validating coupon' };
+      setCouponResult(null);
+      return result;
+    }
+  }, []);
+
+  const clearCoupon = useCallback(() => {
+    setCouponResult(null);
+    setError(null);
+  }, []);
+
+  const createOrder = useCallback(async (planId: string, couponCode?: string) => {
+    const body: Record<string, string> = { planId };
+    if (couponCode) body.couponCode = couponCode;
+
     const res = await fetch('/api/payment/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ planId }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -77,7 +137,7 @@ export function useRazorpay() {
       throw new Error(data.error || 'Failed to create order');
     }
 
-    return res.json();
+    return res.json() as Promise<OrderResult>;
   }, []);
 
   const verifyPayment = useCallback(async (response: RazorpayResponse, planId: string) => {
@@ -101,7 +161,7 @@ export function useRazorpay() {
     return res.json();
   }, []);
 
-  const checkout = useCallback(async (planId: string, planName: string, _amount: number) => {
+  const checkout = useCallback(async (planId: string, planName: string, _amount: number, appliedCouponCode?: string) => {
     if (!user) {
       setError('Please login first');
       return false;
@@ -109,35 +169,28 @@ export function useRazorpay() {
 
     setLoading(true);
     setError(null);
-    // Clear any previous error on new checkout attempt
 
     try {
-      // 1. Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         throw new Error('Failed to load Razorpay. Check your internet connection.');
       }
 
-      // 2. Create order
-      const orderData = await createOrder(planId);
+      // Create order (with coupon if applied — prefer explicit param over hook state)
+      const orderData = await createOrder(planId, appliedCouponCode || couponResult?.couponCode || undefined);
 
-      // 3. Open Razorpay checkout
       return new Promise<boolean>((resolve) => {
         const options: RazorpayOptions = {
           key: orderData.keyId,
           amount: orderData.amount,
           currency: orderData.currency || 'INR',
           name: 'SunoBolo English',
-          description: `${planName} — One-time payment`,
+          description: `${planName} — One-time payment${orderData.discountAmount ? ` (₹${orderData.discountAmount / 100} off)` : ''}`,
           order_id: orderData.orderId,
           handler: async (response: RazorpayResponse) => {
             try {
-              // 4. Verify payment
               await verifyPayment(response, planId);
-              
-              // 5. Refresh auth to get updated subscription
               await refreshAuth();
-              
               setLoading(false);
               resolve(true);
             } catch (err: any) {
@@ -151,7 +204,7 @@ export function useRazorpay() {
             email: user.email || '',
           },
           theme: {
-            color: '#6366f1', // brand-600
+            color: '#6366f1',
           },
           modal: {
             ondismiss: () => {
@@ -163,13 +216,11 @@ export function useRazorpay() {
 
         const rzp = new window.Razorpay(options);
         rzp.on('payment.failed', (response: any) => {
-          // Only show error if user is still on the page (not navigated away)
           setError(response.error?.description || 'Payment failed');
           setLoading(false);
           resolve(false);
         });
         rzp.open();
-        // Clear any stale error once modal is open
         setError(null);
       });
     } catch (err: any) {
@@ -177,7 +228,7 @@ export function useRazorpay() {
       setLoading(false);
       return false;
     }
-  }, [user, loadRazorpayScript, createOrder, verifyPayment, refreshAuth]);
+  }, [user, loadRazorpayScript, createOrder, verifyPayment, refreshAuth, couponResult]);
 
-  return { checkout, loading, error };
+  return { checkout, loading, error, couponResult, validatingCoupon, validateCoupon, clearCoupon };
 }

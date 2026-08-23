@@ -53,7 +53,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in min-h-[50vh]">
       {/* User info */}
       <div className="text-center py-6">
         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white flex items-center justify-center text-3xl mx-auto shadow-glow-brand font-extrabold">

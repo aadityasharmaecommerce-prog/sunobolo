@@ -90,7 +90,7 @@ export default function CourseDetail() {
   const heroGradient = COURSE_GRADIENTS[courseId || ''] || 'from-brand-500 to-accent-600';
 
   return (
-    <div className="space-y-5 animate-fade-in">
+    <div className="space-y-5 animate-fade-in min-h-[50vh]">
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}

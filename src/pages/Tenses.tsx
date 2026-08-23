@@ -32,17 +32,15 @@ export default function Tenses() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-brand-500/30 border-t-brand-400 rounded-full animate-spin mx-auto" />
-          <p className="mt-4 text-sm text-white/40">Loading Tenses...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <img src="/images/logo.png" alt="SunoBolo" className="h-12 w-auto object-contain animate-pulse-soft" style={{ filter: 'drop-shadow(0 2px 8px rgba(99,102,241,0.2))' }} />
+        <p className="text-sm text-white/40 font-medium">Loading Grammar...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in pb-24">
+    <div className="space-y-6 animate-fade-in pb-24 min-h-[50vh]">
       {/* Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-indigo-800 text-white p-6">
         <button

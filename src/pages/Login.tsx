@@ -29,6 +29,14 @@ export default function Login() {
     if (!loading && user) navigate('/', { replace: true });
   }, [user, loading, navigate]);
 
+  // Security: If phone is empty while on create-pin step, redirect back to mobile
+  useEffect(() => {
+    if (step === 'create-pin' && !phone) {
+      setStep('mobile');
+      setError('');
+    }
+  }, [step, phone]);
+
   // Handle reset token from URL
   useEffect(() => {
     if (urlToken && !loading) setStep('reset-new');
@@ -47,6 +55,19 @@ export default function Login() {
       </div>
     );
   }
+
+  // Helper to reset all form state when navigating between steps
+  const resetFormState = () => {
+    setPhone('');
+    setPassword('');
+    setConfirmPassword('');
+    setEmail('');
+    setName('');
+    setError('');
+    setSuccess('');
+    setExistingUserName('');
+    setSubmitting(false);
+  };
 
   // ── Step 1: Mobile Number ──
   const handleMobileSubmit = async (e: React.FormEvent) => {
@@ -89,22 +110,18 @@ export default function Login() {
     navigate('/', { replace: true });
   };
 
-  // ── Step 2b: Create PIN (new user) ──
-  const handleCreatePin = async (e: React.FormEvent) => {
+  // ── Step 2b: Create Account (new user) ──
+  // Single PIN field — no confirm needed (server validates on login)
+  const handleCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
-      setError('PIN / Password do not match.');
-      return;
-    }
     if (password.length < 6) {
-      setError('PIN must be at least 6 characters.');
+      setError('PIN / Password must be at least 6 characters.');
       return;
     }
 
     setSubmitting(true);
-    // Create account with name + phone + PIN + email
     const result = await signup(name.trim() || 'SunoBolo User', phone, email, password);
     setSubmitting(false);
 
@@ -116,8 +133,6 @@ export default function Login() {
     // Account created — go directly to home
     navigate('/', { replace: true });
   };
-
-
 
   // ── Forgot Password ──
   const handleForgot = async (e: React.FormEvent) => {
@@ -189,6 +204,10 @@ export default function Login() {
                 type="tel"
                 placeholder="Mobile Number"
                 required
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                name="phone"
                 value={phone}
                 onChange={(e) => {
                   // Strip everything except digits, max 10
@@ -246,7 +265,7 @@ export default function Login() {
               className="w-full text-center text-sm text-brand-300 font-semibold hover:text-brand-200 transition-colors">
               Forgot PIN / Password?
             </button>
-            <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setPhone(''); }}
+            <button onClick={() => resetFormState()}
               className="w-full text-center text-sm text-white/40 font-medium hover:text-white/60 transition-colors inline-flex items-center justify-center gap-1">
               <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
             </button>
@@ -254,8 +273,9 @@ export default function Login() {
         </>
       )}
 
-      {/* ── Step 2b: Create PIN (new user) ── */}
-      {step === 'create-pin' && (
+      {/* ── Step 2b: Create Account (new user) ── */}
+      {/* Security: Only render if phone is present (the exact number user entered) */}
+      {step === 'create-pin' && phone && (
         <>
           <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center mb-4">
             <User size={24} className="text-brand-600" />
@@ -266,7 +286,7 @@ export default function Login() {
           </p>
           <p className="text-white/35 text-xs mt-1">Naya account ban raha hai — PIN create karein</p>
 
-          <form onSubmit={handleCreatePin} className="mt-6 w-full max-w-sm space-y-3">
+          <form onSubmit={handleCreateAccount} className="mt-6 w-full max-w-sm space-y-3">
             <input
               type="text"
               placeholder="Your name"
@@ -286,15 +306,6 @@ export default function Login() {
               className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
             />
             <input
-              type="password"
-              placeholder="Confirm PIN / Password"
-              required
-              minLength={6}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent bg-white focus:bg-white transition-colors"
-            />
-            <input
               type="email"
               placeholder="Email (optional, for recovery)"
               value={email}
@@ -310,14 +321,12 @@ export default function Login() {
             </button>
           </form>
 
-          <button onClick={() => { setStep('mobile'); setError(''); setPassword(''); setConfirmPassword(''); setEmail(''); }}
+          <button onClick={() => resetFormState()}
             className="mt-4 text-sm text-white/40 font-medium hover:text-white/60 transition-colors inline-flex items-center gap-1">
             <ArrowLeft size={14} strokeWidth={2} /> Change mobile number
           </button>
         </>
       )}
-
-
 
       {/* ── Forgot Password Form ── */}
       {step === 'forgot' && (

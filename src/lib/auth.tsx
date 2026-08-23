@@ -261,6 +261,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSubscription({ active: false });
 
+    // Security: Remove any cached phone data from localStorage
+    // This prevents previous user's phone from appearing in signup flow
+    try {
+      localStorage.removeItem(SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+
     // Destroy server session (fire-and-forget)
     fetch('/api/auth/logout', {
       method: 'POST',

@@ -292,6 +292,85 @@ export default function Home() {
       </section>
 
 
+      {/* ══════════ 30-DAY GRAMMAR JOURNEY — MAIN CTA ══════════ */}
+      <section className="mb-14">
+        <button onClick={() => navigate('/journey')}
+          className="w-full relative overflow-hidden rounded-3xl p-6 sm:p-8 text-left group active:scale-[0.99]"
+          style={{ background: 'linear-gradient(135deg, #07051a 0%, #100b2e 20%, #1a1145 40%, #2d1b69 60%, #4338ca 80%, #6366f1 100%)' }}>
+          {/* Ambient glow */}
+          <div className="absolute -right-16 -top-16 w-60 h-60 bg-white/[0.06] rounded-full blur-[60px] pointer-events-none" />
+          <div className="absolute -left-12 bottom-0 w-48 h-48 bg-accent-500/10 rounded-full blur-[50px] pointer-events-none" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+
+          <div className="relative">
+            {/* Top badge */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] font-extrabold text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">30-Day Course</span>
+              <span className="text-[10px] font-extrabold text-amber-300 bg-amber-500/15 border border-amber-500/20 px-2.5 py-1 rounded-full">Day 1 FREE</span>
+            </div>
+
+            {/* Headline */}
+            <h2 className="text-[1.6rem] sm:text-[2rem] font-extrabold leading-tight text-white mb-2">
+              🎯 30-Day English Grammar Journey
+            </h2>
+            <p className="text-white/50 text-sm sm:text-base leading-relaxed mb-4">
+              Roz sirf 15–20 minutes. Grammar step-by-step seekho, sentences bolo, practice karo aur har din next level unlock karo.
+            </p>
+
+            {/* Progress preview */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-bold text-white/60">DAY</span>
+                <span className="text-xl font-extrabold text-white">1</span>
+                <span className="text-xs text-white/30">→</span>
+                <span className="text-xl font-extrabold text-white">30</span>
+              </div>
+              <div className="h-2 flex-1 bg-white/8 rounded-full overflow-hidden">
+                <div className="h-full w-0 bg-gradient-to-r from-brand-500 to-accent-500 rounded-full" />
+              </div>
+              <span className="text-xs font-bold text-white/40">0/30</span>
+            </div>
+
+            {/* Feature pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {['📘 Grammar', '🎧 Listen', '🗣️ Speak', '✍️ Practice', '📝 Test'].map(f => (
+                <span key={f} className="text-[11px] font-semibold text-white/50 bg-white/[0.06] border border-white/[0.06] px-3 py-1.5 rounded-full">{f}</span>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <span className="btn-premium btn-premium-gradient px-8 py-4 text-sm font-bold flex items-center justify-center gap-2">
+                Start Day 1 — FREE
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
+              <span className="text-[11px] text-white/30 font-medium text-center sm:text-left">
+                Day 1 free · No payment required
+              </span>
+            </div>
+          </div>
+        </button>
+      </section>
+
+
+      {/* ══════════ 30-DAY GRAMMAR JOURNEY — MINI CARDS (placed below main CTA) ══════════ */}
+      <section className="mb-14">
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { emoji: '📘', label: '12 Tenses', sub: 'Step-by-step' },
+            { emoji: '🎧', label: 'Listen & Speak', sub: 'Real sentences' },
+            { emoji: '📝', label: 'Daily Tests', sub: 'Track progress' },
+          ].map(c => (
+            <button key={c.label} onClick={() => navigate('/journey')} className="dark-card p-4 text-center group active:scale-[0.97]">
+              <span className="text-2xl block mb-2">{c.emoji}</span>
+              <p className="text-xs font-bold text-white">{c.label}</p>
+              <p className="text-[10px] text-white/35 mt-0.5">{c.sub}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+
       {/* ══════════ GRAMMAR ══════════ */}
       <section className="mb-14">
         <div className="text-center mb-8">
@@ -456,10 +535,6 @@ export default function Home() {
             Made in India
           </span>
         </div>
-        <p className="text-[13px] text-white/20 mt-5">
-          Made with care by <span className="text-white/40 font-bold">Pankaj Upadhyay</span>
-        </p>
-        <p className="text-white/12 mt-1 text-[12px]">Suno · Bolo · Repeat</p>
       </footer>
     </div>
   );

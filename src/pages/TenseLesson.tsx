@@ -10,7 +10,7 @@ const tensesPromise = import('../data/tenses').then((m) => m.allTenses);
 
 const FORM_CONFIG = {
   affirmative: { icon: '✅', label: 'Affirmative', color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' },
-  negative: { icon: '❌', label: 'Negative', color: 'bg-red-500/10 border-red-500/20 text-red-300' },
+  negative: { icon: '−', label: 'Negative', color: 'bg-amber-500/10 border-amber-500/20 text-amber-300' },
   interrogative: { icon: '❓', label: 'Interrogative', color: 'bg-blue-500/10 border-blue-500/20 text-blue-300' },
   whyQuestion: { icon: '💡', label: 'Why Question', color: 'bg-purple-500/10 border-purple-500/20 text-purple-300' },
 } as const;
@@ -202,11 +202,9 @@ export default function TenseLesson() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-brand-500/30 border-t-brand-400 rounded-full animate-spin mx-auto" />
-          <p className="mt-4 text-sm text-white/40">Loading lesson...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <img src="/images/logo.png" alt="SunoBolo" className="h-12 w-auto object-contain animate-pulse-soft" style={{ filter: 'drop-shadow(0 2px 8px rgba(99,102,241,0.2))' }} />
+        <p className="text-sm text-white/40 font-medium">Loading Lesson...</p>
       </div>
     );
   }
