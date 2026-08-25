@@ -4,7 +4,6 @@ import { Headphones, User, Menu, X, BookOpen, GraduationCap, Mic, TrendingUp, Ta
 import { useAuth } from '../lib/auth';
 import BottomNav from './BottomNav';
 import NotificationPrompt from './NotificationPrompt';
-import InstallAppButton from './InstallAppButton';
 
 export default function Layout() {
   const location = useLocation();
@@ -227,10 +226,7 @@ export default function Layout() {
                 {/* Divider */}
                 <div className="mx-5 my-1 border-t border-white/[0.06]" />
 
-                {/* Install App */}
-                <div onClick={handleMenuLinkClick} className="px-5 py-2">
-                  <InstallAppButton variant="mobile-menu" />
-                </div>
+
               </nav>
             </div>
           </div>
@@ -248,7 +244,7 @@ export default function Layout() {
             <Link to="/" className="flex items-center gap-2">
               <img src="/images/logo.png" alt="SunoBolo" className="h-8 w-auto object-contain" />
             </Link>
-            <InstallAppButton variant="footer" />
+
             {/* Policy Links */}
             <div className="flex items-center gap-3 text-[11px] text-white/30 font-medium">
               <Link to="/privacy-policy" className="hover:text-white/50 transition-colors">Privacy Policy</Link>
