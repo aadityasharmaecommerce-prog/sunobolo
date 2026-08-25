@@ -79,7 +79,7 @@ export default function Home() {
               <div className="flex justify-center lg:justify-start mb-4">
                 <div className="inline-flex items-center gap-2 bg-white/[0.06] backdrop-blur-sm rounded-full px-4 py-2 border border-white/[0.08]">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">India's #1 English Speaking App</span>
+                  <span className="text-[11px] font-bold text-white/70 uppercase tracking-wider">Learn English with Confidence</span>
                 </div>
               </div>
 
@@ -158,9 +158,8 @@ export default function Home() {
           {/* Social proof bar — instant trust */}
           <div className="mt-8 pt-6 border-t border-white/[0.05] flex flex-wrap items-center justify-center lg:justify-start gap-6 sm:gap-8">
             {[
-              { value: '10,000+', label: 'Learners' },
               { value: '5,000+', label: 'Sentences' },
-              { value: '4.9', label: 'Rating', icon: Star },
+              { value: '15+', label: 'Courses' },
               { value: '₹9/day', label: 'se start' },
             ].map(s => (
               <div key={s.label} className="flex items-center gap-2">
@@ -532,7 +531,7 @@ export default function Home() {
               { Icon: Shield, t: 'Secure Payment', d: 'UPI · Cards' },
               { Icon: Zap, t: 'Instant Access', d: 'Turant unlock' },
               { Icon: CreditCard, t: 'Pay Once', d: 'No hidden fees' },
-              { Icon: Users, t: '10,000+ Learners', d: 'Trust SunoBolo' },
+              { Icon: Users, t: 'Learners Love It', d: 'Build confidence' },
             ].map(x => (
               <div key={x.t} className="dark-card-flat !rounded-xl px-3 py-3 text-center">
                 <x.Icon size={16} className="text-white/40 mx-auto mb-1" strokeWidth={2} />

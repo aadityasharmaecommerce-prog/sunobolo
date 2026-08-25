@@ -377,7 +377,7 @@ export default function Pricing() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">Ek Baar Pay Karo. English Improve Karte Raho.</h1>
         <p className="text-white/35 text-sm mt-1.5">One-time payment · No auto-renewal · Full app access</p>
         <div className="inline-flex items-center gap-2 mt-3 text-[12px] font-bold text-white/45 bg-white/[0.04] border border-white/[0.06] rounded-full px-4 py-2">
-          <span className="text-amber-400">★★★★★</span> 4.9 · 10,000+ learners trust SunoBolo
+          Join thousands of learners building English confidence
         </div>
       </div>
 
@@ -542,7 +542,7 @@ export default function Pricing() {
           { Icon: Shield, t: 'Secure Payment', d: 'UPI · Cards · NetBanking' },
           { Icon: Zap, t: 'Instant Access', d: 'Payment ke turant baad' },
           { Icon: CreditCard, t: 'Pay Once', d: 'No hidden fees' },
-          { Icon: Users, t: '10,000+ Learners', d: 'Trust SunoBolo' },
+          { Icon: Users, t: 'Learners Love It', d: 'Build confidence' },
         ].map(x => (
           <div key={x.t} className="dark-card-flat !rounded-xl px-3 py-3.5 text-center">
             <x.Icon size={18} className="text-white/35 mx-auto mb-1.5" strokeWidth={2} />
