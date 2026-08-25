@@ -2258,18 +2258,65 @@ async function handleSendNotification(request: Request, env: Env): Promise<Respo
  * The token is signed with the VAPID private key and includes the
  * subscription endpoint as the audience claim.
  */
+// ASN.1 helpers for SEC1 → PKCS8 key conversion
+function wrapInTag(tag: number, data: Uint8Array): Uint8Array {
+  if (data.length < 128) {
+    return new Uint8Array([tag, data.length, ...data]);
+  } else if (data.length < 256) {
+    return new Uint8Array([tag, 0x81, data.length, ...data]);
+  } else {
+    return new Uint8Array([tag, 0x82, (data.length >> 8) & 0xff, data.length & 0xff, ...data]);
+  }
+}
+function concat(...arrays: Uint8Array[]): Uint8Array {
+  const total = arrays.reduce((sum, a) => sum + a.length, 0);
+  const result = new Uint8Array(total);
+  let offset = 0;
+  for (const a of arrays) {
+    result.set(a, offset);
+    offset += a.length;
+  }
+  return result;
+}
+
 async function generateVapidJwt(privateKeyPem: string, endpoint: string, subject: string): Promise<string> {
   // Parse the ECDSA P-256 private key from PEM format
+  // Support both PKCS8 (BEGIN PRIVATE KEY) and SEC1 (BEGIN EC PRIVATE KEY) formats
+  const isPkcs8 = privateKeyPem.includes('BEGIN PRIVATE KEY');
   const pemBody = privateKeyPem
-    .replace(/-----BEGIN EC PRIVATE KEY-----/, '')
-    .replace(/-----END EC PRIVATE KEY-----/, '')
+    .replace(/-----BEGIN(?: EC)? PRIVATE KEY-----/, '')
+    .replace(/-----END(?: EC)? PRIVATE KEY-----/, '')
     .replace(/\s/g, '');
 
-  const keyData = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
+  const rawKeyData = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
 
-  // Import as ECDSA P-256 private key
+  let keyData: Uint8Array;
+  let keyFormat: string;
+
+  if (isPkcs8) {
+    // Already PKCS8 — import directly
+    keyData = rawKeyData;
+    keyFormat = 'pkcs8';
+  } else {
+    // SEC1 format (EC PRIVATE KEY) — wrap into PKCS8 envelope for WebCrypto
+    // PKCS8 wrapper for ECDSA P-256:
+    // SEQUENCE {
+    //   INTEGER 0
+    //   SEQUENCE { OID 1.2.840.10045.2.1 (ecPublicKey), OID 1.2.840.10045.3.1.7 (P-256) }
+    //   OCTET STRING { the SEC1 key data }
+    // }
+    const ecPublicKeyOid = new Uint8Array([0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07]); // 1.2.840.10045.3.1.7
+    const algoId = new Uint8Array([0x30, 0x10, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01, 0x06, 0x05, 0x2B, 0x81, 0x04, 0x00, 0x22]); // ecPublicKey + P-256
+    const octetString = wrapInTag(0x04, rawKeyData);
+    const version = new Uint8Array([0x02, 0x01, 0x00]);
+    const inner = concat(algoId, octetString);
+    const seq = wrapInTag(0x30, concat(version, inner));
+    keyData = seq;
+    keyFormat = 'pkcs8';
+  }
+
   const privateKey = await crypto.subtle.importKey(
-    'pkcs8',
+    keyFormat as any,
     keyData,
     { name: 'ECDSA', namedCurve: 'P-256' },
     false,
