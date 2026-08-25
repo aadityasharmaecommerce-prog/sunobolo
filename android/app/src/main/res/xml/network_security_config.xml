@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow HTTPS only (production) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">sunobolo.in</domain>
+        <domain includeSubdomains="true">api.sunobolo.in</domain>
+        <domain includeSubdomains="true">admin.sunobolo.in</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Cloudflare Pages domain -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">sunobolo-english.pages.dev</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Razorpay API -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">api.razorpay.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Default: block all cleartext -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

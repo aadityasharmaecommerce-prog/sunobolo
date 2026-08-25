@@ -1,25 +1,43 @@
 /**
  * SunoBolo — Notification Permission Prompt
  *
- * Shows immediately when user opens the website.
+ * Shows when a LOGGED-IN user opens the website.
+ * - Only renders for authenticated users (push subscriptions require auth on backend)
  * - Checks Notification.permission directly as source of truth
  * - Never shows if permission is 'granted' or 'denied'
  * - Respects dismissal state (won't re-show after "Not now")
+ * - Re-syncs subscription to backend when user logs in (handles pre-login permission grant)
  */
 
 import { useState, useEffect } from 'react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useAuth } from '../lib/auth';
 import { Bell, X } from 'lucide-react';
 
 const DISMISS_KEY = 'sb_push_prompt_dismissed';
 
 export default function NotificationPrompt() {
-  const { isSupported, permission, isSubscribed, loading, subscribe } = usePushNotifications();
+  const { user } = useAuth();
+  const { isSupported, permission, isSubscribed, loading, subscribe, syncToBackend } = usePushNotifications();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
 
+  // CRITICAL: When user becomes logged-in, re-sync any existing browser subscription to backend.
+  // This handles the case where the user granted permission before logging in.
   useEffect(() => {
+    if (user && isSupported && permission === 'granted' && !isSubscribed && !loading) {
+      syncToBackend();
+    }
+  }, [user, isSupported, permission, isSubscribed, loading, syncToBackend]);
+
+  useEffect(() => {
+    // NEVER show if user is not logged in — backend requires auth for subscription
+    if (!user) {
+      setVisible(false);
+      return;
+    }
+
     // Check Notification.permission DIRECTLY — always the source of truth
     if (typeof Notification === 'undefined') return;
 
@@ -55,7 +73,7 @@ export default function NotificationPrompt() {
 
     // Show immediately with a 2-second delay (so page loads first)
     const timer = setTimeout(() => {
-      // Re-check permission before showing
+      // Re-check permission and login state before showing
       if (Notification.permission === 'granted' || Notification.permission === 'denied') {
         return;
       }
@@ -63,7 +81,7 @@ export default function NotificationPrompt() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isSupported, permission, isSubscribed, loading]);
+  }, [user, isSupported, permission, isSubscribed, loading]);
 
   const handleEnable = async () => {
     setSubscribing(true);
@@ -89,8 +107,9 @@ export default function NotificationPrompt() {
     } catch { /* ignore */ }
   };
 
-  // Final safety check: never render if permission is granted or denied
+  // Final safety check: never render if not logged in, dismissed, or permission is set
   if (
+    !user ||
     !visible ||
     dismissed ||
     loading ||

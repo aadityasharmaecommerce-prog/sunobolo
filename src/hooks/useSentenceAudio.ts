@@ -56,7 +56,7 @@ let fileExistsCache = new Map<string, boolean>();
 
 // Clear file existence cache on app load to ensure fresh checks
 try {
-  const storedVersion = localStorage.getItem('sb_audio_version');    const currentVersion = '22';
+  const storedVersion = localStorage.getItem('sb_audio_version');    const currentVersion = '23';
   if (storedVersion !== currentVersion) {
     fileExistsCache = new Map<string, boolean>();
     localStorage.setItem('sb_audio_version', currentVersion);

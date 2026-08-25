@@ -1,15 +1,39 @@
+import { useState, useEffect } from 'react';
 import { courseMetadata } from '../data/content';
 import { computeStreak, getProgress } from '../lib/progress';
 import { checkBadges } from '../config/badges';
+import { useAuth } from '../lib/auth';
 import { TrendingUp, BookOpen, Flame, Clock, Award, Check } from 'lucide-react';
 
+interface ServerProgress {
+  sentencesDone: number;
+  lessonsDone: number;
+  dailyActivity: string[];
+  courseProgress: Record<string, number>;
+  journeyProgress: { day: number; status: string; score: number | null }[];
+}
+
 export default function ProgressPage() {
-  const progress = getProgress();
-  const sentencesDone = Object.keys(progress.completedSentences).length;
-  const lessonsDone = Object.keys(progress.completedLessons).length;
-  const streak = computeStreak(progress.dailyActivity);
+  const { user } = useAuth();
+  const [serverData, setServerData] = useState<ServerProgress | null>(null);
+
+  // Fetch server-side progress for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    fetch('/api/progress/stats', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setServerData(data); })
+      .catch(() => {});
+  }, [user]);
+
+  // Use server data if available, fallback to localStorage
+  const localProgress = getProgress();
+  const sentencesDone = serverData?.sentencesDone ?? Object.keys(localProgress.completedSentences).length;
+  const lessonsDone = serverData?.lessonsDone ?? Object.keys(localProgress.completedLessons).length;
+  const dailyActivity = serverData?.dailyActivity ?? localProgress.dailyActivity;
+  const streak = computeStreak(dailyActivity);
   const minutes = Math.max(sentencesDone * 2, 0);
-  const badgeChecks = checkBadges(progress);
+  const badgeChecks = checkBadges(localProgress);
   const earnedBadges = badgeChecks.filter(b => b.earned);
 
   const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -24,7 +48,7 @@ export default function ProgressPage() {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${d.getFullYear()}-${m}-${dd}`;
   });
-  const weekActivity = weekKeys.map(k => progress.dailyActivity.includes(k));
+  const weekActivity = weekKeys.map(k => dailyActivity.includes(k));
   const isToday = (i: number) => i === dow;
 
   return (
@@ -97,12 +121,17 @@ export default function ProgressPage() {
         <div className="space-y-3">
           {courseMetadata.map(course => {
             const totalSentences = course.totalSentences;
+            // Use server data if available, fallback to localStorage matching
             let doneSentences = 0;
-            Object.keys(progress.completedSentences).forEach(sentId => {
-              if (sentId.startsWith(course.id + '-') && progress.completedSentences[sentId]) {
-                doneSentences++;
-              }
-            });
+            if (serverData?.courseProgress && serverData.courseProgress[course.id] !== undefined) {
+              doneSentences = serverData.courseProgress[course.id];
+            } else {
+              Object.keys(localProgress.completedSentences).forEach(sentId => {
+                if (sentId.startsWith(course.id + '-') && localProgress.completedSentences[sentId]) {
+                  doneSentences++;
+                }
+              });
+            }
             const pct = totalSentences > 0 ? (doneSentences / totalSentences) * 100 : 0;
             if (pct === 0) return null;
             return (

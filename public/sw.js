@@ -220,6 +220,7 @@ self.addEventListener('notificationclick', (event) => {
     fetch('/api/push/track-click', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ notificationId }),
     }).catch(() => {});
   }
@@ -251,6 +252,7 @@ self.addEventListener('notificationclose', (event) => {
     fetch('/api/push/track-close', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ notificationId }),
     }).catch(() => {});
   }

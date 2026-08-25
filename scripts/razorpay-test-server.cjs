@@ -193,9 +193,9 @@ function getTestPageHTML() {
             <h2 style="font-size: 16px; margin-bottom: 4px;">📊 Test Log</h2>
             <div id="log" class="log">
                 <div class="log-entry">
-                    <span class="time">${new Date().toLocaleTimeString()}</span>
+                    <span class="time">\${new Date().toLocaleTimeString()}</span>
                     <span class="icon">🔑</span>
-                    <span class="text">Test key: ${RAZORPAY_KEY_ID}</span>
+                    <span class="text">Test key: \${RAZORPAY_KEY_ID}</span>
                 </div>
             </div>
         </div>
@@ -258,7 +258,7 @@ function getTestPageHTML() {
 
                 // 2. Open Razorpay checkout
                 const options = {
-                    key: '${RAZORPAY_KEY_ID}',
+                    key: '\${RAZORPAY_KEY_ID}',
                     amount: orderData.amount,
                     currency: 'INR',
                     name: 'SunoBolo English',

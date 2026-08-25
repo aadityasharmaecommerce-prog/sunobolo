@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, BookOpen, Download, Mic, TrendingUp, User } from 'lucide-react';
-
-const tabs = [
-  { id: 'home', label: 'Home', icon: Home, path: '/' },
-  { id: 'learn', label: 'Learn', icon: BookOpen, path: '/courses' },
-  { id: 'practice', label: 'Practice', icon: Mic, path: '/free-trial' },
-  { id: 'progress', label: 'Progress', icon: TrendingUp, path: '/progress' },
-  { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
-] as const;
+import { Home, BookOpen, Download, Mic, TrendingUp, User, Target, BookMarked } from 'lucide-react';
+import { useAuth } from '../lib/auth';
 
 function isStandalone(): boolean {
   if (typeof window === 'undefined') return false;
@@ -28,6 +21,17 @@ export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const { subscription } = useAuth();
+  const isPaid = subscription.active;
+
+  const tabs = [
+    { id: 'home', label: 'Home', icon: Home, path: '/' },
+    { id: 'learn', label: 'Learn', icon: BookOpen, path: '/courses' },
+    { id: 'read', label: 'Read', icon: BookMarked, path: '/reading' },
+    ...(!isPaid ? [{ id: 'practice', label: 'Practice', icon: Mic, path: '/free-trial' }] : [{ id: 'journey', label: 'Journey', icon: Target, path: '/journey' }]),
+    { id: 'progress', label: 'Progress', icon: TrendingUp, path: '/progress' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
+  ] as const;
 
   useEffect(() => {
     if (isStandalone()) return;

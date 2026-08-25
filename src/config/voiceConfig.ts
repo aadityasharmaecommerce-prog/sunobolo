@@ -32,7 +32,7 @@ export const HINDI_MEANING_PREFIX = 'मतलब';
 /**
  * Cache-busting version — bump to '18' for Sarvam AI premium voice audio.
  */
-export const AUDIO_VERSION = '22';
+export const AUDIO_VERSION = '23';
 
 const withVersion = (path: string): string => `${path}?v=${AUDIO_VERSION}`;
 

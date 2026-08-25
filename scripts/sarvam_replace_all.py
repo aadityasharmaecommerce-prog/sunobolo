@@ -74,7 +74,7 @@ RETRY_DELAY = 8
 SAFETY_TIMEOUT = 60
 
 BASE = Path(__file__).resolve().parent.parent
-CONTENT_TS = BASE / "src" / "data" / "content.ts"
+CONTENT_DIR = BASE / "src" / "data" / "content"
 AUDIO_BASE = BASE / "public" / "audio"
 STATE_FILE = BASE / "scripts" / "sarvam_replace_state.json"
 
@@ -95,25 +95,31 @@ def unescape(s: str) -> str:
 
 
 def parse_sentences():
-    """Parse all sentences from content.ts."""
-    with open(CONTENT_TS, "r", encoding="utf-8") as f:
-        text = f.read()
+    """Parse all sentences from content/*.ts files."""
     pattern = (
         r'"id":\s*"([^"]+)".*?"courseId":\s*"([^"]+)".*?'
         r'"lessonId":\s*"([^"]+)".*?"english":\s*"((?:[^"\\]|\\.)*)".*?'
         r'"hindi":\s*"((?:[^"\\]|\\.)*)"'
     )
-    matches = re.findall(pattern, text, re.DOTALL)
     seen = set()
     sentences = []
-    for sid, cid, lid, eng, hin in matches:
-        if sid in seen:
+    # Scan all .ts files in content/ directory (skip index.ts, types.ts)
+    skip_files = {'index.ts', 'types.ts'}
+    ts_files = sorted(CONTENT_DIR.glob('*.ts'))
+    for ts_file in ts_files:
+        if ts_file.name in skip_files:
             continue
-        seen.add(sid)
-        eng = unescape(eng)
-        hin = unescape(hin)
-        sentences.append({"id": sid, "courseId": cid, "lessonId": lid,
-                          "english": eng, "hindi": hin})
+        with open(ts_file, 'r', encoding='utf-8') as f:
+            text = f.read()
+        matches = re.findall(pattern, text, re.DOTALL)
+        for sid, cid, lid, eng, hin in matches:
+            if sid in seen:
+                continue
+            seen.add(sid)
+            eng = unescape(eng)
+            hin = unescape(hin)
+            sentences.append({"id": sid, "courseId": cid, "lessonId": lid,
+                              "english": eng, "hindi": hin})
     return sentences
 
 

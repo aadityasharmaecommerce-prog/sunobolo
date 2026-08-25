@@ -9,6 +9,7 @@
  *   GET  /api/lessons/:id                     - one lesson with sentences
  *   GET  /api/sentences/:id                    - one sentence
  *   POST /api/progress                         - mark sentence complete
+ *   GET  /api/progress/stats                    - dashboard progress stats (server-side)
  *
  *   POST /api/auth/signup                      - Phone + email + password signup
  *   POST /api/auth/login                       - Phone + password login
@@ -28,6 +29,15 @@
  *   SESSION_SECRET,
  *   RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
  *   RESEND_API_KEY, EMAIL_FROM, APP_BASE_URL
+ *   GOOGLE_SERVICE_ACCOUNT_KEY (JSON string for Play Developer API)
+ *   GOOGLE_PLAY_PACKAGE_NAME (e.g. com.sunobolo.english)
+ *   GOOGLE_RTDN_SUBSCRIPTION (Pub/Sub subscription path for RTDN verification)
+ *   GOOGLE_PUBSUB_VERIFICATION_KEY (optional: manual Pub/Sub verification key)
+ *
+ *   POST /api/payment/verify-google  — Google Play purchase verification
+ *   POST /api/payment/google-rtdn   — Google Play RTDN webhook (Pub/Sub push)
+ *   POST /api/auth/delete-account   — Delete user account + all data (GDPR/Play Store)
+ *   GET  /delete-account            — Public account deletion page (Play Store URL)
  */
 
 interface Env {
@@ -44,14 +54,19 @@ interface Env {
   WEB_PUSH_PRIVATE_KEY?: string;
   WEB_PUSH_SUBJECT?: string;
   VAPID_PUBLIC_KEY?: string;
+  GOOGLE_SERVICE_ACCOUNT_KEY?: string;
+  GOOGLE_PLAY_PACKAGE_NAME?: string;
+  GOOGLE_RTDN_SUBSCRIPTION?: string;
+  GOOGLE_PUBSUB_VERIFICATION_KEY?: string;
 }
 
 // ── Plan Configuration (server-side source of truth) ──
 
 const PLANS = {
-  three_month: { id: 'three_month', amount: 59900, durationMonths: 3 },
-  six_month:   { id: 'six_month',   amount: 99900, durationMonths: 6 },
-  one_year:    { id: 'one_year',    amount: 170000, durationMonths: 12 },
+  one_month:   { id: 'one_month',   amount: 19900,  durationMonths: 1 },
+  three_month: { id: 'three_month', amount: 49900,  durationMonths: 3 },
+  six_month:   { id: 'six_month',   amount: 69900,  durationMonths: 6 },
+  one_year:    { id: 'one_year',    amount: 99900,  durationMonths: 12 },
 } as const;
 
 type PlanId = keyof typeof PLANS;
@@ -665,6 +680,51 @@ async function handleResetPassword(request: Request, env: Env): Promise<Response
   return json({ success: true, message: 'Password reset successful. You can now login with your new password.' });
 }
 
+/**
+ * POST /api/auth/delete-account
+ * Google Play Store requires an account-deletion URL.
+ * User submits phone + password; server verifies, then deletes ALL user data.
+ */
+async function handleDeleteAccount(request: Request, env: Env): Promise<Response> {
+  const body = await request.json<{ phone?: string; password?: string }>();
+  if (!body?.phone || !body?.password) return err('Mobile number and password are required');
+
+  const normalizedPhone = normalizePhone(body.phone);
+  const user = await env.DB.prepare('SELECT id, name, phone FROM users WHERE phone = ?').bind(normalizedPhone).first<{ id: string; name: string; phone: string }>();
+  if (!user) return err('No account found with this mobile number');
+
+  // Verify password
+  const stored = await env.DB.prepare('SELECT password_hash FROM users WHERE id = ?').bind(user.id).first<{ password_hash: string }>();
+  if (!stored?.password_hash) return err('Cannot verify account. Please contact support.');
+  const inputHash = await hashPasswordPw(body.password, getPasswordPepper(env));
+  if (inputHash !== stored.password_hash) return err('Incorrect password');
+
+  const userId = user.id;
+
+  // Delete ALL user data (order matters for foreign keys)
+  await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM user_progress WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM lesson_progress WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM daily_activity WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM favorites WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM journey_progress WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM push_subscriptions WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM payments WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM subscriptions WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM user_profiles WHERE user_id = ?').bind(userId).run();
+  await env.DB.prepare('DELETE FROM admin_users WHERE user_id = ?').bind(userId).run();
+  try { await env.DB.prepare('DELETE FROM coupon_usages WHERE user_id = ?').bind(userId).run(); } catch {}
+  await env.DB.prepare('DELETE FROM analytics_events WHERE user_id = ?').bind(userId).run();
+  // Keep audit_events for compliance, but anonymize
+  await env.DB.prepare("UPDATE audit_events SET user_id = NULL, metadata = '{}' WHERE user_id = ?").bind(userId).run();
+  // Finally delete the user record
+  await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId).run();
+
+  await logAuditEvent(userId, 'ACCOUNT_DELETED', { name: user.name, phone: normalizedPhone }, env.DB);
+
+  return json({ ok: true, message: 'Account and all associated data have been permanently deleted.' }, { status: 200, headers: { ...getCorsHeaders(request.headers.get('origin')) } });
+}
+
 async function handleAuthLogout(request: Request, env: Env): Promise<Response> {
   const token = extractSessionToken(request.headers.get('cookie'));
   if (token && env.SESSION_SECRET) {
@@ -694,10 +754,97 @@ async function handleAccess(request: Request, env: Env): Promise<Response> {
   return json({ hasAccess: subscribed, reason: subscribed ? 'active' : 'expired' });
 }
 
+/** GET /api/offers/active — Return currently active offers for the pricing page */
+async function handleActiveOffers(_request: Request, env: Env): Promise<Response> {
+  try {
+    const now = new Date().toISOString();
+    // Find active offers that are within their schedule window
+    const { results } = await env.DB.prepare(
+      `SELECT id, name, label, plan_id, mrp, discount_percent, sale_price, start_at, end_at, status
+       FROM offers
+       WHERE status = 'active' AND start_at <= ? AND end_at >= ?
+       ORDER BY plan_id`
+    ).bind(now, now).all();
+
+    // Group by plan_id, only one active offer per plan
+    const offersByPlan: Record<string, any> = {};
+    for (const offer of (results || []) as any[]) {
+      if (!offersByPlan[offer.plan_id]) {
+        offersByPlan[offer.plan_id] = {
+          id: offer.id,
+          name: offer.name,
+          label: offer.label,
+          plan_id: offer.plan_id,
+          mrp: offer.mrp,
+          discountPercent: offer.discount_percent,
+          salePrice: offer.sale_price,
+          startAt: offer.start_at,
+          endAt: offer.end_at,
+        };
+      }
+    }
+
+    return json({ offers: offersByPlan });
+  } catch (e) {
+    // offers table may not exist yet — return empty
+    console.error('[OFFERS] Query failed (table may not exist):', e);
+    return json({ offers: {} });
+  }
+}
+
+async function handleProgressStats(request: Request, env: Env): Promise<Response> {
+  const user = await authenticateUser(request, env);
+  if (!user) return err('Login required', 401);
+
+  const sentCount = await env.DB.prepare(
+    'SELECT COUNT(*) as n FROM user_progress WHERE user_id = ?'
+  ).bind(user.id).first<{ n: number }>();
+
+  const lessonCount = await env.DB.prepare(
+    'SELECT COUNT(*) as n FROM lesson_progress WHERE user_id = ?'
+  ).bind(user.id).first<{ n: number }>();
+
+  const journeyDays = await env.DB.prepare(
+    "SELECT completed_at FROM journey_progress WHERE user_id = ? AND status = 'completed' AND completed_at IS NOT NULL"
+  ).bind(user.id).all<{ completed_at: string }>();
+  const activityDates = [...new Set(
+    (journeyDays.results || []).map(r => r.completed_at.split('T')[0])
+  )];
+  const sentDates = await env.DB.prepare(
+    "SELECT DATE(completed_at) as d FROM user_progress WHERE user_id = ? GROUP BY DATE(completed_at)"
+  ).bind(user.id).all<{ d: string }>();
+  const allDates = new Set(activityDates);
+  (sentDates.results || []).forEach(r => allDates.add(r.d));
+
+  const courseIds = ['beginner', 'intermediate', 'advanced'];
+  const courseProgress: Record<string, number> = {};
+  for (const cid of courseIds) {
+    const cnt = await env.DB.prepare(
+      "SELECT COUNT(*) as n FROM user_progress WHERE user_id = ? AND sentence_id LIKE ?"
+    ).bind(user.id, cid + '-%').first<{ n: number }>();
+    courseProgress[cid] = cnt?.n || 0;
+  }
+
+  const journeyProgress = await env.DB.prepare(
+    "SELECT day_number, status, score FROM journey_progress WHERE user_id = ? ORDER BY day_number"
+  ).bind(user.id).all<{ day_number: number; status: string; score: number | null }>();
+
+  return json({
+    sentencesDone: sentCount?.n || 0,
+    lessonsDone: lessonCount?.n || 0,
+    dailyActivity: [...allDates],
+    courseProgress,
+    journeyProgress: (journeyProgress.results || []).map(r => ({
+      day: r.day_number, status: r.status, score: r.score,
+    })),
+  });
+}
+
 // ── Payment handlers (3-plan system) ──
 
 /** Plan duration ranking for upgrade/downgrade detection (higher = longer) */
 const PLAN_DURATION_RANK: Record<string, number> = {
+  one_month: 1,
   three_month: 3,
   six_month: 6,
   one_year: 12,
@@ -717,7 +864,7 @@ async function handlePaymentCreateOrder(request: Request, env: Env): Promise<Res
 
   // Server-side plan validation — NEVER trust frontend amount
   const plan = getServerPlan(body.planId);
-  if (!plan) return err('Invalid plan. Allowed: three_month, six_month, one_year');
+  if (!plan) return err('Invalid plan. Allowed: one_month, three_month, six_month, one_year');
 
   // ── Duplicate / same-plan purchase prevention ──
   // Auto-expire first, then check for active subscription
@@ -744,67 +891,107 @@ async function handlePaymentCreateOrder(request: Request, env: Env): Promise<Res
     // Longer plan requested — allow as upgrade (flow continues below)
   }
 
+  // ── Offer validation (server-side) ──
+  // Check for active offer on this plan — offer price replaces MRP as base
+  let offerId: string | null = null;
+  let offerName: string | null = null;
+  let offerMrp: number | null = null;
+  let offerDiscountPercent: number | null = null;
+  let offerSalePrice: number | null = null;
+  let baseAmount = plan.amount; // Start with plan MRP
+
+  try {
+    const now = new Date().toISOString();
+    const activeOffer = await env.DB.prepare(
+      `SELECT id, name, mrp, discount_percent, sale_price
+       FROM offers
+       WHERE plan_id = ? AND status = 'active' AND start_at <= ? AND end_at >= ?
+       LIMIT 1`
+    ).bind(body.planId!, now, now).first<{
+      id: string; name: string; mrp: number; discount_percent: number; sale_price: number;
+    }>();
+
+    if (activeOffer) {
+      offerId = activeOffer.id;
+      offerName = activeOffer.name;
+      offerMrp = activeOffer.mrp;
+      offerDiscountPercent = activeOffer.discount_percent;
+      offerSalePrice = activeOffer.sale_price;
+      baseAmount = activeOffer.sale_price; // Offer price is the new base
+    }
+  } catch (offerErr) {
+    // offers table may not exist yet — proceed with normal pricing
+    console.error('[CREATE-ORDER] Offer check failed (non-critical):', offerErr);
+  }
+
   // ── Coupon validation (server-side) ──
+  // Coupon discount applies on top of the base amount (offer price or MRP)
   let discountAmount = 0;
   let couponId: string | null = null;
   let couponCode: string | null = null;
-  let originalAmount = plan.amount;
-  let finalAmount = plan.amount;
+  let originalAmount = baseAmount;
+  let finalAmount = baseAmount;
 
   if (body.couponCode && body.couponCode.trim()) {
-    const code = body.couponCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const coupon = await env.DB.prepare(
-      'SELECT * FROM coupons WHERE code = ?'
-    ).bind(code).first<{
-      id: string; code: string; discount_type: string; discount_value: number;
-      applicable_plans: string; start_date: string; expiry_date: string;
-      max_total_uses: number; max_uses_per_user: number; min_order_amount: number;
-      is_active: number;
-    }>();
+    try {
+      const code = body.couponCode.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const coupon = await env.DB.prepare(
+        'SELECT * FROM coupons WHERE code = ?'
+      ).bind(code).first<{
+        id: string; code: string; discount_type: string; discount_value: number;
+        applicable_plans: string; start_date: string; expiry_date: string;
+        max_total_uses: number; max_uses_per_user: number; min_order_amount: number;
+        is_active: number;
+      }>();
 
-    if (coupon && coupon.is_active) {
-      const now = new Date();
-      const isValidDate = new Date(coupon.start_date) <= now && new Date(coupon.expiry_date) >= now;
+      if (coupon && coupon.is_active) {
+        const now = new Date();
+        const isValidDate = new Date(coupon.start_date) <= now && new Date(coupon.expiry_date) >= now;
 
-      if (isValidDate) {
-        // Check usage limits
-        let usageOk = true;
-        if (coupon.max_total_uses > 0) {
-          const totalUsed = await env.DB.prepare(
-            "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND status = 'completed'"
-          ).bind(coupon.id).first<{ n: number }>();
-          if ((totalUsed?.n || 0) >= coupon.max_total_uses) usageOk = false;
-        }
-        if (usageOk && coupon.max_uses_per_user > 0) {
-          const userUsed = await env.DB.prepare(
-            "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND user_id = ? AND status = 'completed'"
-          ).bind(coupon.id, user.id).first<{ n: number }>();
-          if ((userUsed?.n || 0) >= coupon.max_uses_per_user) usageOk = false;
-        }
-        // Check plan applicability
-        if (usageOk && coupon.applicable_plans !== 'all') {
-          const allowed = coupon.applicable_plans.split(',').map(s => s.trim());
-          if (!allowed.includes(body.planId!)) usageOk = false;
-        }
-        // Check minimum order
-        if (usageOk && coupon.min_order_amount > 0 && plan.amount < coupon.min_order_amount) {
-          usageOk = false;
-        }
-
-        if (usageOk) {
-          if (coupon.discount_type === 'percentage') {
-            discountAmount = Math.floor(plan.amount * coupon.discount_value / 100);
-          } else {
-            discountAmount = Math.min(coupon.discount_value, plan.amount);
+        if (isValidDate) {
+          // Check usage limits
+          let usageOk = true;
+          if (coupon.max_total_uses > 0) {
+            const totalUsed = await env.DB.prepare(
+              "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND status = 'completed'"
+            ).bind(coupon.id).first<{ n: number }>();
+            if ((totalUsed?.n || 0) >= coupon.max_total_uses) usageOk = false;
           }
-          discountAmount = Math.min(discountAmount, plan.amount - 100);
-          discountAmount = Math.max(discountAmount, 0);
-          finalAmount = plan.amount - discountAmount;
-          couponId = coupon.id;
-          couponCode = coupon.code;
+          if (usageOk && coupon.max_uses_per_user > 0) {
+            const userUsed = await env.DB.prepare(
+              "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND user_id = ? AND status = 'completed'"
+            ).bind(coupon.id, user.id).first<{ n: number }>();
+            if ((userUsed?.n || 0) >= coupon.max_uses_per_user) usageOk = false;
+          }
+          // Check plan applicability
+          if (usageOk && coupon.applicable_plans !== 'all') {
+            const allowed = coupon.applicable_plans.split(',').map(s => s.trim());
+            if (!allowed.includes(body.planId!)) usageOk = false;
+          }
+          // Check minimum order
+          if (usageOk && coupon.min_order_amount > 0 && plan.amount < coupon.min_order_amount) {
+            usageOk = false;
+          }
+
+          if (usageOk) {
+            if (coupon.discount_type === 'percentage') {
+              discountAmount = Math.floor(plan.amount * coupon.discount_value / 100);
+            } else {
+              discountAmount = Math.min(coupon.discount_value, plan.amount);
+            }
+            discountAmount = Math.min(discountAmount, plan.amount - 100);
+            discountAmount = Math.max(discountAmount, 0);
+            finalAmount = plan.amount - discountAmount;
+            couponId = coupon.id;
+            couponCode = coupon.code;
+          }
         }
       }
+    } catch (couponErr) {
+      // If coupons table doesn't exist or has errors, proceed without coupon
+      console.error('[CREATE-ORDER] Coupon validation failed (non-critical):', couponErr);
     }
+
   }
 
   if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) {
@@ -821,40 +1008,88 @@ async function handlePaymentCreateOrder(request: Request, env: Env): Promise<Res
       body: JSON.stringify({ amount: finalAmount, currency: 'INR', receipt: `sb_${user.id.slice(0, 16)}_${Date.now()}` }),
     });
     const order = await res.json<{ id: string; amount: number; currency: string }>();
-    await env.DB.prepare(
-      `INSERT INTO payments (id, user_id, razorpay_order_id, amount, original_amount, discount_amount, final_amount, currency, plan_id, coupon_id, coupon_code, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'created')`
-    ).bind(
-      crypto.randomUUID(), user.id, order.id, finalAmount,
-      originalAmount, discountAmount, finalAmount,
-      order.currency, plan.id, couponId, couponCode
-    ).run();
-    // Reserve coupon usage (with race condition protection)
-    if (couponId) {
-      const usageId = 'cu_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    // Try full INSERT with coupon columns; fall back to basic INSERT if columns are missing
+    const paymentId = crypto.randomUUID();
+    try {
       await env.DB.prepare(
-        'INSERT INTO coupon_usages (id, coupon_id, user_id, order_id, original_amount, discount_amount, final_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        `INSERT INTO payments (id, user_id, razorpay_order_id, amount, original_amount, discount_amount, final_amount, currency, plan_id, coupon_id, coupon_code, offer_id, offer_name, offer_mrp, offer_discount_percent, offer_sale_price, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'created')`
       ).bind(
-        usageId, couponId, user.id, order.id, originalAmount, discountAmount, finalAmount, 'reserved'
+        paymentId, user.id, order.id, finalAmount,
+        originalAmount, discountAmount, finalAmount,
+        order.currency, plan.id, couponId, couponCode,
+        offerId, offerName, offerMrp, offerDiscountPercent, offerSalePrice
       ).run();
-      // Post-reservation check: verify total uses (completed + reserved) hasn't exceeded limit
-      const couponRecord = await env.DB.prepare('SELECT max_total_uses FROM coupons WHERE id = ?').bind(couponId).first<{ max_total_uses: number }>();
-      if (couponRecord && couponRecord.max_total_uses > 0) {
-        const totalActive = await env.DB.prepare(
-          "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND status IN ('completed', 'reserved')"
-        ).bind(couponId).first<{ n: number }>();
-        if ((totalActive?.n || 0) > couponRecord.max_total_uses) {
-          // Race condition: another request reserved the last slot — roll back
-          await env.DB.prepare('DELETE FROM coupon_usages WHERE id = ?').bind(usageId).run();
-          await env.DB.prepare('DELETE FROM payments WHERE razorpay_order_id = ?').bind(order.id).run();
-          return err('This coupon has just been fully redeemed. Please try without a coupon.', 409);
+    } catch (insertErr: any) {
+      // If offer/coupon columns don't exist yet, fall back to basic columns
+      console.error('[CREATE-ORDER] Full INSERT failed, trying basic INSERT:', insertErr.message);
+      try {
+        await env.DB.prepare(
+          `INSERT INTO payments (id, user_id, razorpay_order_id, amount, original_amount, discount_amount, final_amount, currency, plan_id, coupon_id, coupon_code, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'created')`
+        ).bind(
+          paymentId, user.id, order.id, finalAmount,
+          originalAmount, discountAmount, finalAmount,
+          order.currency, plan.id, couponId, couponCode
+        ).run();
+      } catch (basicErr: any) {
+        // If coupon columns also missing, try without them
+        console.error('[CREATE-ORDER] Basic INSERT also failed:', basicErr.message);
+        try {
+          await env.DB.prepare(
+            `INSERT INTO payments (id, user_id, razorpay_order_id, amount, currency, plan_id, status)
+             VALUES (?, ?, ?, ?, ?, ?, 'created')`
+          ).bind(
+            paymentId, user.id, order.id, finalAmount,
+            order.currency, plan.id
+          ).run();
+        } catch (finalErr: any) {
+          console.error('[CREATE-ORDER] Final INSERT also failed:', finalErr.message);
+          await env.DB.prepare(
+            `INSERT INTO payments (id, user_id, razorpay_order_id, amount, currency, status)
+             VALUES (?, ?, ?, ?, ?, 'created')`
+          ).bind(
+            paymentId, user.id, order.id, finalAmount,
+            order.currency
+          ).run();
         }
       }
     }
-    await logAuditEvent(user.id, 'PAYMENT_CREATED', { orderId: order.id, amount: finalAmount, originalAmount, discountAmount, planId: plan.id, couponCode }, env.DB);
-    return json({ orderId: order.id, amount: finalAmount, originalAmount, discountAmount, couponCode, currency: order.currency, keyId: env.RAZORPAY_KEY_ID, planId: plan.id });
+    // Reserve coupon usage (with race condition protection) — non-critical if table missing
+    if (couponId) {
+      try {
+        const usageId = 'cu_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        await env.DB.prepare(
+          'INSERT INTO coupon_usages (id, coupon_id, user_id, order_id, original_amount, discount_amount, final_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(
+          usageId, couponId, user.id, order.id, originalAmount, discountAmount, finalAmount, 'reserved'
+        ).run();
+        // Post-reservation check: verify total uses (completed + reserved) hasn't exceeded limit
+        const couponRecord = await env.DB.prepare('SELECT max_total_uses FROM coupons WHERE id = ?').bind(couponId).first<{ max_total_uses: number }>();
+        if (couponRecord && couponRecord.max_total_uses > 0) {
+          const totalActive = await env.DB.prepare(
+            "SELECT COUNT(*) as n FROM coupon_usages WHERE coupon_id = ? AND status IN ('completed', 'reserved')"
+          ).bind(couponId).first<{ n: number }>();
+          if ((totalActive?.n || 0) > couponRecord.max_total_uses) {
+            // Race condition: another request reserved the last slot — roll back
+            await env.DB.prepare('DELETE FROM coupon_usages WHERE id = ?').bind(usageId).run();
+            await env.DB.prepare('DELETE FROM payments WHERE razorpay_order_id = ?').bind(order.id).run();
+            return err('This coupon has just been fully redeemed. Please try without a coupon.', 409);
+          }
+        }
+      } catch (usageErr) {
+        console.error('[CREATE-ORDER] Failed to reserve coupon usage (non-critical):', usageErr);
+      }
+    }
+    await logAuditEvent(user.id, 'PAYMENT_CREATED', { orderId: order.id, amount: finalAmount, originalAmount, discountAmount, planId: plan.id, couponCode, offerId, offerName }, env.DB);
+    return json({
+      orderId: order.id, amount: finalAmount, originalAmount, discountAmount, couponCode,
+      currency: order.currency, keyId: env.RAZORPAY_KEY_ID, planId: plan.id,
+      offerId, offerName, offerMrp, offerDiscountPercent, offerSalePrice,
+    });
   } catch (e: any) {
-    return err('Failed to create order: ' + e.message, 500);
+    console.error('[CREATE-ORDER] Error:', e.message, e.stack);
+    return err('Payment could not be started. Please try again.', 500);
   }
 }
 
@@ -873,8 +1108,8 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
 
   // Get payment record (server-side, never trust frontend)
   const payment = await env.DB.prepare(
-    `SELECT amount, user_id, status FROM payments WHERE razorpay_order_id = ?`
-  ).bind(body.razorpay_order_id).first<{ amount: number; user_id: string; status: string }>();
+    `SELECT amount, user_id, status, plan_id FROM payments WHERE razorpay_order_id = ?`
+  ).bind(body.razorpay_order_id).first<{ amount: number; user_id: string; status: string; plan_id: string | null }>();
   if (!payment) {
     console.error(`[VERIFY] No payment record for order ${body.razorpay_order_id}`);
     return err('Payment not found');
@@ -889,12 +1124,13 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
     return json({ verified: true, already_verified: true });
   }
 
-  // Determine plan from amount (server-side, never trust frontend planId)
+  // Determine plan from payment record (server-side, never trust frontend planId)
   let planId: string | null = null;
-  // Try plan_id first (if column exists), fallback to amount matching
-  if ((payment as any).plan_id) {
-    planId = (payment as any).plan_id;
+  // Priority: 1) plan_id from DB, 2) amount matching (for old payments without plan_id)
+  if (payment.plan_id) {
+    planId = payment.plan_id;
   } else {
+    // Fallback: match amount to plan (only works for non-discounted payments)
     for (const [id, p] of Object.entries(PLANS)) {
       if (p.amount === payment.amount) { planId = id; break; }
     }
@@ -944,6 +1180,714 @@ async function handlePaymentVerify(request: Request, env: Env): Promise<Response
   }
 }
 
+// ── Google Play Billing Verification (Production-Secure) ──
+
+/**
+ * Server-side allowed product IDs — NEVER trust client.
+ * Client may send any productId, but only these are valid.
+ */
+const GOOGLE_ALLOWED_PRODUCTS: Record<string, { planId: string; amount: number; durationMonths: number }> = {
+  'sunobolo_one_month':   { planId: 'one_month',   amount: 19900,  durationMonths: 1 },
+  'sunobolo_three_month': { planId: 'three_month', amount: 49900,  durationMonths: 3 },
+  'sunobolo_six_month':   { planId: 'six_month',   amount: 69900,  durationMonths: 6 },
+  'sunobolo_one_year':    { planId: 'one_year',    amount: 99900,  durationMonths: 12 },
+};
+
+/**
+ * Google Play purchase states
+ */
+const GOOGLE_PURCHASE_STATE = {
+  PENDING: 0,
+  PURCHASED: 1,
+  CANCELED: 2,
+} as const;
+
+/**
+ * Get a Google OAuth2 access token using service account credentials.
+ * Uses Ed25519/RS256 JWT signing with Cloudflare Web Crypto API.
+ */
+async function getGoogleAccessToken(env: Env): Promise<string> {
+  const saKeyJson = env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!saKeyJson) {
+    throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY not configured');
+  }
+
+  const saKey = JSON.parse(saKeyJson);
+  const now = Math.floor(Date.now() / 1000);
+
+  // JWT header
+  const header = { alg: 'RS256', typ: 'JWT' };
+  // JWT claim set
+  const claimSet = {
+    iss: saKey.client_email,
+    scope: 'https://www.googleapis.com/auth/androidpublisher',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+  };
+
+  const encoder = new TextEncoder();
+
+  // Base64url encode
+  const base64url = (data: string) =>
+    btoa(data).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+  const headerB64 = base64url(JSON.stringify(header));
+  const claimB64 = base64url(JSON.stringify(claimSet));
+  const signingInput = `${headerB64}.${claimB64}`;
+
+  // Import private key for RS256 signing
+  // Service account private key is in PEM format
+  const pemBody = saKey.private_key
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s/g, '');
+
+  const keyData = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+
+  const privateKey = await crypto.subtle.importKey(
+    'pkcs8',
+    keyData,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    privateKey,
+    encoder.encode(signingInput),
+  );
+
+  const signatureB64 = base64url(String.fromCharCode(...new Uint8Array(signature)));
+  const jwt = `${signingInput}.${signatureB64}`;
+
+  // Exchange JWT for access token
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+  });
+
+  if (!tokenRes.ok) {
+    const errBody = await tokenRes.text();
+    throw new Error(`Google OAuth token failed: ${tokenRes.status} ${errBody}`);
+  }
+
+  const tokenData = await tokenRes.json<{ access_token: string }>();
+  return tokenData.access_token;
+}
+
+/**
+ * Verify purchase with Google Play Developer API.
+ * Returns authoritative purchase state from Google servers.
+ */
+async function verifyPurchaseWithGoogle(
+  productId: string,
+  purchaseToken: string,
+  env: Env,
+): Promise<{
+  purchaseState: number;
+  orderId: string;
+  acknowledgementState: number;
+  consumptionState: number;
+  purchaseTimeMillis: string;
+} | null> {
+  const packageName = env.GOOGLE_PLAY_PACKAGE_NAME || 'com.sunobolo.english';
+  const accessToken = await getGoogleAccessToken(env);
+
+  const url = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}`;
+
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error(`[GOOGLE-API] Verification failed: ${res.status} ${errBody}`);
+    return null;
+  }
+
+  return res.json();
+}
+
+/**
+ * Acknowledge purchase with Google Play Developer API (server-side).
+ */
+async function acknowledgePurchaseWithGoogle(
+  productId: string,
+  purchaseToken: string,
+  env: Env,
+): Promise<boolean> {
+  const packageName = env.GOOGLE_PLAY_PACKAGE_NAME || 'com.sunobolo.english';
+  const accessToken = await getGoogleAccessToken(env);
+
+  const url = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}:acknowledge`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ developmentPayload: 'SunoBolo server-acknowledged' }),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error(`[GOOGLE-ACK] Acknowledge failed: ${res.status} ${errBody}`);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Handle Google Play Billing purchase verification.
+ * 
+ * FLOW:
+ * 1. Client sends purchaseToken + productId
+ * 2. Backend validates productId against server-side allowed list
+ * 3. Backend verifies purchaseToken with Google Play Developer API
+ * 4. Backend checks purchaseState === PURCHASED
+ * 5. Backend checks for duplicate purchaseToken (unique per user)
+ * 6. Backend activates entitlement
+ * 7. Backend acknowledges purchase server-side
+ */
+async function handlePaymentVerifyGoogle(request: Request, env: Env): Promise<Response> {
+  const user = await authenticateUser(request, env);
+  if (!user) {
+    return err('Login required', 401);
+  }
+
+  const body = await request.json<{
+    productId?: string;
+    purchaseToken?: string;
+  }>();
+
+  if (!body.productId || !body.purchaseToken) {
+    return err('Missing productId or purchaseToken');
+  }
+
+  // ── STEP 1: Validate productId server-side (NEVER trust client) ──
+  const allowedProduct = GOOGLE_ALLOWED_PRODUCTS[body.productId];
+  if (!allowedProduct) {
+    console.error(`[GOOGLE-VERIFY] Invalid productId: ${body.productId}`);
+    return err('Invalid product', 400);
+  }
+
+  const { planId, amount, durationMonths } = allowedProduct;
+  const plan = getServerPlan(planId);
+  if (!plan) {
+    return err('Invalid plan configuration', 500);
+  }
+
+  // ── STEP 2: Check duplicate purchaseToken (idempotent + cross-user protection) ──
+  try {
+    const existingPayment = await env.DB.prepare(
+      `SELECT id, user_id, status FROM payments WHERE google_purchase_token = ?`
+    ).bind(body.purchaseToken).first<{ id: string; user_id: string; status: string }>();
+
+    if (existingPayment) {
+      if (existingPayment.user_id === user.id && existingPayment.status === 'paid') {
+        // Same user, already processed — idempotent success
+        return json({ verified: true, already_verified: true });
+      }
+      if (existingPayment.user_id !== user.id) {
+        // Different user trying to reuse token — SECURITY EVENT
+        await logAuditEvent(user.id, 'SECURITY_PURCHASE_TOKEN_REUSE', {
+          purchaseToken: body.purchaseToken.substring(0, 20) + '...',
+          originalUserId: existingPayment.user_id,
+          attemptedUserId: user.id,
+        }, env.DB);
+        return err('This purchase has already been used by another account.', 403);
+      }
+    }
+  } catch (e: any) {
+    // Column may not exist yet — FAIL SAFELY rather than bypass duplicate protection
+    console.error('[GOOGLE-VERIFY] google_purchase_token column may be missing. Run migration 0015. Error:', e.message);
+    return err('Billing system not configured. Please contact support.', 500);
+  }
+
+  // ── STEP 3: Verify with Google Play Developer API ──
+  let googlePurchase: Awaited<ReturnType<typeof verifyPurchaseWithGoogle>>;
+  try {
+    googlePurchase = await verifyPurchaseWithGoogle(body.productId, body.purchaseToken, env);
+  } catch (e: any) {
+    console.error('[GOOGLE-VERIFY] Google API call failed:', e.message);
+    return err('Failed to verify with Google Play. Please try again.', 502);
+  }
+
+  if (!googlePurchase) {
+    return err('Could not verify purchase with Google Play', 502);
+  }
+
+  // ── STEP 4: Check purchaseState — ONLY PURCHASED is accepted ──
+  if (googlePurchase.purchaseState === GOOGLE_PURCHASE_STATE.PENDING) {
+    return json({ verified: false, pending: true, message: 'Payment is pending. Access will be granted once payment completes.' });
+  }
+
+  if (googlePurchase.purchaseState === GOOGLE_PURCHASE_STATE.CANCELED) {
+    return err('Purchase was cancelled', 402);
+  }
+
+  if (googlePurchase.purchaseState !== GOOGLE_PURCHASE_STATE.PURCHASED) {
+    return err('Purchase is not in a valid state', 402);
+  }
+
+  // ── STEP 5: Store payment record ──
+  const paymentId = crypto.randomUUID();
+  const googleOrderId = googlePurchase.orderId || `google_${Date.now()}`;
+
+  try {
+    // Try with google_purchase_token column (new schema)
+    await env.DB.prepare(
+      `INSERT INTO payments (id, user_id, razorpay_order_id, amount, currency, plan_id, google_purchase_token, google_acknowledgement_state, status, verified_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'paid', datetime('now'))`
+    ).bind(
+      paymentId,
+      user.id,
+      googleOrderId,
+      amount,
+      'INR',
+      planId,
+      body.purchaseToken,
+      googlePurchase.acknowledgementState === 1 ? 'acknowledged' : 'not_acknowledged',
+    ).run();
+  } catch (insertErr: any) {
+    // Column may not exist — FAIL SAFELY rather than storing without purchase token
+    console.error('[GOOGLE-VERIFY] Payment INSERT failed (migration 0015 may not be applied):', insertErr.message);
+    return err('Billing system not configured. Please contact support.', 500);
+  }
+
+  // ── STEP 6: Activate entitlement (server-side calculated) ──
+  await activateGoogleEntitlement(user.id, body.purchaseToken, planId, durationMonths, env.DB);
+
+  // ── STEP 7: Server-side acknowledgement (fire-and-forget if fails) ──
+  if (googlePurchase.acknowledgementState !== 1) {
+    const acked = await acknowledgePurchaseWithGoogle(body.productId, body.purchaseToken, env);
+    if (acked) {
+      try {
+        await env.DB.prepare(
+          `UPDATE payments SET google_acknowledgement_state = 'acknowledged' WHERE google_purchase_token = ?`
+        ).bind(body.purchaseToken).run();
+      } catch (e) {
+        // Column may not exist — non-critical (purchase is already recorded)
+        console.error('[GOOGLE-ACK] Failed to update acknowledgement state (non-critical):', e);
+      }
+    }
+  }
+
+  await logAuditEvent(user.id, 'GOOGLE_PAYMENT_SUCCESS', {
+    productId: body.productId,
+    planId,
+    amount,
+    googleOrderId,
+  }, env.DB);
+
+  return json({ verified: true });
+}
+
+/**
+ * Activate entitlement from verified Google Play purchase.
+ * Idempotent — same purchaseToken never grants access twice.
+ */
+async function activateGoogleEntitlement(
+  userId: string,
+  purchaseToken: string,
+  planId: string,
+  durationMonths: number,
+  db: D1Database,
+): Promise<void> {
+  // Idempotency check
+  const existing = await db.prepare(
+    `SELECT id FROM subscriptions WHERE payment_id = ? AND status = 'active'`
+  ).bind(purchaseToken).first();
+  if (existing) return; // Already activated
+
+  // Check existing active subscription for extension
+  const existingSub = await db.prepare(
+    `SELECT expires_at FROM subscriptions WHERE user_id = ? AND status = 'active' ORDER BY expires_at DESC LIMIT 1`
+  ).bind(userId).first<{ expires_at: string }>();
+
+  const now = new Date();
+  let startedAt: string;
+  let expiresAt: string;
+
+  if (existingSub && new Date(existingSub.expires_at) > now) {
+    // Extend from current expiry
+    startedAt = existingSub.expires_at;
+    const newExpiry = new Date(existingSub.expires_at);
+    newExpiry.setMonth(newExpiry.getMonth() + durationMonths);
+    expiresAt = newExpiry.toISOString();
+  } else {
+    // New entitlement
+    startedAt = now.toISOString();
+    const newExpiry = new Date(now);
+    newExpiry.setMonth(newExpiry.getMonth() + durationMonths);
+    expiresAt = newExpiry.toISOString();
+  }
+
+  // Deactivate old subscriptions
+  await db.prepare(
+    `UPDATE subscriptions SET status = 'expired' WHERE user_id = ? AND status = 'active'`
+  ).bind(userId).run();
+
+  // Create new subscription
+  const subId = 'sub_gplay_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  await db.prepare(
+    `INSERT INTO subscriptions (id, user_id, package_id, status, started_at, expires_at, payment_id)
+     VALUES (?, ?, ?, 'active', ?, ?, ?)`
+  ).bind(subId, userId, planId, startedAt, expiresAt, purchaseToken).run();
+
+  console.log(`[GOOGLE-ENTITLEMENT] user=${userId}, plan=${planId}, expires=${expiresAt}`);
+}
+
+/**
+ * Verify Google Cloud Pub/Sub push message authenticity.
+ * Google signs push messages with a JWT in the Authorization header.
+ * We verify against Google's public keys (fetched from Google's signing key endpoint).
+ */
+async function verifyPubSubAuth(request: Request, env: Env): Promise<boolean> {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.error('[RTDN-AUTH] Missing Authorization header');
+    return false;
+  }
+
+  const token = authHeader.slice(7);
+
+  try {
+    // Parse JWT header to get key ID
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      console.error('[RTDN-AUTH] Invalid JWT format');
+      return false;
+    }
+
+    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+    // Verify audience matches our endpoint URL
+    const expectedUrl = env.APP_BASE_URL || 'https://sunobolo.in';
+    if (payload.aud !== `${expectedUrl}/api/payment/google-rtdn`) {
+      console.error('[RTDN-AUTH] Invalid audience:', payload.aud);
+      return false;
+    }
+
+    // Verify issuer is Google
+    if (!payload.iss || !payload.iss.startsWith('https://accounts.google.com')) {
+      console.error('[RTDN-AUTH] Invalid issuer:', payload.iss);
+      return false;
+    }
+
+    // Verify token hasn't expired
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      console.error('[RTDN-AUTH] Token expired');
+      return false;
+    }
+
+    // Verify against Google's public signing keys
+    const keyId = header.kid;
+    if (!keyId) {
+      console.error('[RTDN-AUTH] Missing kid in JWT header');
+      return false;
+    }
+
+    // Fetch Google's public keys (cached by browser/CF)
+    const googleKeysRes = await fetch('https://www.googleapis.com/oauth2/v3/certs');
+    if (!googleKeysRes.ok) {
+      console.error('[RTDN-AUTH] Failed to fetch Google signing keys');
+      return false;
+    }
+
+    const googleKeys = await googleKeysRes.json<{ keys: Array<{ kid: string; n: string; e: string; kty: string; alg: string }> }>();
+    const signingKey = googleKeys.keys.find(k => k.kid === keyId);
+    if (!signingKey) {
+      console.error('[RTDN-AUTH] No matching key found for kid:', keyId);
+      return false;
+    }
+
+    // Import Google's public key and verify JWT signature
+    const encoder = new TextEncoder();
+    const keyData = {
+      kty: signingKey.kty,
+      n: signingKey.n,
+      e: signingKey.e,
+      alg: 'RS256',
+      use: 'sig',
+    };
+
+    const publicKey = await crypto.subtle.importKey(
+      'jwk',
+      keyData,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['verify'],
+    );
+
+    // Reconstruct signing input and signature
+    const signingInput = parts[0] + '.' + parts[1];
+    const signatureB64 = parts[2].replace(/-/g, '+').replace(/_/g, '/');
+    const signatureBytes = Uint8Array.from(atob(signatureB64), c => c.charCodeAt(0));
+
+    const valid = await crypto.subtle.verify(
+      'RSASSA-PKCS1-v1_5',
+      publicKey,
+      signatureBytes,
+      encoder.encode(signingInput),
+    );
+
+    if (!valid) {
+      console.error('[RTDN-AUTH] JWT signature verification failed');
+      return false;
+    }
+
+    return true;
+  } catch (e: any) {
+    console.error('[RTDN-AUTH] Verification error:', e.message);
+    return false;
+  }
+}
+
+/**
+ * Voided/refunded product types
+ */
+const GOOGLE_VOIDED_PRODUCT_TYPE = {
+  SUBSCRIPTION: 1,
+  ONE_TIME: 2,
+} as const;
+
+/**
+ * Handle Google Play RTDN (Real-time Developer Notifications).
+ * 
+ * IMPORTANT: Google's RTDN structure is:
+ * {
+ *   version: string,
+ *   packageName: string,
+ *   eventTimeMillis: long,
+ *   oneTimeProductNotification: { notificationType, purchaseToken, sku },
+ *   voidedPurchaseNotification: { purchaseToken, orderId, productType, refundType },
+ *   subscriptionNotification: { ... },
+ *   testNotification: { ... }
+ * }
+ * 
+ * These fields are MUTUALLY EXCLUSIVE — only one is present per message.
+ */
+async function handleGoogleRtdn(request: Request, env: Env): Promise<Response> {
+  // ── STEP 0: Authenticate Pub/Sub push message ──
+  const isAuthentic = await verifyPubSubAuth(request, env);
+  if (!isAuthentic) {
+    console.error('[RTDN] Unauthenticated Pub/Sub message rejected');
+    // Return 200 to prevent Pub/Sub from retrying unauthenticated messages
+    return json({ ok: false, error: 'unauthenticated' }, { status: 200 });
+  }
+
+  try {
+    const body = await request.json<{ message?: { data?: string; messageId?: string }; subscription?: string }>();
+
+    if (!body.message?.data) {
+      return json({ ok: true, skipped: 'no data' }, { status: 200 });
+    }
+
+    // Verify subscription path (defense in depth)
+    if (body.subscription) {
+      // Subscription format: projects/<project-id>/subscriptions/<subscription-name>
+      const expectedSub = env.GOOGLE_RTDN_SUBSCRIPTION || '';
+      if (expectedSub && body.subscription !== expectedSub) {
+        console.error('[RTDN] Unexpected subscription:', body.subscription);
+        return json({ ok: false, error: 'unexpected subscription' }, { status: 200 });
+      }
+    }
+
+    // Decode Pub/Sub message data
+    const decoded = JSON.parse(atob(body.message.data));
+    const { packageName } = decoded;
+
+    // Verify package name
+    const expectedPackage = env.GOOGLE_PLAY_PACKAGE_NAME || 'com.sunobolo.english';
+    if (packageName !== expectedPackage) {
+      console.error('[RTDN] Wrong package:', packageName);
+      return json({ ok: false, error: 'wrong package' }, { status: 200 });
+    }
+
+    // ── Deduplication check ──
+    const messageId = body.message.messageId;
+    if (messageId) {
+      try {
+        const existing = await env.DB.prepare(
+          `SELECT id FROM google_webhook_log WHERE message_id = ?`
+        ).bind(messageId).first();
+        if (existing) {
+          return json({ ok: true, duplicate: true }, { status: 200 });
+        }
+      } catch {
+        // Table may not exist yet — continue processing
+      }
+    }
+
+    // ── Handle OneTimeProductNotification ──
+    if (decoded.oneTimeProductNotification) {
+      const notif = decoded.oneTimeProductNotification;
+      const { notificationType, purchaseToken, sku } = notif;
+
+      // Log the message
+      if (messageId) {
+        try {
+          await env.DB.prepare(
+            `INSERT INTO google_webhook_log (id, message_id, message_type, package_name, product_id, purchase_token)
+             VALUES (?, ?, ?, ?, ?, ?)`
+          ).bind(
+            crypto.randomUUID(), messageId, `otp_${notificationType}`,
+            packageName, sku, purchaseToken,
+          ).run();
+        } catch {
+          // Table may not exist — continue
+        }
+      }
+
+      // notificationType 1 = ONE_TIME_PRODUCT_PURCHASED
+      // Already handled by handlePaymentVerifyGoogle (client-initiated flow)
+      // No action needed here — the client flow already verified + activated
+      if (notificationType === 1) {
+        console.log(`[RTDN] ONE_TIME_PRODUCT_PURCHASED: sku=${sku}, token=${purchaseToken.substring(0, 20)}...`);
+      }
+
+      // notificationType 2 = ONE_TIME_PRODUCT_CANCELED
+      // This means a PENDING purchase was cancelled by the user.
+      // It does NOT mean an already-completed purchase was refunded.
+      // We do NOT revoke any entitlement because the purchase was never completed.
+      if (notificationType === 2) {
+        console.log(`[RTDN] ONE_TIME_PRODUCT_CANCELED (pending cancelled): sku=${sku}, token=${purchaseToken.substring(0, 20)}...`);
+        // Log only — no entitlement to revoke
+        await logAuditEvent('system', 'GOOGLE_OTP_PENDING_CANCELLED', {
+          sku,
+          purchaseToken: purchaseToken.substring(0, 20) + '...',
+        }, env.DB).catch(() => {});
+      }
+    }
+
+    // ── Handle VoidedPurchaseNotification (REFUND / VOID) ──
+    if (decoded.voidedPurchaseNotification) {
+      const notif = decoded.voidedPurchaseNotification;
+      const { purchaseToken, orderId, productType, refundType } = notif;
+
+      console.log(`[RTDN] VOIDED_PURCHASE: orderId=${orderId}, productType=${productType}, refundType=${refundType}, token=${purchaseToken.substring(0, 20)}...`);
+
+      // Log the message
+      if (messageId) {
+        try {
+          await env.DB.prepare(
+            `INSERT INTO google_webhook_log (id, message_id, message_type, package_name, product_id, purchase_token)
+             VALUES (?, ?, ?, ?, ?, ?)`
+          ).bind(
+            crypto.randomUUID(), messageId, `voided_pt${productType}_rt${refundType}`,
+            packageName, orderId || 'unknown', purchaseToken,
+          ).run();
+        } catch {
+          // Table may not exist — continue
+        }
+      }
+
+      // ── IMPORTANT: Do NOT trust the RTDN alone for revocation. ──
+      // Call Google Play Developer API to get the authoritative purchase state.
+      // Find the payment by purchaseToken and determine productId from our allowed list.
+      if (productType === GOOGLE_VOIDED_PRODUCT_TYPE.ONE_TIME) {
+        const payment = await env.DB.prepare(
+          `SELECT id, user_id, plan_id, google_purchase_token FROM payments WHERE google_purchase_token = ?`
+        ).bind(purchaseToken).first<{ id: string; user_id: string; plan_id: string; google_purchase_token: string }>();
+
+        if (!payment) {
+          console.error(`[RTDN] Voided purchase token not found in payments: ${purchaseToken.substring(0, 20)}...`);
+          // Still return OK — we can't process what we don't have
+          return json({ ok: true, skipped: 'payment not found' }, { status: 200 });
+        }
+
+        // Determine productId from planId using server-side map
+        const planToProduct: Record<string, string> = {
+          'one_month': 'sunobolo_one_month',
+          'three_month': 'sunobolo_three_month',
+          'six_month': 'sunobolo_six_month',
+          'one_year': 'sunobolo_one_year',
+        };
+        const productId = planToProduct[payment.plan_id];
+        if (!productId) {
+          console.error(`[RTDN] Unknown plan_id for voided purchase: ${payment.plan_id}`);
+          return json({ ok: true, skipped: 'unknown plan' }, { status: 200 });
+        }
+
+        // ── VERIFY with Google Play Developer API (authoritative state) ──
+        try {
+          const googlePurchase = await verifyPurchaseWithGoogle(productId, purchaseToken, env);
+
+          if (!googlePurchase) {
+            console.error('[RTDN] Google API verification failed for voided purchase — NOT revoking');
+            return json({ ok: true, skipped: 'google api failed' }, { status: 200 });
+          }
+
+          // Only revoke if Google confirms the purchase was actually voided
+          // Check if the purchase is in a non-purchased state (canceled/voided)
+          if (googlePurchase.purchaseState === GOOGLE_PURCHASE_STATE.CANCELED || googlePurchase.consumptionState !== 0) {
+            // Google confirms the purchase is voided — revoke entitlement
+            await env.DB.prepare(
+              `UPDATE payments SET status = 'refunded' WHERE id = ?`
+            ).bind(payment.id).run();
+
+            // Only revoke if subscription is currently active
+            await env.DB.prepare(
+              `UPDATE subscriptions SET status = 'revoked' WHERE user_id = ? AND payment_id = ? AND status = 'active'`
+            ).bind(payment.user_id, purchaseToken).run();
+
+            await logAuditEvent(payment.user_id, 'GOOGLE_PURCHASE_VOIDED', {
+              orderId,
+              productId,
+              refundType,
+              googlePurchaseState: googlePurchase.purchaseState,
+            }, env.DB);
+
+            console.log(`[RTDN] Purchase VOIDED and entitlement revoked: user=${payment.user_id}, orderId=${orderId}`);
+          } else {
+            // Google says purchase is still valid — do NOT revoke
+            console.log(`[RTDN] Google API says purchase still valid (state=${googlePurchase.purchaseState}) — NOT revoking: orderId=${orderId}`);
+            await logAuditEvent(payment.user_id, 'GOOGLE_VOIDED_BUT_API_SAYS_VALID', {
+              orderId,
+              productId,
+              refundType,
+              googlePurchaseState: googlePurchase.purchaseState,
+            }, env.DB);
+          }
+        } catch (e: any) {
+          console.error('[RTDN] Google API call failed during voided purchase processing:', e.message);
+          // Do NOT revoke — we can't verify
+          return json({ ok: true, skipped: 'verification failed' }, { status: 200 });
+        }
+      }
+
+      // productType === 1 (subscription) — not applicable to our app
+      if (productType === GOOGLE_VOIDED_PRODUCT_TYPE.SUBSCRIPTION) {
+        console.log(`[RTDN] Subscription voided (not applicable to our one-time model): orderId=${orderId}`);
+      }
+    }
+
+    // ── Handle SubscriptionNotification (not expected, but log for safety) ──
+    if (decoded.subscriptionNotification) {
+      console.log(`[RTDN] Unexpected SubscriptionNotification:`, JSON.stringify(decoded.subscriptionNotification));
+    }
+
+    // ── Handle TestNotification ──
+    if (decoded.testNotification) {
+      console.log('[RTDN] Test notification received — configuration is working!');
+    }
+
+    return json({ ok: true }, { status: 200 });
+  } catch (e: any) {
+    console.error('[RTDN] Error:', e.message);
+    // Return 200 to prevent infinite Pub/Sub retries
+    // Log the error for debugging
+    return json({ ok: true, error: e.message }, { status: 200 });
+  }
+}
+
 /** Activate or extend subscription after verified payment. Idempotent. */
 async function activateSubscription(userId: string, orderId: string, paymentId: string, planId: string, db: D1Database): Promise<void> {
   // Idempotency check — same payment cannot create multiple entitlements
@@ -956,10 +1900,14 @@ async function activateSubscription(userId: string, orderId: string, paymentId: 
   // Mark payment as paid
   await db.prepare(`UPDATE payments SET status = 'paid', verified_at = datetime('now') WHERE razorpay_order_id = ?`).bind(orderId).run();
 
-  // Complete coupon usage (mark reserved → completed)
-  await db.prepare(
-    `UPDATE coupon_usages SET status = 'completed', payment_id = (SELECT id FROM payments WHERE razorpay_order_id = ?), completed_at = datetime('now') WHERE order_id = ? AND status = 'reserved'`
-  ).bind(orderId, orderId).run();
+  // Complete coupon usage (mark reserved → completed) — fire-and-forget if table/columns missing
+  try {
+    await db.prepare(
+      `UPDATE coupon_usages SET status = 'completed', payment_id = (SELECT id FROM payments WHERE razorpay_order_id = ?), completed_at = datetime('now') WHERE order_id = ? AND status = 'reserved'`
+    ).bind(orderId, orderId).run();
+  } catch (e) {
+    console.error('[ACTIVATE] Failed to update coupon_usages (non-critical):', e);
+  }
 
   // Check existing active subscription
   const existingSub = await db.prepare(
@@ -987,11 +1935,30 @@ async function activateSubscription(userId: string, orderId: string, paymentId: 
   // Deactivate old subscriptions
   await db.prepare(`UPDATE subscriptions SET status = 'expired' WHERE user_id = ? AND status = 'active'`).bind(userId).run();
 
-  // Create new subscription
-  await db.prepare(
-    `INSERT INTO subscriptions (id, user_id, package_id, status, payment_ref, started_at, expires_at)
-     VALUES (?, ?, ?, 'active', ?, ?, ?)`
-  ).bind(crypto.randomUUID(), userId, planId, paymentId, startedAt, expiresAt).run();
+  // Fetch offer snapshot from payment record (if any)
+  let offerId: string | null = null;
+  let offerName: string | null = null;
+  try {
+    const paymentRecord = await db.prepare(
+      'SELECT offer_id, offer_name FROM payments WHERE razorpay_order_id = ?'
+    ).bind(orderId).first<{ offer_id: string | null; offer_name: string | null }>();
+    offerId = paymentRecord?.offer_id || null;
+    offerName = paymentRecord?.offer_name || null;
+  } catch { /* offer columns may not exist yet */ }
+
+  // Create new subscription (with offer snapshot)
+  try {
+    await db.prepare(
+      `INSERT INTO subscriptions (id, user_id, package_id, status, payment_ref, started_at, expires_at, offer_id, offer_name)
+       VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?)`
+    ).bind(crypto.randomUUID(), userId, planId, paymentId, startedAt, expiresAt, offerId, offerName).run();
+  } catch {
+    // Fallback if offer columns don't exist yet in subscriptions table
+    await db.prepare(
+      `INSERT INTO subscriptions (id, user_id, package_id, status, payment_ref, started_at, expires_at)
+       VALUES (?, ?, ?, 'active', ?, ?, ?)`
+    ).bind(crypto.randomUUID(), userId, planId, paymentId, startedAt, expiresAt).run();
+  }
 }
 
 async function handlePaymentWebhook(request: Request, env: Env): Promise<Response> {
@@ -1065,8 +2032,8 @@ async function handlePaymentWebhook(request: Request, env: Env): Promise<Respons
 
     // Find the payment record in D1
     const payment = await env.DB.prepare(
-      `SELECT id, user_id, amount, status FROM payments WHERE razorpay_order_id = ?`
-    ).bind(orderId).first<{ id: string; user_id: string; amount: number; status: string }>();
+      `SELECT id, user_id, amount, status, plan_id FROM payments WHERE razorpay_order_id = ?`
+    ).bind(orderId).first<{ id: string; user_id: string; amount: number; status: string; plan_id: string | null }>();
 
     if (!payment) {
       console.error(`[WEBHOOK] No payment record for order ${orderId}`);
@@ -1078,13 +2045,17 @@ async function handlePaymentWebhook(request: Request, env: Env): Promise<Respons
       return json({ ok: true, already_processed: true });
     }
 
-    // Determine plan from amount
+    // Determine plan: prefer plan_id from DB, fallback to amount matching
     let planId: string | null = null;
-    for (const [id, p] of Object.entries(PLANS)) {
-      if (p.amount === payment.amount) { planId = id; break; }
+    if (payment.plan_id) {
+      planId = payment.plan_id;
+    } else {
+      for (const [id, p] of Object.entries(PLANS)) {
+        if (p.amount === payment.amount) { planId = id; break; }
+      }
     }
     if (!planId) {
-      console.error(`[WEBHOOK] Unknown payment amount ${payment.amount} for order ${orderId}`);
+      console.error(`[WEBHOOK] Cannot determine plan for order ${orderId} (amount: ${payment.amount}, plan_id: ${payment.plan_id})`);
       return json({ ok: true });
     }
 
@@ -1457,15 +2428,22 @@ async function handleCouponValidate(request: Request, env: Env): Promise<Respons
   const plan = getServerPlan(body.planId);
   if (!plan) return err('Invalid plan');
 
-  // 1. Find coupon
-  const coupon = await env.DB.prepare(
-    'SELECT * FROM coupons WHERE code = ?'
-  ).bind(code).first<{
+  // 1. Find coupon (gracefully handle if coupons table doesn't exist yet)
+  let coupon: {
     id: string; code: string; discount_type: string; discount_value: number;
     applicable_plans: string; start_date: string; expiry_date: string;
     max_total_uses: number; max_uses_per_user: number; min_order_amount: number;
     is_active: number;
-  }>();
+  } | null = null;
+  try {
+    coupon = await env.DB.prepare(
+      'SELECT * FROM coupons WHERE code = ?'
+    ).bind(code).first();
+  } catch (e) {
+    // coupons table may not exist yet if migration 0010 hasn't been applied
+    console.error('[COUPON] coupons table may not exist:', e);
+    return err('Coupon system is not available yet. Please try again later.', 503);
+  }
 
   if (!coupon) return err('Invalid coupon code');
 
@@ -1765,6 +2743,9 @@ async function authenticateAdmin(request: Request, env: Env): Promise<{ id: stri
   return user;
 }
 
+// Translation is handled client-side (browser calls Google Translate directly)
+// No server-side endpoint needed — works from any device
+
 // ── Main router ──
 
 export const onRequest: PagesFunction<Env> = async ({ request, env, params }) => {
@@ -1857,6 +2838,7 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
     }
 
     if (route === '/auth/guest' && method === 'POST') {
+    if (route === '/progress/stats' && method === 'GET') return handleProgressStats(request, env);
       // Rate limit: max 50 guest accounts per hour (global)
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const guestCount = await env.DB.prepare(
@@ -1877,14 +2859,18 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
     if (route === '/auth/signup' && method === 'POST') return handleAuthSignup(request, env);
     if (route === '/auth/login' && method === 'POST') return handleAuthLogin(request, env);
     if (route === '/auth/me' && method === 'GET') return handleAuthMe(request, env);
+    if (route === '/auth/delete-account' && method === 'POST') return handleDeleteAccount(request, env);
     if (route === '/auth/logout' && method === 'POST') return handleAuthLogout(request, env);
     if (route === '/auth/forgot-password' && method === 'POST') return handleForgotPassword(request, env);
     if (route === '/auth/reset-password' && method === 'POST') return handleResetPassword(request, env);
     if (route === '/subscription' && method === 'GET') return handleSubscription(request, env);
     if (route === '/access' && method === 'GET') return handleAccess(request, env);
+    if (route === '/offers/active' && method === 'GET') return handleActiveOffers(request, env);
     if (route === '/coupon/validate' && method === 'POST') return handleCouponValidate(request, env);
     if (route === '/payment/create-order' && method === 'POST') return handlePaymentCreateOrder(request, env);
     if (route === '/payment/verify' && method === 'POST') return handlePaymentVerify(request, env);
+    if (route === '/payment/verify-google' && method === 'POST') return handlePaymentVerifyGoogle(request, env);
+    if (route === '/payment/google-rtdn' && method === 'POST') return handleGoogleRtdn(request, env);
     if (route === '/payment/webhook' && method === 'POST') return handlePaymentWebhook(request, env);
 
     // ── Push Notification routes ──
@@ -1908,6 +2894,8 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
 
     // ── Admin Payment Reconciliation routes ──
     if (route === '/payment/reconcile' && method === 'POST') return handlePaymentReconcile(request, env);
+
+
 
     // Non-API routes — let Cloudflare Pages serve static files / SPA fallback
     return undefined as unknown as Response;

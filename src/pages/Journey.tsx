@@ -49,6 +49,8 @@ export default function Journey() {
   const [progress, setProgress] = useState<DayProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [previewDay, setPreviewDay] = useState<JourneyDay | null>(null);
+  // Track whether the locked day modal is for subscriber (sequential lock) or free user (subscription needed)
+  const [lockReason, setLockReason] = useState<'sequential' | 'subscription'>('subscription');
 
   const hasFullAccess = subscription.active;
 
@@ -206,6 +208,12 @@ export default function Journey() {
                         if (isAccessible) {
                           navigate(`/journey/${day.day}`);
                         } else {
+                          // Determine lock reason: subscriber with sequential lock vs free user needing subscription
+                          if (hasFullAccess && isLocked) {
+                            setLockReason('sequential');
+                          } else {
+                            setLockReason('subscription');
+                          }
                           setPreviewDay(day);
                         }
                       }}
@@ -289,7 +297,9 @@ export default function Journey() {
           <div className="dark-card-page p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">🔒</span>
+                <span className="text-2xl">
+                  {lockReason === 'sequential' ? '📋' : '🔒'}
+                </span>
                 <div>
                   <p className="text-[10px] font-bold text-white/40">DAY {previewDay.day}</p>
                   <p className="text-sm font-extrabold text-white">{previewDay.title}</p>
@@ -302,28 +312,61 @@ export default function Journey() {
 
             <p className="text-sm text-white/50 mb-4">{previewDay.description}</p>
 
-            <div className="space-y-2 mb-5">
-              <p className="text-xs font-bold text-white/60">Includes:</p>
-              {['✓ Grammar explanation', '✓ Real-life sentences', '✓ Speaking practice', '✓ Practice exercises', '✓ Mini test', '✓ Next-day unlock'].map(f => (
-                <div key={f} className="flex items-center gap-2 text-sm text-white/50">
-                  <Check size={14} className="text-emerald-400 shrink-0" strokeWidth={3} />
-                  {f.slice(2)}
+            {lockReason === 'sequential' ? (
+              <>
+                {/* Subscriber but previous day not completed */}
+                <div className="bg-brand-500/10 border border-brand-500/20 rounded-xl p-4 mb-5">
+                  <p className="text-sm font-bold text-brand-300 mb-1">Complete previous days first</p>
+                  <p className="text-xs text-white/50">
+                    You need to complete Day {previewDay.day - 1} before unlocking Day {previewDay.day}.
+                    Each day builds on the previous one for the best learning experience.
+                  </p>
                 </div>
-              ))}
-            </div>
 
-            <button
-              onClick={() => { setPreviewDay(null); navigate('/pricing'); }}
-              className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl flex items-center justify-center gap-2"
-            >
-              🚀 Unlock Day 2–30
-            </button>
-            <button
-              onClick={() => { setPreviewDay(null); navigate('/journey/1'); }}
-              className="w-full mt-2 py-3 text-sm text-white/50 font-semibold hover:text-white/70 transition-colors"
-            >
-              View Day 1 again
-            </button>
+                {nextDay && (
+                  <button
+                    onClick={() => { setPreviewDay(null); navigate(`/journey/${nextDay.day}`); }}
+                    className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl flex items-center justify-center gap-2"
+                  >
+                    <Play size={16} fill="currentColor" />
+                    {getDayStatus(nextDay.day).status === 'in_progress' ? `Continue Day ${nextDay.day}` : `Start Day ${nextDay.day}`}
+                    <ChevronRight size={16} />
+                  </button>
+                )}
+                <button
+                  onClick={() => { setPreviewDay(null); }}
+                  className="w-full mt-2 py-3 text-sm text-white/50 font-semibold hover:text-white/70 transition-colors"
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Free user — needs subscription */}
+                <div className="space-y-2 mb-5">
+                  <p className="text-xs font-bold text-white/60">Includes:</p>
+                  {['✓ Grammar explanation', '✓ Real-life sentences', '✓ Speaking practice', '✓ Practice exercises', '✓ Mini test', '✓ Next-day unlock'].map(f => (
+                    <div key={f} className="flex items-center gap-2 text-sm text-white/50">
+                      <Check size={14} className="text-emerald-400 shrink-0" strokeWidth={3} />
+                      {f.slice(2)}
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => { setPreviewDay(null); navigate('/pricing'); }}
+                  className="w-full btn-premium btn-premium-gradient py-3.5 text-sm font-bold rounded-xl flex items-center justify-center gap-2"
+                >
+                  🚀 Unlock Day 2–30
+                </button>
+                <button
+                  onClick={() => { setPreviewDay(null); navigate('/journey/1'); }}
+                  className="w-full mt-2 py-3 text-sm text-white/50 font-semibold hover:text-white/70 transition-colors"
+                >
+                  View Day 1 again
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

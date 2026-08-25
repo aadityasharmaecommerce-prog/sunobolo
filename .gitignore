@@ -36,3 +36,34 @@ scripts/sarvam_output.log
 .env.local
 .env.production
 .env.*.local
+
+# Debug/test files (moved here during cleanup)
+_trash/
+*.mp3
+!public/audio/**/*.mp3
+
+# Android Keystore (NEVER commit - Play Store signing key)
+*.keystore
+*.jks
+*.p12
+
+# Firebase config (contains API keys)
+google-services.json
+keystore.properties
+android/keystore.properties
+android/app/*.keystore
+android/app/*.jks
+android/app/*.p12
+
+# Wrangler local state
+.wrangler/
+.wrangler/**
+
+# Android build artifacts
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+
+# Capacitor
+android/app/src/main/assets/capacitor.config.json

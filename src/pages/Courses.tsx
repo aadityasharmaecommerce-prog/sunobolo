@@ -77,9 +77,14 @@ export default function Courses() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-white text-sm group-hover:text-brand-300 transition-colors truncate">{course.title}</h3>
-                    {!course.isFree && (
+                    {!course.isFree && !subscription.active && (
                       <span className="text-[9px] font-extrabold text-white/25 bg-white/5 px-1.5 py-0.5 rounded-full shrink-0 inline-flex items-center gap-0.5">
                         <Lock size={7} strokeWidth={2.5} /> PRO
+                      </span>
+                    )}
+                    {!course.isFree && subscription.active && (
+                      <span className="text-[9px] font-extrabold text-emerald-300 bg-emerald-500/12 px-1.5 py-0.5 rounded-full shrink-0">
+                        UNLOCKED
                       </span>
                     )}
                   </div>

@@ -1,12 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { freeTrialLesson, courseMetadata } from '../data/content';
+import { useAuth } from '../lib/auth';
 import { useSentenceAudio } from '../hooks/useSentenceAudio';
 import { markSentenceComplete, getProgress } from '../lib/progress';
 import Confetti from '../components/Confetti';
 import BadgeToast from '../components/BadgeToast';
 import { checkAndPersistBadges } from '../lib/badges';
 import type { Badge } from '../config/badges';
-import { Check } from 'lucide-react';
+import { Check, GraduationCap, ArrowRight } from 'lucide-react';
 
 type Phase = 'listen' | 'speak';
 
@@ -49,7 +51,35 @@ function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
 }
 
 export default function FreeTrial() {
+  const { subscription, loading } = useAuth();
+  const navigate = useNavigate();
   const [started, setStarted] = useState(false);
+
+  // Paid users: show redirect to courses instead of free trial
+  if (!loading && subscription.active) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center animate-fade-in">
+        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-success-400 to-emerald-600 text-white flex items-center justify-center text-4xl shadow-glow-success mb-6">
+          🎉
+        </div>
+        <h1 className="text-2xl font-extrabold text-white">You already have full access!</h1>
+        <p className="text-white/50 text-sm mt-2 max-w-xs">
+          Your plan is active. Skip the free trial and dive into all courses.
+        </p>
+        <button onClick={() => navigate('/courses')}
+          className="mt-6 btn-premium btn-premium-gradient px-8 py-4 text-sm rounded-xl inline-flex items-center gap-2">
+          <GraduationCap size={18} strokeWidth={2.5} />
+          Browse All Courses
+          <ArrowRight size={16} strokeWidth={2.5} />
+        </button>
+        <button onClick={() => navigate('/tenses')}
+          className="mt-3 text-sm text-brand-300 font-semibold">
+          Or try Grammar →
+        </button>
+      </div>
+    );
+  }
+
   if (!started) return <Landing onStart={() => setStarted(true)} />;
   return <Practice />;
 }
@@ -110,7 +140,7 @@ function Landing({ onStart }: { onStart: () => void }) {
 
       {/* Grammar Preview Card */}
       <div className="mt-8 w-full max-w-sm">
-        <a href="/tenses" className="block dark-card-page p-4 text-left hover:border-indigo-500/30 transition-all">
+        <Link to="/tenses" className="block dark-card-page p-4 text-left hover:border-indigo-500/30 transition-all">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
               <span className="text-white text-base font-extrabold">T</span>
@@ -124,7 +154,7 @@ function Landing({ onStart }: { onStart: () => void }) {
             </div>
             <span className="text-white/30 text-sm">→</span>
           </div>
-        </a>
+        </Link>
       </div>
 
       {/* Beginner English — PAID */}
@@ -291,15 +321,15 @@ function Practice() {
         <p className="text-white/50 mt-2 text-sm">{total} sentences practiced! 👏</p>
         <p className="text-white/35 text-xs mt-1">Want to learn more? Unlock the full course.</p>
         <div className="mt-8 w-full max-w-xs space-y-3">
-          <a href="/pricing" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-xl">
+          <Link to="/pricing" className="btn-premium btn-premium-gradient w-full py-4 text-sm block text-center rounded-xl">
             🚀 Unlock Beginner English <span className="text-[10px] font-extrabold text-white/60 ml-1">PRO</span>
-          </a>
-          <a href="/courses" className="block w-full bg-white/5 border border-white/10 text-white/70 font-bold py-4 rounded-xl text-center text-sm hover:bg-white/10 transition-colors">
+          </Link>
+          <Link to="/courses" className="block w-full bg-white/5 border border-white/10 text-white/70 font-bold py-4 rounded-xl text-center text-sm hover:bg-white/10 transition-colors">
             📚 View All Courses
-          </a>
-          <a href="/tenses" className="block w-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold py-4 rounded-xl text-center text-sm hover:bg-indigo-500/20 transition-colors">
+          </Link>
+          <Link to="/tenses" className="block w-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold py-4 rounded-xl text-center text-sm hover:bg-indigo-500/20 transition-colors">
             📘 Grammar Free Preview
-          </a>
+          </Link>
         </div>
       </div>
     );

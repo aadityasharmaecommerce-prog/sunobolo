@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SunoBolo English</string>
+    <string name="title_activity_main">SunoBolo English</string>
+    <string name="package_name">com.sunobolo.english</string>
+    <string name="custom_url_scheme">com.sunobolo.english</string>
+</resources>

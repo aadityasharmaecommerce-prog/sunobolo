@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { PLANS, type PlanId } from '../config/plans';
-import { User, Mic, BookOpen, CreditCard, LogOut, ChevronRight, Calendar, CheckCircle2 } from 'lucide-react';
+import { User, Mic, BookOpen, CreditCard, LogOut, ChevronRight, Calendar, CheckCircle2, Shield, AlertTriangle, Ban } from 'lucide-react';
 
 export default function Profile() {
   const { user, subscription, logout, loading } = useAuth();
@@ -130,6 +130,30 @@ export default function Profile() {
             { Icon: Mic, label: 'Try Free Trial', path: '/free-trial', color: 'bg-brand-500/15 text-brand-400' },
             { Icon: BookOpen, label: 'Browse Courses', path: '/courses', color: 'bg-accent-500/15 text-accent-400' },
             ...(!subscription.active ? [{ Icon: CreditCard, label: 'See Pricing', path: '/pricing', color: 'bg-emerald-500/15 text-emerald-400' }] : []),
+          ].map(action => (
+            <button
+              key={action.path}
+              onClick={() => navigate(action.path)}
+              className="w-full text-left p-3 rounded-xl hover:bg-white/5 transition-colors flex items-center gap-3 group"
+            >
+              <span className={`w-9 h-9 rounded-lg ${action.color} flex items-center justify-center`}>
+                <action.Icon size={16} strokeWidth={2} />
+              </span>
+              <span className="font-medium text-white/70 text-sm flex-1">{action.label}</span>
+              <ChevronRight size={14} className="text-white/20 group-hover:text-white/40 transition-colors" strokeWidth={2} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Legal & Policies */}
+      <div className="dark-card p-5">
+        <h2 className="font-bold text-white mb-3">Legal</h2>
+        <div className="space-y-1">
+          {[
+            { Icon: Shield, label: 'Privacy Policy', path: '/privacy-policy', color: 'bg-blue-500/15 text-blue-400' },
+            { Icon: AlertTriangle, label: 'Disclaimer', path: '/disclaimer', color: 'bg-amber-500/15 text-amber-400' },
+            { Icon: Ban, label: 'Refund Policy', path: '/refund-policy', color: 'bg-red-500/15 text-red-400' },
           ].map(action => (
             <button
               key={action.path}

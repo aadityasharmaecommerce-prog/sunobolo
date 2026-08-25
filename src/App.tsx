@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import { AuthProvider } from './lib/auth';
 import SplashScreen from './components/SplashScreen';
 import ScrollToTop from './components/ScrollToTop';
@@ -17,12 +17,28 @@ import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailure from './pages/PaymentFailure';
+import Reading from './pages/Reading';
+import ReadingArticle from './pages/ReadingArticle';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Disclaimer from './pages/Disclaimer';
+import RefundPolicy from './pages/RefundPolicy';
+import DeleteAccount from './pages/DeleteAccount';
 
 // Lazy-loaded Tenses pages (separate chunk)
 const Tenses = lazy(() => import('./pages/Tenses'));
 const TenseLesson = lazy(() => import('./pages/TenseLesson'));
 const Journey = lazy(() => import('./pages/Journey'));
 const JourneyDay = lazy(() => import('./pages/JourneyDay'));
+
+/**
+ * Wrapper that forces JourneyDay to remount when dayNumber changes.
+ * This prevents stale state (dayComplete, stepIdx, etc.) from persisting
+ * across day transitions — the root cause of "Day 2 shows Complete immediately".
+ */
+function JourneyDayWrapper() {
+  const { dayNumber } = useParams<{ dayNumber: string }>();
+  return <JourneyDay key={dayNumber} />;
+}
 
 export default function App() {
   return (
@@ -45,7 +61,13 @@ export default function App() {
           <Route path="tenses" element={<Suspense fallback={<LoadingFallback text="Loading Grammar..." />}><Tenses /></Suspense>} />
           <Route path="tenses/:tenseId" element={<Suspense fallback={<LoadingFallback text="Loading Lesson..." />}><TenseLesson /></Suspense>} />
           <Route path="journey" element={<Suspense fallback={<LoadingFallback text="Loading Journey..." />}><Journey /></Suspense>} />
-          <Route path="journey/:dayNumber" element={<Suspense fallback={<LoadingFallback text="Loading Day..." />}><JourneyDay /></Suspense>} />
+          <Route path="journey/:dayNumber" element={<Suspense fallback={<LoadingFallback text="Loading Day..." />}><JourneyDayWrapper /></Suspense>} />
+          <Route path="reading" element={<Reading />} />
+          <Route path="reading/:id" element={<ReadingArticle />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="disclaimer" element={<Disclaimer />} />
+          <Route path="refund-policy" element={<RefundPolicy />} />
+          <Route path="delete-account" element={<DeleteAccount />} />
           <Route path="payment/success" element={<PaymentSuccess />} />
           <Route path="payment/failure" element={<PaymentFailure />} />
         </Route>

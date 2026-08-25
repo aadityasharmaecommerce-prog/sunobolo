@@ -2,7 +2,7 @@
  * SunoBolo — Centralized plan configuration.
  *
  * ONE source of truth for all pricing.
- * All three plans are ONE-TIME payments. NO monthly subscriptions.
+ * All four plans are ONE-TIME payments. NO monthly subscriptions.
  *
  * Backend MUST validate against this — never trust frontend amounts.
  */
@@ -15,18 +15,42 @@ export interface Plan {
   durationMonths: number;
   durationLabel: string;
   access: 'full';
+  badge?: string;
   features: readonly string[];
 }
 
 export const PLANS = {
+  one_month: {
+    id: 'one_month',
+    name: '1 Month',
+    amount: 19900,
+    amountRupees: 199,
+    durationMonths: 1,
+    durationLabel: '1 Month',
+    access: 'full',
+    badge: 'Entry Plan',
+    features: [
+      'Full App Access',
+      '5,000+ English Sentences',
+      '📘 English Grammar / 12 Tenses',
+      'Beginner · Daily Life · Interview',
+      'Business · Corporate · Travel',
+      'School · Kids',
+      'Hindi Meaning',
+      'Listen & Speak Practice',
+      '3× Repetition Practice',
+      'Progress Tracking',
+    ],
+  },
   three_month: {
     id: 'three_month',
     name: '3 Months',
-    amount: 59900,
-    amountRupees: 599,
+    amount: 49900,
+    amountRupees: 499,
     durationMonths: 3,
     durationLabel: '3 Months',
     access: 'full',
+    badge: '⭐ Best Value',
     features: [
       'Full App Access',
       '5,000+ English Sentences',
@@ -43,16 +67,19 @@ export const PLANS = {
   six_month: {
     id: 'six_month',
     name: '6 Months',
-    amount: 99900,
-    amountRupees: 999,
+    amount: 69900,
+    amountRupees: 699,
     durationMonths: 6,
     durationLabel: '6 Months',
     access: 'full',
+    badge: '🔥 Most Popular',
     features: [
       'Full App Access',
       '5,000+ English Sentences',
       '📘 English Grammar / 12 Tenses',
-      'All Courses',
+      'Beginner · Daily Life · Interview',
+      'Business · Corporate · Travel',
+      'School · Kids',
       'Hindi Meaning',
       'Listen & Speak Practice',
       '3× Repetition Practice',
@@ -62,16 +89,19 @@ export const PLANS = {
   one_year: {
     id: 'one_year',
     name: '1 Year',
-    amount: 170000,
-    amountRupees: 1700,
+    amount: 99900,
+    amountRupees: 999,
     durationMonths: 12,
     durationLabel: '1 Year',
     access: 'full',
+    badge: '🏆 Best Saving',
     features: [
       'Full App Access',
       '5,000+ English Sentences',
       '📘 English Grammar / 12 Tenses',
-      'All Courses',
+      'Beginner · Daily Life · Interview',
+      'Business · Corporate · Travel',
+      'School · Kids',
       'Hindi Meaning',
       'Listen & Speak Practice',
       '3× Repetition Practice',

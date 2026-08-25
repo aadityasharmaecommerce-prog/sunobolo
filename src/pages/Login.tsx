@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
 import { ArrowLeft, Headphones, Mail, Lock, User } from 'lucide-react';
@@ -394,12 +394,12 @@ export default function Login() {
       {/* ── Footer Links ── */}
       {step === 'mobile' && (
         <div className="mt-5 space-y-2 w-full max-w-sm">
-          <a href="/free-trial" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors inline-flex items-center justify-center gap-1">
+          <Link to="/free-trial" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors inline-flex items-center justify-center gap-1">
             <Headphones size={12} strokeWidth={2} /> Try Free Trial first
-          </a>
-          <a href="/" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors">
+          </Link>
+          <Link to="/" className="block w-full text-center text-xs text-white/35 hover:text-white/55 transition-colors">
             Back to Home
-          </a>
+          </Link>
         </div>
       )}
     </div>

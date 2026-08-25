@@ -7,5 +7,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'https://sunobolo-english.pages.dev',
+        changeOrigin: true,
+      },
+    },
   },
 })

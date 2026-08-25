@@ -1,11 +1,13 @@
 /**
- * SunoBolo — Push Notification Hook (Fixed)
+ * SunoBolo — Push Notification Hook
  *
- * Key fixes:
- * 1. Updates permission state after requestPermission() resolves
- * 2. Module-level guard prevents multiple requestPermission() calls
- * 3. Checks Notification.permission directly as source of truth
- * 4. Separates browser permission from push subscription state
+ * Key features:
+ * 1. Checks and requests browser notification permission
+ * 2. Creates PushManager subscription and syncs to backend
+ * 3. syncToBackend() allows re-syncing after user login (handles pre-login permission grant)
+ * 4. Module-level guard prevents multiple requestPermission() calls
+ * 5. Checks Notification.permission directly as source of truth
+ * 6. Separates browser permission from push subscription state
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -96,7 +98,7 @@ export function usePushNotifications() {
               applicationServerKey: applicationServerKey.buffer as ArrayBuffer,
             });
 
-            // Send to backend
+            // Send to backend (requires auth — will fail silently for non-logged-in users)
             const { endpoint } = newSubscription;
             const p256dh = btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('p256dh')!)));
             const auth = btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('auth')!)));
@@ -127,6 +129,56 @@ export function usePushNotifications() {
     return () => {
       mountedRef.current = false;
     };
+  }, []);
+
+  /**
+   * Sync existing browser subscription to backend.
+   * Call this after user logs in to handle the case where:
+   * - User granted notification permission before logging in
+   * - Browser has a PushManager subscription
+   * - Backend doesn't have it yet (401 prevented earlier save)
+   */
+  const syncToBackend = useCallback(async (): Promise<boolean> => {
+    try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        return false;
+      }
+
+      const permission = Notification.permission;
+      if (permission !== 'granted') return false;
+
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (!subscription) return false;
+
+      // Fetch VAPID key to verify backend is reachable
+      const keyRes = await fetch('/api/push/vapid-key', { credentials: 'include' });
+      const keyData = await keyRes.json();
+      if (!keyData.publicKey) return false;
+
+      // Send subscription to backend
+      const { endpoint } = subscription;
+      const p256dh = btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')!)));
+      const auth = btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')!)));
+
+      const res = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ endpoint, p256dh, auth }),
+      });
+
+      if (res.ok) {
+        if (mountedRef.current) {
+          setState((s) => ({ ...s, isSubscribed: true }));
+        }
+        return true;
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
   }, []);
 
   // Subscribe to push notifications
@@ -284,5 +336,6 @@ export function usePushNotifications() {
     subscribe,
     unsubscribe,
     toggle,
+    syncToBackend,
   };
 }
