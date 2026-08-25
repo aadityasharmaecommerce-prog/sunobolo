@@ -18,7 +18,7 @@
  * - Never caches POST requests or sensitive endpoints
  */
 
-const CACHE_NAME = 'sunobolo-v4';
+const CACHE_NAME = 'sunobolo-v5';
 const AUDIO_CACHE = 'sunobolo-audio-v3';
 const IMAGE_CACHE = 'sunobolo-images-v3';
 
@@ -87,24 +87,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── Navigation (HTML): Network-first ──
+  // ── Navigation (HTML): ALWAYS network-first, never cache SPA shell ──
+  // CRITICAL: index.html references hashed JS/CSS filenames that change on deploy.
+  // Caching index.html causes white/black screens after deploys.
   if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Always update cache with fresh HTML
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => {
-          // Offline fallback: serve cached version
-          return caches.match(request).then((cached) => {
-            return cached || caches.match('/');
-          });
-        })
+      fetch(request).catch(() => {
+        // Offline fallback: only serve cached version when truly offline
+        return caches.match(request);
+      })
     );
     return;
   }

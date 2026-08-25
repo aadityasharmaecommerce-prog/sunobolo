@@ -22,6 +22,7 @@ import ReadingArticle from './pages/ReadingArticle';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Disclaimer from './pages/Disclaimer';
 import RefundPolicy from './pages/RefundPolicy';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy-loaded Tenses pages (separate chunk)
 const Tenses = lazy(() => import('./pages/Tenses'));
@@ -57,10 +58,10 @@ export default function App() {
           <Route path="pricing" element={<Pricing />} />
           <Route path="login" element={<Login />} />
           <Route path="reset-password" element={<Login />} />
-          <Route path="tenses" element={<Suspense fallback={<LoadingFallback text="Loading Grammar..." />}><Tenses /></Suspense>} />
-          <Route path="tenses/:tenseId" element={<Suspense fallback={<LoadingFallback text="Loading Lesson..." />}><TenseLesson /></Suspense>} />
-          <Route path="journey" element={<Suspense fallback={<LoadingFallback text="Loading Journey..." />}><Journey /></Suspense>} />
-          <Route path="journey/:dayNumber" element={<Suspense fallback={<LoadingFallback text="Loading Day..." />}><JourneyDayWrapper /></Suspense>} />
+          <Route path="tenses" element={<ErrorBoundary><Suspense fallback={<LoadingFallback text="Loading Grammar..." />}><Tenses /></Suspense></ErrorBoundary>} />
+          <Route path="tenses/:tenseId" element={<ErrorBoundary><Suspense fallback={<LoadingFallback text="Loading Lesson..." />}><TenseLesson /></Suspense></ErrorBoundary>} />
+          <Route path="journey" element={<ErrorBoundary><Suspense fallback={<LoadingFallback text="Loading Journey..." />}><Journey /></Suspense></ErrorBoundary>} />
+          <Route path="journey/:dayNumber" element={<ErrorBoundary><Suspense fallback={<LoadingFallback text="Loading Day..." />}><JourneyDayWrapper /></Suspense></ErrorBoundary>} />
           <Route path="reading" element={<Reading />} />
           <Route path="reading/:id" element={<ReadingArticle />} />
           <Route path="privacy-policy" element={<PrivacyPolicy />} />
