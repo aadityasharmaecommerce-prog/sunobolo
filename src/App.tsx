@@ -22,7 +22,6 @@ import ReadingArticle from './pages/ReadingArticle';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Disclaimer from './pages/Disclaimer';
 import RefundPolicy from './pages/RefundPolicy';
-import DeleteAccount from './pages/DeleteAccount';
 
 // Lazy-loaded Tenses pages (separate chunk)
 const Tenses = lazy(() => import('./pages/Tenses'));
@@ -67,7 +66,6 @@ export default function App() {
           <Route path="privacy-policy" element={<PrivacyPolicy />} />
           <Route path="disclaimer" element={<Disclaimer />} />
           <Route path="refund-policy" element={<RefundPolicy />} />
-          <Route path="delete-account" element={<DeleteAccount />} />
           <Route path="payment/success" element={<PaymentSuccess />} />
           <Route path="payment/failure" element={<PaymentFailure />} />
         </Route>
