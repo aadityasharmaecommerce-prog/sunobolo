@@ -8,9 +8,6 @@
     <!-- Google Play Billing -->
     <uses-permission android:name="com.android.vending.BILLING" />
 
-    <!-- Audio Recording (English speaking practice) -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
     <!-- Haptic Feedback -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
