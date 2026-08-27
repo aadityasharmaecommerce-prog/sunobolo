@@ -78,7 +78,7 @@ function getServerPlan(planId: string): { id: string; amount: number; durationMo
 
 // ── Helpers ──
 
-const ALLOWED_ORIGINS = ['https://sunobolo.in', 'https://www.sunobolo.in', 'https://admin.sunobolo.in', 'https://sunobolo-admin.aadityasharmaecommerce.workers.dev'];
+const ALLOWED_ORIGINS = ['https://sunobolo.in', 'https://www.sunobolo.in', 'https://admin.sunobolo.in', 'https://sunobolo-admin.aadityasharmaecommerce.workers.dev', 'capacitor://localhost', 'https://localhost'];
 function getCorsHeaders(origin: string | null): Record<string, string> {
   // SECURITY: Only return specific allowed origins — never wildcard with credentials
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -489,7 +489,7 @@ async function handleAuthSignup(request: Request, env: Env): Promise<Response> {
       headers: {
         'content-type': 'application/json; charset=utf-8',
         ...getCorsHeaders(request.headers.get('origin')),
-        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}`,
+        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${90 * 24 * 60 * 60}`,
       },
     }
   );
@@ -561,7 +561,7 @@ async function handleAuthLogin(request: Request, env: Env): Promise<Response> {
       headers: {
         'content-type': 'application/json; charset=utf-8',
         ...getCorsHeaders(request.headers.get('origin')),
-        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${90 * 24 * 60 * 60}`,
+        'set-cookie': `sb_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${90 * 24 * 60 * 60}`,
       },
     }
   );
@@ -735,7 +735,7 @@ async function handleAuthLogout(request: Request, env: Env): Promise<Response> {
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
-    headers: { 'content-type': 'application/json; charset=utf-8', ...getCorsHeaders(request.headers.get('origin')), 'set-cookie': 'sb_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0' },
+    headers: { 'content-type': 'application/json; charset=utf-8', ...getCorsHeaders(request.headers.get('origin')), 'set-cookie': 'sb_session=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0' },
   });
 }
 
@@ -2884,8 +2884,8 @@ export const onRequest: PagesFunction<Env> = async ({ request, env, params }) =>
       return json({ ok: true });
     }
 
-    if (route === '/auth/guest' && method === 'POST') {
     if (route === '/progress/stats' && method === 'GET') return handleProgressStats(request, env);
+    if (route === '/auth/guest' && method === 'POST') {
       // Rate limit: max 50 guest accounts per hour (global)
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const guestCount = await env.DB.prepare(
